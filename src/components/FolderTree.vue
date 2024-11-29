@@ -1,6 +1,5 @@
 <template>
   <el-tree
-    style="max-width: 600px"
     :data="props.data"
     :props="defaultProps"
     @node-click="handleNodeClick"
@@ -12,14 +11,22 @@ import { ElTree } from 'element-plus';
 interface Tree {
   label: string
   children?: Tree[]
-  value?:string
+  path?:string
+  isDir?:boolean
 }
 const emit
-  = defineEmits<(e: 'tchange', payload: string | undefined,node ) => void>()
+  = defineEmits<{
+  (e: 'tchange', payload: string | undefined ) : void
+  (e: 'getTextFromPath', path:string | undefined) : void
+   } >()
 
-const handleNodeClick = (data: Tree,node) => {
-  console.log(data.value)
-  emit('tchange',data.value,node)
+const handleNodeClick = (data: Tree) => {
+  console.log(data.path)
+  if(!data.isDir){
+    console.log("emit")
+    emit('getTextFromPath',data.path)
+  }
+
 
 }
 const props = defineProps<{

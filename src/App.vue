@@ -1,15 +1,18 @@
 <script setup lang="ts">
 import MonacoEditor from "./components/MonacoEditor.vue";
-import FileExplorer from "./components/FileExplorer.vue";
+import { onMounted } from "vue";
 import FolderTree from "./components/FolderTree.vue";
 import {ref} from 'vue'
-import { useFileStore } from "./store";
+import { Plus } from '@element-plus/icons-vue'
+import axios from "axios"
+
 interface Tree {
   label: string
   children?: Tree[]
-  value?:string
+  path?:string
+  isDir?:boolean
 }
-const data:Tree[]=[
+const treeData=ref<Tree[]>([
         {
           label: 'src',
           children: [
@@ -18,71 +21,126 @@ const data:Tree[]=[
               children: [
                 {
                   label: 'FileTree.vue',
-                  value: '<script setup lang="ts">'
+                  path: 'src/components/FileTree.vue'
                 },
                 {
                   label: 'FileTree2.vue',
-                  value: '\ninterface Tree {\nlabel: string\nchildren?: Tree[]\nvalue?:string\n}'
+                  path: 'src/components/FileTree2.vue'
                 }
               ],
             },
           ],
         },
-        {
-          label: 'Level one 2',
-          children: [
-            {
-              label: 'Level two 2-1',
-              children: [
-                {
-                  label: 'Level three 2-1-1',
-                },
-              ],
-            },
-            {
-              label: 'Level two 2-2',
-              children: [
-                {
-                  label: 'Level three 2-2-1',
-                },
-              ],
-            },
-          ],
-        },
-        {
-          label: 'Level one 3',
-          children: [
-            {
-              label: 'Level two 3-1',
-              children: [
-                {
-                  label: 'Level three 3-1-1',
-                },
-              ],
-            },
-            {
-              label: 'Level two 3-2',
-              children: [
-                {
-                  label: 'Level three 3-2-1',
-                },
-              ],
-            },
-          ],
-        },
-      ]
-//const filestore=useFileStore()
+      ])
+
+
 const text = ref('')
-const changeTextValue=function(textvalue,treenode){
-  console.log('changeTextValue:',textvalue,treenode)
-  text.value=textvalue;
+const selectedPath = ref('')
+
+// 转换目录结构为树形数据
+const convertToTreeData = (data: any) => {
+  return data.map((item: any) => {
+    const treeNode: Tree = {
+      label: item.path.split('\\').pop() || '', // 仅取文件或目录的名称作为 label
+      path: item.path,
+    };
+
+    if (item.is_directory && item.children && item.children.length > 0) {
+      treeNode.children = convertToTreeData(item.children); // 递归处理子目录
+    }else if(item.is_directory){ //空目录
+      treeNode.children=[]
+    }
+    treeNode.isDir=item.is_directory
+    //treeNode.isLeaf=item.is_directory?"leaf":""
+    return treeNode;
+  });
 }
+const getTextFromServer=function(path:string|undefined){
+  if(path === undefined) return
+  selectedPath.value=path
+  axios({
+  method: 'get',
+  url: '/getTextFromPath',
+  baseURL:'api/',
+  headers: {
+        'Accept': 'text/plain; charset=utf-8'  // 确保前端的请求头是正确的
+    },
+  params:{
+    "path":path
+  }
+}).then(res => {
+    console.log(res.data)
+    text.value=res.data["file-text"]
+
+}).catch(err => {
+    console.log(err)
+})
+}
+const saveTextToServer=function(text:string|undefined){
+  if(text === undefined) return
+  axios({
+    method: 'post',
+    url:'/api/saveText',
+  data:{
+    "path":selectedPath.value,
+    "text":text
+  },
+  headers: {
+      'Content-Type': 'application/json'
+    },
+}).then(res => {
+    console.log(res)
+
+}).catch(err => {
+    console.log(err)
+})
+}
+const RunJKS=function(){
+  axios({
+  method: 'get',
+  url: '/RunJKS',
+  baseURL:'api/',
+  params:{
+    "path":selectedPath.value
+  }
+}).then(res => {
+    console.log(res.data)
+
+}).catch(err => {
+    console.log(err)
+})
+}
+const getDirStructure=function(){
+  axios({
+  method: 'get',
+  url: '/getDirStructure',
+  baseURL:'api/',
+  params:{
+    "path":"C:\\Users\\wy156\\Desktop\\Go\\jk_robot_app_windows\\example_script\\Thread"
+  }
+}).then(res => {
+    console.log(res.data)
+    treeData.value=convertToTreeData(res.data.data)
+   console.log(convertToTreeData(res.data.data))
+
+}).catch(err => {
+    console.log(err)
+})
+}
+
+onMounted(() => {
+  getDirStructure()
+})
 </script>
 
 <template>
   <main class="container" >
-    <FolderTree :data="data" @tchange="changeTextValue"/>
-    <MonacoEditor class="editor" :text-value="text"/>
+    <div class="nav">
+      <el-button type="" :icon="Plus" />
+
+    </div>
+    <FolderTree class="file" :data="treeData" @get-text-from-path="getTextFromServer"/>
+    <MonacoEditor class="editor" :text-value="text" :path="selectedPath" @save="saveTextToServer" @run="RunJKS"/>
   </main>
 </template>
 
@@ -100,12 +158,11 @@ body {
 }
 .container {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  grid-template-rows: 1fr 1fr 1fr;
+  grid-template-columns: 0.6fr 1.1fr 1.3fr;
+  grid-template-rows: 0.3fr 1.7fr 1fr;
   gap: 0px 0px;
-  grid-auto-flow: row;
   grid-template-areas:
-    "file editor editor"
+    "nav editor editor"
     "file editor editor"
     "file editor editor";
   width: 100%;
@@ -118,5 +175,8 @@ body {
 
 .file {
   grid-area: file;
+}
+.nav { grid-area: nav;
+margin: 2%;
 }
 </style>

@@ -8,25 +8,29 @@ import * as monaco from 'monaco-editor'
 import EditorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
 import JSONWorker from 'monaco-editor/esm/vs/language/json/json.worker?worker'
 
-/* import CSSWorker from 'monaco-editor/esm/vs/language/css/css.worker?worker'
+import CSSWorker from 'monaco-editor/esm/vs/language/css/css.worker?worker'
 import HTMLWorker from 'monaco-editor/esm/vs/language/html/html.worker?worker'
-import TSWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker' */
+import TSWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker'
 import { StorageName, initialEditorValue, useDarkGlobal } from '../utils'
 
 const props = defineProps<{
-  activeTab: string
+  path: string
   textValue: string
 }>()
 
 const emit
-  = defineEmits<(e: 'change', payload: typeof editorValue.value) => void>()
+  = defineEmits<{
+  (e: 'change', payload: typeof editorValue.value) : void
+  (e: 'save' , text:string) : void
+  (e: 'run') : void
+   } >()
 
 // @ts-expect-error: Monaco stuff
 self.MonacoEnvironment = {
   getWorker(_: string, label: string) {
      if (label === 'json')
       return new JSONWorker()
-/*
+
     if (label === 'css' || label === 'scss' || label === 'less')
       return new CSSWorker()
 
@@ -35,7 +39,7 @@ self.MonacoEnvironment = {
 
     if (label === 'typescript' || label === 'javascript')
       return new TSWorker()
- */
+
     return new EditorWorker()
   },
 }
@@ -46,13 +50,10 @@ let editor: monaco.editor.IStandaloneCodeEditor
 
 const isDark = useDarkGlobal()
 
-const { activeTab,textValue } = toRefs(props)
-activeTab.value="javascript";
+//const { activeTab,textValue } = toRefs(props)
+//activeTab.value="javascript";
 
-const editorState = useStorage<Record<string, any>>(
-  StorageName.EDITOR_STATE,
-  {},
-)
+
 const editorValue = useStorage<Record<string, any>>(
   StorageName.EDITOR_VALUE,
   initialEditorValue,
@@ -60,51 +61,21 @@ const editorValue = useStorage<Record<string, any>>(
 
 onMounted(() => {
   editor = monaco.editor.create(container.value!, {
-    language: activeTab.value,
-    //language: 'javascript',
-    theme: isDark.value ? 'vs-dark' : 'vs',
+    language: 'python',
+    //theme: isDark.value ? 'vs-dark' : 'vs',
+    theme: 'vs-dark',
   })
 
   emit('change', editorValue.value)
-
-  editor.onDidChangeModelContent(
-    useDebounceFn(() => {
-      if (editorValue.value[activeTab.value] !== editor.getValue()!) {
-        editorValue.value[activeTab.value] = editor.getValue()!
-        emit('change', editorValue.value)
-      }
-    }, 500),
-  )
-
-  // Set values from storage on load
-  if (editorValue.value[activeTab.value]) {
-    editor.setValue(editorValue.value[activeTab.value])
-    editor.restoreViewState(editorState.value[activeTab.value])
-  }
 })
 
 
-
-watch(activeTab, (currentTab, prevTab) => {
-  monaco.editor.setModelLanguage(editor.getModel()!, currentTab)
-
-  editorState.value[prevTab] = editor.saveViewState()
-
-  if (editorValue.value[currentTab])
-    editor.setValue(editorValue.value[currentTab])
-  else
-    editor.setValue('')
-
-  if (editorState.value[currentTab]) {
-    editor.restoreViewState(editorState.value[currentTab]!)
-    editor.focus()
-  }
-})
-watch(textValue,(value)=>{
-  if(typeof value === 'undefined'){
+watch(()=>props.textValue,(newvalue,oldValue)=>{
+  if(typeof newvalue === 'undefined'){
 
   }else{
-    editor.setValue(value)
+    console.log("in monaco editor,text change")
+    editor.setValue(newvalue)
   }
 
 })
@@ -122,8 +93,30 @@ onUnmounted(() => {
   editor?.dispose()
   editorObserver.stop()
 })
+
+const Save=function(){
+  console.log("save")
+  emit('save',editor.getValue())
+}
+const Run=function(){
+  console.log("run")
+  emit('run')
+}
 </script>
 
 <template>
-  <div ref="container" style="height: calc(100% - 2.5rem)" />
+  <div>
+  <el-button class="save" @click="Save">Save</el-button>
+  <el-button class="run" @click="Run">Run</el-button>
+  <div ref="container" style="height: calc(100% - 2.5rem)" ></div>>
+
+  </div>
+
 </template>
+
+
+<style scoped>
+.save{
+  margin: 1%;
+}
+</style>
