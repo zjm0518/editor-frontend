@@ -137,10 +137,10 @@ onMounted(() => {
   <main class="container" >
     <div class="nav">
       <el-button type="" :icon="Plus" />
-
     </div>
     <FolderTree class="file" :data="treeData" @get-text-from-path="getTextFromServer"/>
     <MonacoEditor class="editor" :text-value="text" :path="selectedPath" @save="saveTextToServer" @run="RunJKS"/>
+    <iframe class="terminal" src="http://localhost:7681" width="100%" height="100%" frameborder="0"></iframe>
   </main>
 </template>
 
@@ -156,27 +156,17 @@ body {
   font-family: Consolas, "Courier New", monospace;
   color: #d4d4d4;
 }
+
 .container {
   display: grid;
   grid-template-columns: 0.6fr 1.1fr 1.3fr;
-  grid-template-rows: 0.3fr 1.7fr 1fr;
+  grid-template-rows: 0.3fr 2.1fr 0.6fr;
   gap: 0px 0px;
-  grid-template-areas:
-    "nav editor editor"
-    "file editor editor"
-    "file editor editor";
   width: 100%;
   height: 100vh;
 }
-
-.editor {
-  grid-area: editor;
-}
-
-.file {
-  grid-area: file;
-}
-.nav { grid-area: nav;
-margin: 2%;
-}
+.editor { grid-area: 1 / 2 / 3 / 4; }
+.file { grid-area: 2 / 1 / 4 / 2; }
+.nav { grid-area: 1 / 1 / 2 / 2; }
+.terminal { grid-area: 3 / 2 / 4 / 4;}
 </style>
