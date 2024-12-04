@@ -7,6 +7,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    App: typeof import('./src/components/ttydTeminal/components/app.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
     FileExplorer: typeof import('./src/components/FileExplorer.vue')['default']
     FileTree: typeof import('./src/components/FileTree.vue')['default']
@@ -16,7 +17,16 @@ declare module 'vue' {
     IconEcosystem: typeof import('./src/components/icons/IconEcosystem.vue')['default']
     IconSupport: typeof import('./src/components/icons/IconSupport.vue')['default']
     IconTooling: typeof import('./src/components/icons/IconTooling.vue')['default']
+    Index: typeof import('./src/components/ttydTeminal/components/terminal/Index.vue')['default']
+    IXterm: typeof import('./src/components/IXterm.vue')['default']
     MonacoEditor: typeof import('./src/components/MonacoEditor.vue')['default']
+    Terminal: typeof import('./src/components/ttydTeminal/components/terminal/index.vue')['default']
+    TerminalComponent: typeof import('./src/components/TerminalComponent.vue')['default']
+    Tindex: typeof import('./src/components/ttydTeminal/components/terminal/Tindex.vue')['default']
+    TIndex: typeof import('./src/components/ttydTeminal/components/terminal/TIndex.vue')['default']
     TreeItem: typeof import('./src/components/TreeItem.vue')['default']
+    Tty: typeof import('./src/components/ttydTeminal/components/Tty.vue')['default']
+    TtydTeminal: typeof import('./src/components/ttydTeminal/ttydTeminal.vue')['default']
+    Xterm: typeof import('./src/components/IXterm.vue')['default']
   }
 }

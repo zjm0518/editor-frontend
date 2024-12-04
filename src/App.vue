@@ -5,6 +5,9 @@ import FolderTree from "./components/FolderTree.vue";
 import {ref} from 'vue'
 import { Plus } from '@element-plus/icons-vue'
 import axios from "axios"
+import IXterm from "./components/IXterm.vue";
+import TerminalComponent from "./components/TerminalComponent.vue";
+
 
 interface Tree {
   label: string
@@ -36,7 +39,7 @@ const treeData=ref<Tree[]>([
 
 const text = ref('')
 const selectedPath = ref('')
-
+const term = ref(null);
 // 转换目录结构为树形数据
 const convertToTreeData = (data: any) => {
   return data.map((item: any) => {
@@ -96,7 +99,7 @@ const saveTextToServer=function(text:string|undefined){
 })
 }
 const RunJKS=function(){
-  axios({
+ /*  axios({
   method: 'get',
   url: '/RunJKS',
   baseURL:'api/',
@@ -108,7 +111,8 @@ const RunJKS=function(){
 
 }).catch(err => {
     console.log(err)
-})
+}) */
+  term.value.Run(selectedPath.value)
 }
 const getDirStructure=function(){
   axios({
@@ -127,21 +131,40 @@ const getDirStructure=function(){
     console.log(err)
 })
 }
+const StartTTYD=function(){
+  axios({
+  method: 'get',
+  url: '/StartTTYD',
+  baseURL:'api/',
+  params:{
+    "path":"C:\\Users\\wy156\\Desktop\\Go\\jk_robot_app_windows\\example_script\\Thread"
+  }
+}).then(res => {
+    console.log(res.data)
+    treeData.value=convertToTreeData(res.data.data)
+   console.log(convertToTreeData(res.data.data))
 
+}).catch(err => {
+    console.log(err)
+})
+}
 onMounted(() => {
   getDirStructure()
+  StartTTYD()
 })
 </script>
 
 <template>
-  <main class="container" >
+  <div class="container" >
     <div class="nav">
       <el-button type="" :icon="Plus" />
     </div>
     <FolderTree class="file" :data="treeData" @get-text-from-path="getTextFromServer"/>
     <MonacoEditor class="editor" :text-value="text" :path="selectedPath" @save="saveTextToServer" @run="RunJKS"/>
-    <iframe class="terminal" src="http://localhost:7681" width="100%" height="100%" frameborder="0"></iframe>
-  </main>
+
+  <TerminalComponent class="terminal" ref="term"/>
+
+  </div>
 </template>
 
 <style scoped>
@@ -162,11 +185,15 @@ body {
   grid-template-columns: 0.6fr 1.1fr 1.3fr;
   grid-template-rows: 0.3fr 2.1fr 0.6fr;
   gap: 0px 0px;
-  width: 100%;
-  height: 100vh;
+  grid-template-areas:
+    "nav editor editor"
+    "file editor editor"
+    "file terminal terminal";
+    width: 100%;
+    height: 100vh;
 }
-.editor { grid-area: 1 / 2 / 3 / 4; }
-.file { grid-area: 2 / 1 / 4 / 2; }
-.nav { grid-area: 1 / 1 / 2 / 2; }
-.terminal { grid-area: 3 / 2 / 4 / 4;}
+.file { grid-area: file; }
+.nav { grid-area: nav; }
+.terminal { grid-area: terminal; }
+.editor { grid-area: editor; }
 </style>
