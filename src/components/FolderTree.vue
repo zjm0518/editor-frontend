@@ -1,5 +1,5 @@
 <template>
-  <el-tree
+  <el-tree class="jktree"
     :data="props.data"
     :props="defaultProps"
     @node-click="handleNodeClick"
@@ -39,3 +39,9 @@ const defaultProps = {
   label: 'label',
 }
 </script>
+
+<style lang="css">
+.jktree {
+  width: 300px;
+}
+</style>

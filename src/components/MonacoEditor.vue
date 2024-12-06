@@ -23,6 +23,7 @@ const emit
   (e: 'change', payload: typeof editorValue.value) : void
   (e: 'save' , text:string) : void
   (e: 'run') : void
+  (e: 'stop') : void
    } >()
 
 // @ts-expect-error: Monaco stuff
@@ -102,14 +103,21 @@ const Run=function(){
   console.log("run")
   emit('run')
 }
+const Stop=function(){
+  console.log("stop")
+  emit('stop')
+}
 </script>
 
 <template>
-  <div>
-  <el-button class="save" @click="Save">Save</el-button>
-  <el-button class="run" @click="Run">Run</el-button>
-  <div ref="container" style="height: calc(100% - 2.5rem)" ></div>>
+  <div >
+    <div style="height: 7vh;">
+      <el-button class="save" @click="Save" >Save</el-button>
+      <el-button class="run" @click="Run">Run</el-button>
+      <el-button class="stop" @click="Stop">Stop</el-button>
+    </div>
 
+    <div ref="container" style="height: 63vh;"></div>
   </div>
 
 </template>
@@ -119,4 +127,11 @@ const Run=function(){
 .save{
   margin: 1%;
 }
+.run{
+  margin: 1%;
+}
+.stop{
+  margin: 1%;
+}
+
 </style>
