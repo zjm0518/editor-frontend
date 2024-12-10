@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, toRefs, watch } from 'vue'
-import { useDebounceFn, useResizeObserver, useStorage } from '@vueuse/core'
+import { onMounted, onUnmounted, ref, watch } from 'vue'
+import { useResizeObserver, useStorage } from '@vueuse/core'
 
 // Import monaco
 // https://github.com/vitejs/vite/discussions/1791
@@ -26,7 +26,6 @@ const emit
   (e: 'stop') : void
    } >()
 
-// @ts-expect-error: Monaco stuff
 self.MonacoEnvironment = {
   getWorker(_: string, label: string) {
      if (label === 'json')

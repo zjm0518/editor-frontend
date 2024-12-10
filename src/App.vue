@@ -7,7 +7,7 @@ import { Plus } from "@element-plus/icons-vue";
 import axios from "axios";
 
 import TerminalComponent from "./components/TerminalComponent.vue";
-
+import RemoteTreeFile from "./components/RemoteTreeFile.vue";
 interface Tree {
   label: string;
   children?: Tree[];
@@ -41,8 +41,9 @@ const term = ref(null);
 // 转换目录结构为树形数据
 const convertToTreeData = (data: any) => {
   return data.map((item: any) => {
+    const path=item.path.replace(/\\$/, ""); // 去掉末尾的 \\
     const treeNode: Tree = {
-      label: item.path.split("\\").pop() || "", // 仅取文件或目录的名称作为 label
+      label: path.split("\\").pop() || "", // 仅取文件或目录的名称作为 label
       path: item.path,
     };
 
@@ -118,17 +119,17 @@ const RunJKS = function () {
 const Stop = function () {
   term.value.Stop();
 };
-const getDirStructure = function () {
+const getDirStructure = function (path :string) {
   axios({
     method: "get",
     url: "/getDirStructure",
     baseURL: "api/",
     params: {
-      path: "C:\\Users\\wy156\\Desktop\\Go\\jk_robot_app_windows\\example_script\\Thread",
+      path: path
     },
   })
     .then((res) => {
-      console.log(res.data);
+      console.log(res)
       treeData.value = convertToTreeData(res.data.data);
       console.log(convertToTreeData(res.data.data));
     })
@@ -155,7 +156,7 @@ const StartTTYD = function () {
     });
 };
 onMounted(() => {
-  getDirStructure();
+  getDirStructure("C:\\Users\\wy156\\Desktop\\Go\\jk_robot_app_windows\\example_script\\Thread");
   //StartTTYD()
 });
 </script>
@@ -164,7 +165,7 @@ onMounted(() => {
   <div class="container">
     <div class="folder">
       <div class="nav">
-        <el-button type="" :icon="Plus" />
+        <RemoteTreeFile @selectDir="getDirStructure"/>
       </div>
       <FolderTree
         class="file"
@@ -205,7 +206,6 @@ body {
 
 .container {
   width: 100vw;
-  height: 100%;
   display: flex;
   overflow: hidden;
   /*   grid-template-areas:
@@ -222,9 +222,10 @@ body {
 
 .folder {
   width: 300px;
+  overflow-y:auto;
 }
 .Right {
-  width: 100%;
+  width: calc(100vw-300px);
   height: 100vh;
   display: flex;
   flex-direction: column; /* 设置为垂直排列 */

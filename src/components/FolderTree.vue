@@ -40,8 +40,10 @@ const defaultProps = {
 }
 </script>
 
-<style lang="css">
-.jktree {
+<style lang="css" scoped>
+el-tree .jktree {
   width: 300px;
+  overflow-y: auto;
 }
+
 </style>

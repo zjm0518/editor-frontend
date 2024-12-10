@@ -9,6 +9,9 @@ declare module 'vue' {
   export interface GlobalComponents {
     App: typeof import('./src/components/ttydTeminal/components/app.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
+    ElDialog: typeof import('element-plus/es')['ElDialog']
+    ElInput: typeof import('element-plus/es')['ElInput']
+    ElTree: typeof import('element-plus/es')['ElTree']
     FileExplorer: typeof import('./src/components/FileExplorer.vue')['default']
     FileTree: typeof import('./src/components/FileTree.vue')['default']
     FolderTree: typeof import('./src/components/FolderTree.vue')['default']
@@ -20,6 +23,7 @@ declare module 'vue' {
     Index: typeof import('./src/components/ttydTeminal/components/terminal/Index.vue')['default']
     IXterm: typeof import('./src/components/IXterm.vue')['default']
     MonacoEditor: typeof import('./src/components/MonacoEditor.vue')['default']
+    RemoteTreeFile: typeof import('./src/components/RemoteTreeFile.vue')['default']
     Terminal: typeof import('./src/components/ttydTeminal/components/terminal/index.vue')['default']
     TerminalComponent: typeof import('./src/components/TerminalComponent.vue')['default']
     Tindex: typeof import('./src/components/ttydTeminal/components/terminal/Tindex.vue')['default']

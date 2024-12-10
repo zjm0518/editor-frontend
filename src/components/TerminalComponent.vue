@@ -161,4 +161,14 @@ export default {
 .xterm {
   height: 30vh;
 }
+/* 滚动条css chrome/safari */
+::-webkit-scrollbar {
+	width: 15px;
+
+}
+
+::-webkit-scrollbar-thumb {
+	background-color: rgba(111, 113, 117, 0.4);
+
+}
 </style>
