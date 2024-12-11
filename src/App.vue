@@ -3,11 +3,13 @@ import MonacoEditor from "./components/MonacoEditor.vue";
 import { onMounted } from "vue";
 import FolderTree from "./components/FolderTree.vue";
 import { ref } from "vue";
-import { Plus } from "@element-plus/icons-vue";
 import axios from "axios";
 
 import TerminalComponent from "./components/TerminalComponent.vue";
 import RemoteTreeFile from "./components/RemoteTreeFile.vue";
+
+import { LaySplitPanel, LaySplitPanelItem } from "@layui/layui-vue";
+import "@layui/layui-vue/es/splitPanel/index.css";
 interface Tree {
   label: string;
   children?: Tree[];
@@ -38,10 +40,11 @@ const treeData = ref<Tree[]>([
 const text = ref("");
 const selectedPath = ref("");
 const term = ref(null);
+
 // 转换目录结构为树形数据
 const convertToTreeData = (data: any) => {
   return data.map((item: any) => {
-    const path=item.path.replace(/\\$/, ""); // 去掉末尾的 \\
+    const path = item.path.replace(/\\$/, ""); // 去掉末尾的 \\
     const treeNode: Tree = {
       label: path.split("\\").pop() || "", // 仅取文件或目录的名称作为 label
       path: item.path,
@@ -119,17 +122,17 @@ const RunJKS = function () {
 const Stop = function () {
   term.value.Stop();
 };
-const getDirStructure = function (path :string) {
+const getDirStructure = function (path: string) {
   axios({
     method: "get",
     url: "/getDirStructure",
     baseURL: "api/",
     params: {
-      path: path
+      path: path,
     },
   })
     .then((res) => {
-      console.log(res)
+      console.log(res);
       treeData.value = convertToTreeData(res.data.data);
       console.log(convertToTreeData(res.data.data));
     })
@@ -156,13 +159,15 @@ const StartTTYD = function () {
     });
 };
 onMounted(() => {
-  getDirStructure("C:\\Users\\wy156\\Desktop\\Go\\jk_robot_app_windows\\example_script\\Thread");
+  getDirStructure(
+    "C:\\Users\\wy156\\Desktop\\Go\\jk_robot_app_windows\\example_script\\Thread"
+  );
   //StartTTYD()
 });
 </script>
 
 <template>
-  <div class="container">
+  <!-- <div class="container">
     <div class="folder">
       <div class="nav">
         <RemoteTreeFile @selectDir="getDirStructure"/>
@@ -173,7 +178,6 @@ onMounted(() => {
         @get-text-from-path="getTextFromServer"
       />
     </div>
-    <!-- <div> -->
     <div class="Right">
       <MonacoEditor
         class="editor"
@@ -186,8 +190,39 @@ onMounted(() => {
 
       <TerminalComponent class="terminal" ref="term" />
     </div>
-    <!-- <TerminalComponent class="terminal" ref="term"/> -->
-    <!-- </div> -->
+  </div> -->
+  <div class="container">
+    <lay-split-panel class="Panel" :min-size="200">
+      <lay-split-panel-item :space="300">
+        <div class="folder">
+          <div class="nav">
+            <RemoteTreeFile @selectDir="getDirStructure" />
+          </div>
+          <FolderTree
+            class="file"
+            :data="treeData"
+            @get-text-from-path="getTextFromServer"
+          />
+        </div>
+      </lay-split-panel-item>
+      <lay-split-panel-item>
+        <lay-split-panel :vertical="true" :min-size="150">
+          <lay-split-panel-item :space="500">
+            <MonacoEditor
+              class="editor"
+              :text-value="text"
+              :path="selectedPath"
+              @save="saveTextToServer"
+              @run="RunJKS"
+              @stop="Stop"
+            />
+          </lay-split-panel-item>
+          <lay-split-panel-item>
+            <TerminalComponent class="terminal" ref="term" />
+          </lay-split-panel-item>
+        </lay-split-panel>
+      </lay-split-panel-item>
+    </lay-split-panel>
   </div>
 </template>
 
@@ -208,46 +243,47 @@ body {
   width: 100vw;
   display: flex;
   overflow: hidden;
-  /*   grid-template-areas:
-    "nav editor editor"
-    "file editor editor"
-    "file terminal terminal"; */
-
   height: 100vh;
 }
-/* .file { grid-area: file; }
-.nav { grid-area: nav; }
-.terminal { grid-area: terminal; }
-.editor { grid-area: editor; } */
+.Panel {
+  width: 100%;
+  height: 100%;
+}
 
 .folder {
-  width: 300px;
-  overflow-y:auto;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
 }
 .Right {
-  width: calc(100vw-300px);
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column; /* 设置为垂直排列 */
-
 }
-
-.editor, .terminal {
-  min-height: 100px;  /* 给每个组件预留最小空间 */
-  flex-grow: 0;  /* 不允许组件扩展 */
+.Left {
+  width: 100%;
+}
+.editor,
+.terminal {
+  height: 100%;
+  flex-grow: 0; /* 不允许组件扩展 */
 
   margin: 0; /* 去除间隙 */
-
 }
-.editor{
-  width: calc(100vw - 300px);
+.editor {
+  width: 100%;
   word-wrap: break-word;
-  height: 70vh;
+  height: 100%;
 }
-.terminal{
-  width: calc(100vw - 300px);
-  height:30vh
+.terminal {
+  width: 100%;
+  height: 100%;
+}
+:deep(.lay-split-panel-line) {
+  background-color: #626060;
+  margin:0;
+  border:0;
 
 }
-
 </style>

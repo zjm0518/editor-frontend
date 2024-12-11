@@ -109,28 +109,27 @@ const Stop=function(){
 </script>
 
 <template>
-  <div >
-    <div style="height: 7vh;">
+  <div class="MonacoEditor">
+    <div style="height: 7%;width: 100%">
       <el-button class="save" @click="Save" >Save</el-button>
       <el-button class="run" @click="Run">Run</el-button>
       <el-button class="stop" @click="Stop">Stop</el-button>
     </div>
 
-    <div ref="container" style="height: 63vh;"></div>
+    <div ref="container" style="height: 93%;"></div>
   </div>
 
 </template>
 
 
 <style scoped>
-.save{
-  margin: 1%;
+.MonacoEditor{
+  height: 100%;
+  width: 100%;
 }
-.run{
-  margin: 1%;
-}
-.stop{
-  margin: 1%;
+:deep(el-button){
+  height: 50%;
+  width: 100%;
 }
 
 </style>

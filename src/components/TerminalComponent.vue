@@ -11,7 +11,7 @@ export default {
   name: "TerminalComponent",
   mounted() {
     this.termOptions = {
-      fontSize: 13,
+      fontSize: 15,
       fontFamily: "Consolas,Liberation Mono,Menlo,Courier,monospace",
       theme: {
         foreground: "#d2d2d2",
@@ -50,9 +50,14 @@ export default {
     fitaddon.fit()
     window.addEventListener('resize',()=>
     {
-      console.log("resize")
+
       fitaddon.fit()
   })
+   const resizeObserver = new ResizeObserver(() => {
+    console.log("resize")
+    fitaddon.fit()
+    });
+    resizeObserver.observe(this.$refs.terminal)
     // 创建 WebSocket 连接到 ttyd 后端
     this.socket = new WebSocket("ws://10.1.12.88:7681", ["tty"]);
 
@@ -121,6 +126,7 @@ export default {
     }
     this.socket.send(payload); // 发送数据到 WebSocket
   },
+
   methods: {
     Run(jkspath) {
 
@@ -159,7 +165,7 @@ export default {
 
 <style>
 .xterm {
-  height: 30vh;
+  height: 100%;
 }
 /* 滚动条css chrome/safari */
 ::-webkit-scrollbar {
