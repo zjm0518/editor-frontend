@@ -9,6 +9,7 @@ export interface FileData {
   label: string;
   path: string;
   isNew?: boolean;
+  isRename?:boolean;
   isDir: boolean;
   children?: Array<FileData>;
 };

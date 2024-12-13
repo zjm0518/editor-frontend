@@ -31,3 +31,7 @@ export function postFile(data = {}, headers = {}, config = {}){
 export function deleteFile(data = {}, headers = {}, config = {}){
   return http.post("/api/DeleteFile", data, headers, config);
 }
+
+export function renameFile(data = {}, headers = {}, config = {}){
+  return http.post("/api/RenameFile", data, headers, config);
+}

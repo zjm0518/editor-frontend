@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-button type="" @click="handelTree" :icon="Plus"></el-button>
-    <el-dialog title="请选择脚本库" v-model="visible" width="50%" align-center>
+    <el-dialog title="请选择文件夹" v-model="visible" width="50%" align-center>
       <el-input placeholder="输入关键字进行过滤" v-model="filterText">
       </el-input>
       <el-tree
