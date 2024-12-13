@@ -39,6 +39,7 @@ const handleResponse = async (requestPromise, method, url) => {
 const http = {
   request(method, url, data = {}, headers = {}, config = {}) {
     const requestConfig = createConfig(method, url, data, headers, config);
+    //console.log("request config",requestConfig)
     return handleResponse(service(requestConfig), method, url); // 传入报错时可定位到method 和 url
   },
   get(url, params = {}, headers = {}, config = {}) {

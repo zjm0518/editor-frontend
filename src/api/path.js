@@ -24,3 +24,10 @@ export function getPathAndFile(data = {}, headers = {}, config = {}) {
 export function runFile(data = {}, headers = {}, config = {}) {
   return http.post("/runFile", data, headers, config);
 }
+
+export function postFile(data = {}, headers = {}, config = {}){
+  return http.post("/api/AddFile", data, headers, config);
+}
+export function deleteFile(data = {}, headers = {}, config = {}){
+  return http.post("/api/DeleteFile", data, headers, config);
+}

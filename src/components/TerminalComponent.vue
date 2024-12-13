@@ -59,7 +59,7 @@ export default {
     });
     resizeObserver.observe(this.$refs.terminal)
     // 创建 WebSocket 连接到 ttyd 后端
-    this.socket = new WebSocket("ws://10.1.12.88:7681", ["tty"]);
+    this.socket = new WebSocket("ws://192.168.1.107:7681", ["tty"]);
 
     this.socket.binaryType = "arraybuffer"; // 设置 WebSocket 使用二进制数据格式
 
@@ -130,7 +130,7 @@ export default {
   methods: {
     Run(jkspath) {
 
-      const data = "..\\..\\jk_script_app.exe" + " " + jkspath+"\r\n";
+      const data = "C:\\Users\\wy156\\Desktop\\Go\\jk_robot_app_windows\\jk_script_app.exe" + " " + jkspath+"\r\n";
 
       for (let j = 0; j < data.length; j++) {
         const commandPrefix = "0"; // Command.INPUT 对应 '0'
@@ -143,7 +143,6 @@ export default {
       }
       this.socket.send(payload); // 发送数据到 WebSocket
       }
-
 
     },
     Stop(){

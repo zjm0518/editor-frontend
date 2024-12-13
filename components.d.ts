@@ -24,13 +24,18 @@ declare module 'vue' {
     IXterm: typeof import('./src/components/IXterm.vue')['default']
     MonacoEditor: typeof import('./src/components/MonacoEditor.vue')['default']
     RemoteTreeFile: typeof import('./src/components/RemoteTreeFile.vue')['default']
+    RightContentMenu: typeof import('./src/components/vs-tree/components/RightContentMenu.vue')['default']
     Terminal: typeof import('./src/components/ttydTeminal/components/terminal/index.vue')['default']
     TerminalComponent: typeof import('./src/components/TerminalComponent.vue')['default']
     Tindex: typeof import('./src/components/ttydTeminal/components/terminal/Tindex.vue')['default']
     TIndex: typeof import('./src/components/ttydTeminal/components/terminal/TIndex.vue')['default']
+    Tree: typeof import('./src/components/tree/index.vue')['default']
     TreeItem: typeof import('./src/components/TreeItem.vue')['default']
+    TreeNode: typeof import('./src/components/tree/TreeNode.vue')['default']
+    TreeTest: typeof import('./src/components/TreeTest.vue')['default']
     Tty: typeof import('./src/components/ttydTeminal/components/Tty.vue')['default']
     TtydTeminal: typeof import('./src/components/ttydTeminal/ttydTeminal.vue')['default']
+    VsCodeSlider: typeof import('./src/components/vs-tree/VsCodeSlider.vue')['default']
     Xterm: typeof import('./src/components/IXterm.vue')['default']
   }
 }

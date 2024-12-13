@@ -1,53 +1,38 @@
 <script setup lang="ts">
 import MonacoEditor from "./components/MonacoEditor.vue";
 import { onMounted } from "vue";
-import FolderTree from "./components/FolderTree.vue";
 import { ref } from "vue";
 import axios from "axios";
-
+import { v4 as uuidv4 } from "uuid";
 import TerminalComponent from "./components/TerminalComponent.vue";
 import RemoteTreeFile from "./components/RemoteTreeFile.vue";
-
+import VsCodeSlider from "./components/vs-tree";
 import { LaySplitPanel, LaySplitPanelItem } from "@layui/layui-vue";
 import "@layui/layui-vue/es/splitPanel/index.css";
-interface Tree {
+
+import type { FileData } from "./utils";
+interface TreeNode {
   label: string;
-  children?: Tree[];
+  children?: TreeNode[];
   path?: string;
   isDir?: boolean;
+  key?: string;
+  isNew?:boolean
 }
-const treeData = ref<Tree[]>([
-  {
-    label: "src",
-    children: [
-      {
-        label: "components",
-        children: [
-          {
-            label: "FileTree.vue",
-            path: "src/components/FileTree.vue",
-          },
-          {
-            label: "FileTree2.vue",
-            path: "src/components/FileTree2.vue",
-          },
-        ],
-      },
-    ],
-  },
-]);
+const treeData = ref<TreeNode[]>([]);
 
 const text = ref("");
 const selectedPath = ref("");
 const term = ref(null);
-
+const currentFolder=ref("C:\\Users\\wy156\\Desktop\\Go\\jk_robot_app_windows\\example_script\\Thread")
 // 转换目录结构为树形数据
 const convertToTreeData = (data: any) => {
   return data.map((item: any) => {
     const path = item.path.replace(/\\$/, ""); // 去掉末尾的 \\
-    const treeNode: Tree = {
+    const treeNode: TreeNode = {
       label: path.split("\\").pop() || "", // 仅取文件或目录的名称作为 label
       path: item.path,
+      key: uuidv4(),
     };
 
     if (item.is_directory && item.children && item.children.length > 0) {
@@ -57,6 +42,7 @@ const convertToTreeData = (data: any) => {
       treeNode.children = [];
     }
     treeNode.isDir = item.is_directory;
+    treeNode.isNew=false;
     //treeNode.isLeaf=item.is_directory?"leaf":""
     return treeNode;
   });
@@ -104,25 +90,13 @@ const saveTextToServer = function (text: string | undefined) {
     });
 };
 const RunJKS = function () {
-  /*  axios({
-  method: 'get',
-  url: '/RunJKS',
-  baseURL:'api/',
-  params:{
-    "path":selectedPath.value
-  }
-}).then(res => {
-    console.log(res.data)
-
-}).catch(err => {
-    console.log(err)
-}) */
   term.value.Run(selectedPath.value);
 };
 const Stop = function () {
   term.value.Stop();
 };
 const getDirStructure = function (path: string) {
+  currentFolder.value=path;
   axios({
     method: "get",
     url: "/getDirStructure",
@@ -132,65 +106,22 @@ const getDirStructure = function (path: string) {
     },
   })
     .then((res) => {
-      console.log(res);
       treeData.value = convertToTreeData(res.data.data);
-      console.log(convertToTreeData(res.data.data));
+      console.log(treeData.value);
     })
     .catch((err) => {
       console.log(err);
     });
 };
-const StartTTYD = function () {
-  axios({
-    method: "get",
-    url: "/StartTTYD",
-    baseURL: "api/",
-    params: {
-      path: "C:\\Users\\wy156\\Desktop\\Go\\jk_robot_app_windows\\example_script\\Thread",
-    },
-  })
-    .then((res) => {
-      console.log(res.data);
-      treeData.value = convertToTreeData(res.data.data);
-      console.log(convertToTreeData(res.data.data));
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-};
+
 onMounted(() => {
-  getDirStructure(
-    "C:\\Users\\wy156\\Desktop\\Go\\jk_robot_app_windows\\example_script\\Thread"
+  getDirStructure(currentFolder.value
   );
   //StartTTYD()
 });
 </script>
 
 <template>
-  <!-- <div class="container">
-    <div class="folder">
-      <div class="nav">
-        <RemoteTreeFile @selectDir="getDirStructure"/>
-      </div>
-      <FolderTree
-        class="file"
-        :data="treeData"
-        @get-text-from-path="getTextFromServer"
-      />
-    </div>
-    <div class="Right">
-      <MonacoEditor
-        class="editor"
-        :text-value="text"
-        :path="selectedPath"
-        @save="saveTextToServer"
-        @run="RunJKS"
-        @stop="Stop"
-      />
-
-      <TerminalComponent class="terminal" ref="term" />
-    </div>
-  </div> -->
   <div class="container">
     <lay-split-panel class="Panel" :min-size="200">
       <lay-split-panel-item :space="300">
@@ -198,11 +129,17 @@ onMounted(() => {
           <div class="nav">
             <RemoteTreeFile @selectDir="getDirStructure" />
           </div>
-          <FolderTree
+          <!--      <FolderTree
             class="file"
             :data="treeData"
             @get-text-from-path="getTextFromServer"
-          />
+          /> -->
+          <VsCodeSlider
+            class="file"
+            :files="treeData"
+            theme="dark"
+            @get-text-from-path="getTextFromServer"
+          ></VsCodeSlider>
         </div>
       </lay-split-panel-item>
       <lay-split-panel-item>
@@ -226,7 +163,7 @@ onMounted(() => {
   </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 /* 确保视口高度从根元素继承 */
 html,
 body {
@@ -253,7 +190,7 @@ body {
 .folder {
   width: 100%;
   height: 100%;
-  overflow-y: auto;
+  overflow: hidden;
 }
 .Right {
   width: 100%;
@@ -282,8 +219,42 @@ body {
 }
 :deep(.lay-split-panel-line) {
   background-color: #626060;
-  margin:0;
-  border:0;
-
+  margin: 0;
+  border: 0;
 }
+:deep(.lay-split-panel-item) {
+  border: 0;
+}
+
+:deep(.lay-split-panel-vertical){
+ >.lay-split-panel-line {
+  width: 100%;
+  height: 2px; /* 垂直分隔线的初始高度 */
+  &:hover{
+    border: 3px solid #626060;
+    cursor: s-resize;
+  }
+  &:active{
+    border: 3px solid #626060;
+    cursor: s-resize;
+
+  }
+}
+}
+
+
+:deep(.lay-split-panel-horizontal){
+  >.lay-split-panel-line {
+  &:hover{
+    border: 3px solid #626060;
+    cursor: w-resize;
+  }
+  &:active{
+    border: 3px solid #626060;
+    cursor: w-resize;
+
+  }
+}
+}
+
 </style>
