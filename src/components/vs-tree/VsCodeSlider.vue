@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import { computed, watch, reactive, ref, nextTick } from "vue";
-import { dealFilePath, fileSorts, getFileIcon } from "./utils/utils";
+import { getFileIcon, convertToTreeData } from "./utils/utils";
 import { ElTree, ElInput } from "element-plus";
 import { ArrowRightBold } from "@element-plus/icons-vue";
 import RightContentMenu from "./components/RightContentMenu.vue";
 import { errorInfo } from "./config/config";
 import { v4 as uuidv4 } from "uuid";
 import { type FileData } from "@/utils";
+import axios from "axios";
 import { deleteFile, postFile, renameFile } from "@/api/path";
+import RemoteTreeFile from "../RemoteTreeFile.vue";
 interface Tree {
   [key: string]: any;
 }
@@ -57,20 +59,17 @@ const defaultProps = {
   children: "children",
   label: "label",
 };
-
-const fileList = computed((): Array<FileData> => {
-  //let list = dealFilePath(props.files);
-  //fileSorts(list);
-  return props.files;
-});
+const treeData = ref<Array<FileData>>([]);
+const currentFolder = ref("");
 
 const baseDirName = computed(() => {
-  if (!props.baseDir && fileList.value.length === 1) {
-    return fileList.value[0].label;
+  console.log(treeData.value.length);
+  if (!props.baseDir && treeData.value.length === 1) {
+    return treeData.value[0].label;
   } else if (props.baseDir) {
     return props.baseDir;
   } else {
-    return "未命名";
+    return "No Dir";
   }
 });
 
@@ -89,8 +88,6 @@ const showAddFolder = computed(() => {
 function handleNodeClick(obj, node, TreeNode, Event) {
   currentNodeData.data = obj;
   currentNodeData.node = node;
-  console.log("obj", obj);
-  console.log("node", node);
   if (!obj.isDir) {
     emits("getTextFromPath", obj.path);
   }
@@ -125,7 +122,24 @@ function expandRecursive(node, value) {
     });
   }
 }
-
+const getDirStructure = function (path: string) {
+  currentFolder.value = path;
+  axios({
+    method: "get",
+    url: "/getDirStructure",
+    baseURL: "api/",
+    params: {
+      path: path,
+    },
+  })
+    .then((res) => {
+      treeData.value = convertToTreeData(res.data.data);
+      console.log(treeData.value);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
 function openNode() {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
@@ -334,13 +348,7 @@ function renameFileFunc(data, node, type) {
     createError.value = "";
   }
 }
-const postAddFile = function (data: FileData) {
-  const postdata = {
-    path: data.path,
-    isDir: data.isDir,
-  };
-  postFile(postdata).then((res) => {});
-};
+
 /**
  * 定位文件
  */
@@ -418,6 +426,7 @@ function hiddenSearch() {
     <div class="header">
       <span class="base-dir">{{ baseDirName }}</span>
       <div>
+        <RemoteTreeFile @select-dir="getDirStructure"></RemoteTreeFile>
         <i
           class="icon iconfont vs-find cursor-pointer"
           title="查找文件"
@@ -463,7 +472,7 @@ function hiddenSearch() {
     <div class="el-tree-view" @contextmenu.prevent @click="cancelCurrentClick">
       <ElTree
         ref="elTreeRef"
-        :data="fileList"
+        :data="treeData"
         :default-expanded-keys="defaultExpandKeys"
         :draggable="!!props.allowDrag"
         :filter-node-method="filterNode"

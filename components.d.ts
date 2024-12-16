@@ -8,6 +8,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     App: typeof import('./src/components/ttydTeminal/components/app.vue')['default']
+    copy: typeof import('./src/components/RemoteTreeFile copy.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElDialog: typeof import('element-plus/es')['ElDialog']
     ElInput: typeof import('element-plus/es')['ElInput']
@@ -22,6 +23,7 @@ declare module 'vue' {
     IconTooling: typeof import('./src/components/icons/IconTooling.vue')['default']
     Index: typeof import('./src/components/ttydTeminal/components/terminal/Index.vue')['default']
     IXterm: typeof import('./src/components/IXterm.vue')['default']
+    JKSLibButton: typeof import('./src/components/JKSLibButton.vue')['default']
     MonacoEditor: typeof import('./src/components/MonacoEditor.vue')['default']
     RemoteTreeFile: typeof import('./src/components/RemoteTreeFile.vue')['default']
     RightContentMenu: typeof import('./src/components/vs-tree/components/RightContentMenu.vue')['default']

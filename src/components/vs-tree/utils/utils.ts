@@ -161,7 +161,37 @@ export function getFileIcon(fileName: string) {
             return 'iconfont vs-default icon-w';
     }
 }
+interface TreeNode {
+  label: string;
+  children?: TreeNode[];
+  path?: string;
+  isDir?: boolean;
+  key?: string;
+  isNew?:boolean
+}
 
+// 转换目录结构为树形数据
+export function convertToTreeData(data: any){
+  return data.map((item: any) => {
+    const path = item.path.replace(/\\$/, ""); // 去掉末尾的 \\
+    const treeNode: TreeNode = {
+      label: path.split("\\").pop() || "", // 仅取文件或目录的名称作为 label
+      path: item.path,
+      key: uuidv4(),
+    };
+
+    if (item.is_directory && item.children && item.children.length > 0) {
+      treeNode.children = convertToTreeData(item.children); // 递归处理子目录
+    } else if (item.is_directory) {
+      //空目录
+      treeNode.children = [];
+    }
+    treeNode.isDir = item.is_directory;
+    treeNode.isNew=false;
+    //treeNode.isLeaf=item.is_directory?"leaf":""
+    return treeNode;
+  });
+};
 export default {
     fileSorts,
     dealFilePath,

@@ -7,6 +7,7 @@ import { Terminal } from "@xterm/xterm";
 import "@xterm/xterm/css/xterm.css";
 import { WebLinksAddon } from "xterm-addon-web-links";
 import { FitAddon } from "xterm-addon-fit";
+import { getJKSScriptPath } from "@/api/path";
 export default {
   name: "TerminalComponent",
   mounted() {
@@ -35,7 +36,6 @@ export default {
         brightWhite: "#f1f1f0",
       },
       allowProposedApi: true,
-
     };
     // 创建一个新的终端实例
     this.term = new Terminal(this.termOptions);
@@ -45,19 +45,17 @@ export default {
 
     // 启用链接点击支持
     this.term.loadAddon(new WebLinksAddon());
-    const fitaddon=new FitAddon()
-    this.term.loadAddon(fitaddon)
-    fitaddon.fit()
-    window.addEventListener('resize',()=>
-    {
-
-      fitaddon.fit()
-  })
-   const resizeObserver = new ResizeObserver(() => {
-    console.log("resize")
-    fitaddon.fit()
+    const fitaddon = new FitAddon();
+    this.term.loadAddon(fitaddon);
+    fitaddon.fit();
+    window.addEventListener("resize", () => {
+      fitaddon.fit();
     });
-    resizeObserver.observe(this.$refs.terminal)
+    const resizeObserver = new ResizeObserver(() => {
+      console.log("resize");
+      fitaddon.fit();
+    });
+    resizeObserver.observe(this.$refs.terminal);
     // 创建 WebSocket 连接到 ttyd 后端
     this.socket = new WebSocket("ws://192.168.1.107:7681", ["tty"]);
 
@@ -67,7 +65,7 @@ export default {
       console.log("WebSocket connected");
 
       const msg = JSON.stringify({
-        AuthToken: ""
+        AuthToken: "",
       });
 
       // 将消息编码为字节数组并发送给 WebSocket 服务器
@@ -128,25 +126,28 @@ export default {
   },
 
   methods: {
-    Run(jkspath) {
-
-      const data = "C:\\Users\\wy156\\Desktop\\Go\\jk_robot_app_windows\\jk_script_app.exe" + " " + jkspath+"\r\n";
+    async Run(jkspath) {
+      let jks_script_app_path;
+      await getJKSScriptPath().then((res) => {
+        jks_script_app_path = res["jks_script_path"];
+      });
+      //console.log(jks_script_app_path)
+      const data = jks_script_app_path + " " + jkspath + "\r\n";
 
       for (let j = 0; j < data.length; j++) {
         const commandPrefix = "0"; // Command.INPUT 对应 '0'
-      const modifiedData = commandPrefix + data[j];
+        const modifiedData = commandPrefix + data[j];
 
-      // 转换修改后的数据为字节数组并发送到服务器
-      const payload = new Uint8Array(modifiedData.length);
-      for (let i = 0; i < modifiedData.length; i++) {
-        payload[i] = modifiedData.charCodeAt(i);
+        // 转换修改后的数据为字节数组并发送到服务器
+        const payload = new Uint8Array(modifiedData.length);
+        for (let i = 0; i < modifiedData.length; i++) {
+          payload[i] = modifiedData.charCodeAt(i);
+        }
+        this.socket.send(payload); // 发送数据到 WebSocket
       }
-      this.socket.send(payload); // 发送数据到 WebSocket
-      }
-
     },
-    Stop(){
-          // 模拟 Ctrl+C
+    Stop() {
+      // 模拟 Ctrl+C
       const ctrlC = String.fromCharCode(3); // \x03 是 Ctrl+C
       const commandPrefix = "0"; // Command.INPUT 对应 '0'
       const modifiedData = commandPrefix + ctrlC;
@@ -157,7 +158,7 @@ export default {
         payload[i] = modifiedData.charCodeAt(i);
       }
       this.socket.send(payload); // 发送数据到 WebSocket
-    }
+    },
   },
 };
 </script>
@@ -168,12 +169,10 @@ export default {
 }
 /* 滚动条css chrome/safari */
 ::-webkit-scrollbar {
-	width: 15px;
-
+  width: 15px;
 }
 
 ::-webkit-scrollbar-thumb {
-	background-color: rgba(111, 113, 117, 0.4);
-
+  background-color: rgba(111, 113, 117, 0.4);
 }
 </style>

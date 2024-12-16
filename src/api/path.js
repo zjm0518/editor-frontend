@@ -35,3 +35,9 @@ export function deleteFile(data = {}, headers = {}, config = {}){
 export function renameFile(data = {}, headers = {}, config = {}){
   return http.post("/api/RenameFile", data, headers, config);
 }
+export function getJKSScriptPath(data = {}, headers = {}, config = {}){
+  return http.get("/GetJKSPath", data, headers, config);
+}
+export function setJKSScriptPath(data = {}, headers = {}, config = {}){
+  return http.post("/api/SetJKSPath", data, headers, config);
+}

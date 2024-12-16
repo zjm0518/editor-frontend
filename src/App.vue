@@ -10,7 +10,7 @@ import VsCodeSlider from "./components/vs-tree";
 import { LaySplitPanel, LaySplitPanelItem } from "@layui/layui-vue";
 import "@layui/layui-vue/es/splitPanel/index.css";
 
-import type { FileData } from "./utils";
+
 interface TreeNode {
   label: string;
   children?: TreeNode[];
@@ -19,34 +19,11 @@ interface TreeNode {
   key?: string;
   isNew?:boolean
 }
-const treeData = ref<TreeNode[]>([]);
 
 const text = ref("");
 const selectedPath = ref("");
 const term = ref(null);
-const currentFolder=ref("C:\\Users\\wy156\\Desktop\\Go\\jk_robot_app_windows\\example_script\\Thread")
-// 转换目录结构为树形数据
-const convertToTreeData = (data: any) => {
-  return data.map((item: any) => {
-    const path = item.path.replace(/\\$/, ""); // 去掉末尾的 \\
-    const treeNode: TreeNode = {
-      label: path.split("\\").pop() || "", // 仅取文件或目录的名称作为 label
-      path: item.path,
-      key: uuidv4(),
-    };
 
-    if (item.is_directory && item.children && item.children.length > 0) {
-      treeNode.children = convertToTreeData(item.children); // 递归处理子目录
-    } else if (item.is_directory) {
-      //空目录
-      treeNode.children = [];
-    }
-    treeNode.isDir = item.is_directory;
-    treeNode.isNew=false;
-    //treeNode.isLeaf=item.is_directory?"leaf":""
-    return treeNode;
-  });
-};
 const getTextFromServer = function (path: string | undefined) {
   if (path === undefined) return;
   selectedPath.value = path;
@@ -95,28 +72,10 @@ const RunJKS = function () {
 const Stop = function () {
   term.value.Stop();
 };
-const getDirStructure = function (path: string) {
-  currentFolder.value=path;
-  axios({
-    method: "get",
-    url: "/getDirStructure",
-    baseURL: "api/",
-    params: {
-      path: path,
-    },
-  })
-    .then((res) => {
-      treeData.value = convertToTreeData(res.data.data);
-      console.log(treeData.value);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-};
+
 
 onMounted(() => {
-  getDirStructure(currentFolder.value
-  );
+  //getDirStructure(currentFolder.value);
   //StartTTYD()
 });
 </script>
@@ -126,9 +85,6 @@ onMounted(() => {
     <lay-split-panel class="Panel" :min-size="200">
       <lay-split-panel-item :space="300">
         <div class="folder">
-          <div class="nav">
-            <RemoteTreeFile @selectDir="getDirStructure" />
-          </div>
           <!--      <FolderTree
             class="file"
             :data="treeData"
@@ -136,7 +92,6 @@ onMounted(() => {
           /> -->
           <VsCodeSlider
             class="file"
-            :files="treeData"
             theme="dark"
             @get-text-from-path="getTextFromServer"
           ></VsCodeSlider>

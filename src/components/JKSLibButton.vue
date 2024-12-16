@@ -1,13 +1,12 @@
 <template>
-  <div style="display: inline">
-    <!-- <el-button type="" @click="handelTree" :icon="Plus"></el-button> -->
+  <div>
     <i
-      class="icon iconfont2 icon2-a-Openfolder"
-      style="cursor: pointer"
-      title="打开文件夹"
-      @click="handelTree"
+      class="icon iconfont2 icon2-jiaobenshezhi"
+      style="cursor: pointer; font-size: 16px; align-items: center"
+      title="选择脚本库"
+      @click="handleTree"
     ></i>
-    <el-dialog title="请选择文件夹" v-model="visible" width="50%" align-center>
+    <el-dialog title="请选择脚本库" v-model="visible" width="50%" align-center>
       <el-input placeholder="输入关键字进行过滤" v-model="filterText">
       </el-input>
       <el-tree
@@ -34,7 +33,6 @@
 </template>
 
 <script setup lang="ts">
-import { Plus } from "@element-plus/icons-vue";
 import { ElDialog, ElButton } from "element-plus";
 import { getDisk, getDesktopPath, getPathAndFile } from "@/api/path";
 import { ref, watch } from "vue";
@@ -50,19 +48,19 @@ const defaultProps = {
 interface Tree {
   label: string;
   children?: Tree[];
-  path?: string;
+  path: string;
   isDir?: boolean;
   folder?: string;
 }
 const treeData = ref<Tree[]>([]);
-const emit = defineEmits<{
-  (e: "selectDir", dirPath: string): void;
-}>();
 const filterNode = function (value, data) {
   if (!value) return true;
   return data.label.indexOf(value) !== -1;
 };
-const handelTree = function () {
+const emit = defineEmits<{
+  (e: "selectLib", libPath: string): void;
+}>();
+const handleTree = function () {
   visible.value = true;
   selectNode.value = "";
   selectPath.value = "";
@@ -121,10 +119,10 @@ const handelConfirm = function () {
   if (!selectNode.value) {
     return;
   }
-  if (!selectNode.value.isDir) {
+  if (selectNode.value.isDir) {
     return;
   }
-  emit("selectDir", selectPath.value);
+  emit("selectLib", selectPath.value);
   visible.value = false;
 };
 watch(filterText, (val) => {
