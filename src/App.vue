@@ -9,7 +9,7 @@ import RemoteTreeFile from "./components/RemoteTreeFile.vue";
 import VsCodeSlider from "./components/vs-tree";
 import { LaySplitPanel, LaySplitPanelItem } from "@layui/layui-vue";
 import "@layui/layui-vue/es/splitPanel/index.css";
-
+import IXterm from "./components/IXterm.vue";
 
 interface TreeNode {
   label: string;
@@ -99,7 +99,7 @@ onMounted(() => {
       </lay-split-panel-item>
       <lay-split-panel-item>
         <lay-split-panel :vertical="true" :min-size="150">
-          <lay-split-panel-item :space="500">
+          <lay-split-panel-item :space="400">
             <MonacoEditor
               class="editor"
               :text-value="text"
@@ -110,7 +110,8 @@ onMounted(() => {
             />
           </lay-split-panel-item>
           <lay-split-panel-item>
-            <TerminalComponent class="terminal" ref="term" />
+            <!-- <TerminalComponent class="terminal" ref="term" /> -->
+             <IXterm  class="terminal" ref="term"></IXterm>
           </lay-split-panel-item>
         </lay-split-panel>
       </lay-split-panel-item>

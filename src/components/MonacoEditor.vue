@@ -11,7 +11,12 @@ import JSONWorker from "monaco-editor/esm/vs/language/json/json.worker?worker";
 import CSSWorker from "monaco-editor/esm/vs/language/css/css.worker?worker";
 import HTMLWorker from "monaco-editor/esm/vs/language/html/html.worker?worker";
 import TSWorker from "monaco-editor/esm/vs/language/typescript/ts.worker?worker";
-import { StorageName, initialEditorValue, useDarkGlobal } from "../utils";
+import {
+  StorageName,
+  initialEditorValue,
+  useDarkGlobal,
+  getFileLanguage,
+} from "../utils";
 import JKSLibButton from "./JKSLibButton.vue";
 import { setJKSScriptPath, getJKSScriptPath } from "@/api/path";
 const props = defineProps<{
@@ -76,7 +81,11 @@ watch(
     } else {
       console.log("in monaco editor,text change");
       editor.setValue(newvalue);
-    }
+      let label=props.path.replace(/\\$/, ""); // 去掉末尾的 \\
+      label=label.split("\\").pop() || "";
+      console.log("language",getFileLanguage(label))
+      monaco.editor.setModelLanguage(editor.getModel(),getFileLanguage(label))
+    } 
   }
 );
 watch(isDark, (value) => {
@@ -113,7 +122,6 @@ const getLibPath = function (libPath: string) {
     jks_script_path: libPath,
   };
   setJKSScriptPath(postdata).then((res) => {
-    console.log(res);
     jksLibPath.value = libPath;
   });
 };

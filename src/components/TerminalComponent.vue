@@ -12,7 +12,7 @@ export default {
   name: "TerminalComponent",
   mounted() {
     this.termOptions = {
-      fontSize: 15,
+      fontSize: 13,
       fontFamily: "Consolas,Liberation Mono,Menlo,Courier,monospace",
       theme: {
         foreground: "#d2d2d2",

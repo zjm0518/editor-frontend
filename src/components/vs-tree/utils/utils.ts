@@ -34,15 +34,15 @@ declare interface FileData {
 import { v4 as uuidv4 } from 'uuid';
 
 export function dealFilePath(filePaths: Array<string>) {
-    let fileArr: Array<FileData> = [];
+    const fileArr: Array<FileData> = [];
     filePaths.forEach(path => {
-        let isDir = isFolder(path);
+        const isDir = isFolder(path);
         let isExist = true;
-        let paths = path.split('/').filter(item => item.trim());
+        const paths = path.split('/').filter(item => item.trim());
         let start = 0;
         let tempArr = fileArr;
         while (start < paths.length) {
-            let index = tempArr.findIndex(item => item.name === paths[start]);
+            const index = tempArr.findIndex(item => item.name === paths[start]);
             if (start === paths.length - 1) {
                 if (index < 0 || tempArr[index].isDir !== isDir) {
                     if (isDir) {
@@ -87,8 +87,8 @@ export function getFileIcon(fileName: string) {
     if (fileName.toLowerCase().startsWith('changelog')) {
         return 'iconfont vs-log';
     }
-    let arr = fileName.split('.');
-    let type = (arr.pop() || '').toLowerCase();
+    const arr = fileName.split('.');
+    const type = (arr.pop() || '').toLowerCase();
     switch (type) {
         case 'vue':
             return 'iconfont vs-vue icon-g';

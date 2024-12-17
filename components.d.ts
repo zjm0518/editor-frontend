@@ -38,6 +38,6 @@ declare module 'vue' {
     Tty: typeof import('./src/components/ttydTeminal/components/Tty.vue')['default']
     TtydTeminal: typeof import('./src/components/ttydTeminal/ttydTeminal.vue')['default']
     VsCodeSlider: typeof import('./src/components/vs-tree/VsCodeSlider.vue')['default']
-    Xterm: typeof import('./src/components/IXterm.vue')['default']
+    Xterm: typeof import('./src/components/Xterm.vue')['default']
   }
 }

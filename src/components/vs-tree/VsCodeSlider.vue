@@ -14,7 +14,7 @@ interface Tree {
   [key: string]: any;
 }
 
-let props = defineProps<{
+const props = defineProps<{
   baseDir: string;
   theme: string;
   width: number;
@@ -99,7 +99,7 @@ function handleContentMenuClick(event, data, node, TreeNode) {
   currentNodeData.data = data;
   currentNodeData.node = node;
   //console.log("handleContentMenuClick",data)
-  if (rightContentMenuRef && rightContentMenuRef.value) {
+  if (rightContentMenuRef.value && rightContentMenuRef.value) {
     rightContentMenuRef.value.showMenu(event, data, node, TreeNode);
   }
 }
@@ -175,12 +175,12 @@ function openNode() {
  * 添加目录
  */
 function addFolder() {
-  let currentNode = elTreeRef.value.getCurrentNode();
+  const currentNode = elTreeRef.value.getCurrentNode();
   if (currentNode) {
-    let child = currentNode.children[0];
+    const child = currentNode.children[0];
     if (child) {
       // 非空目录
-      let node = elTreeRef.value.getNode(child.key);
+      const node = elTreeRef.value.getNode(child.key);
       elTreeRef.value.insertBefore(
         {
           children: [],
@@ -210,7 +210,7 @@ function addFolder() {
     }
     openNode().then((res) => {
       addInputRef.value && addInputRef.value.focus();
-      let rect = addInputRef.value.input.getBoundingClientRect();
+      const rect = addInputRef.value.input.getBoundingClientRect();
       errorInfoPosition.left = rect.left - 12;
       errorInfoPosition.top = rect.top + 26;
       errorInfoPosition.width = rect.width + 22;
@@ -223,7 +223,7 @@ function addFolder() {
  * 添加文件
  */
 function addFile() {
-  let currentNode = elTreeRef.value.getCurrentNode();
+  const currentNode = elTreeRef.value.getCurrentNode();
   if (currentNode) {
     if (currentNodeData.data.isDir) {
       elTreeRef.value.append(
@@ -241,7 +241,7 @@ function addFile() {
 
       openNode().then((res) => {
         addInputRef.value && addInputRef.value.focus();
-        let rect = addInputRef.value.input.getBoundingClientRect();
+        const rect = addInputRef.value.input.getBoundingClientRect();
         errorInfoPosition.left = rect.left - 12;
         errorInfoPosition.top = rect.top + 26;
         errorInfoPosition.width = rect.width + 22;
@@ -267,7 +267,7 @@ function cancelCurrentClick() {
  */
 function createFile(data, node, type) {
   if (newFileName.value && newFileName.value.trim()) {
-    let newName = newFileName.value.trim();
+    const newName = newFileName.value.trim();
     if (currentNodeData.data.children.find((item) => item.label === newName)) {
       if (type === "entry") {
         createError.value = errorInfo.EXIT_FILE;
@@ -304,7 +304,7 @@ function createFile(data, node, type) {
 
 function renameFileFunc(data, node, type) {
   if (renameFileName.value && renameFileName.value.trim()) {
-    let reName = renameFileName.value.trim();
+    const reName = renameFileName.value.trim();
     const parentNode = node.parent;
     if (
       parentNode.data.children.find(
