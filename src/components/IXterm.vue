@@ -8,7 +8,7 @@ import { WebLinksAddon } from "xterm-addon-web-links";
 import { FitAddon } from "xterm-addon-fit";
 import { getJKSScriptPath } from "@/api/path";
 import { termOptions, flowControl, Command } from "@/utils/xtermConfigs";
-import { onMounted, ref } from "vue";
+import { onMounted, ref,onBeforeUnmount } from "vue";
 import "@xterm/xterm/css/xterm.css";
 
 const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
@@ -114,18 +114,20 @@ const initListeners = function () {
       sendData(Uint8Array.from(data, (v) => v.charCodeAt(0)))
     )
   );
-  register(
+ register(
     terminal.onResize(({ cols, rows }) => {
       const msg = JSON.stringify({ columns: cols, rows: rows });
       socket?.send(textEncoder.encode(Command.RESIZE_TERMINAL + msg));
+      //terminal.focus()
       fitAddon.fit();
     })
   );
   const resizeObserver = new ResizeObserver(() => {
-      console.log("resize");
+      //console.log("resize");
       fitAddon.fit();
+      terminal.focus();
     });
-    resizeObserver.observe(terminalRef.value);
+   resizeObserver.observe(terminalRef.value);
   register(
     terminal.onSelectionChange(() => {
       if (terminal.getSelection() === "") return;
@@ -174,7 +176,7 @@ const onSocketData = function (event: MessageEvent) {
   const rawData = event.data as ArrayBuffer;
   const cmd = String.fromCharCode(new Uint8Array(rawData)[0]);
   const data = rawData.slice(1);
-
+  console.log("cmd:",cmd)
   switch (cmd) {
     case Command.OUTPUT:
       writeFunc(data);
@@ -244,7 +246,9 @@ onMounted(()=>{
   open(terminalRef.value);
   connect();
 });
-
+onBeforeUnmount(()=>{
+  dispose();
+});
 const Run=async function(jkspath) {
       let jks_script_app_path;
       await getJKSScriptPath().then((res) => {

@@ -110,8 +110,14 @@ onMounted(() => {
             />
           </lay-split-panel-item>
           <lay-split-panel-item>
-            <!-- <TerminalComponent class="terminal" ref="term" /> -->
+            <!--  <TerminalComponent class="terminal" ref="term" />  -->
              <IXterm  class="terminal" ref="term"></IXterm>
+            <!-- <lay-split-panel>
+              <lay-split-panel-item>
+                <IXterm  class="terminal" ref="term"></IXterm>
+              </lay-split-panel-item>
+            </lay-split-panel> -->
+
           </lay-split-panel-item>
         </lay-split-panel>
       </lay-split-panel-item>
@@ -161,6 +167,7 @@ body {
 .terminal {
   height: 100%;
   flex-grow: 0; /* 不允许组件扩展 */
+  overflow: hidden;
 
   margin: 0; /* 去除间隙 */
 }

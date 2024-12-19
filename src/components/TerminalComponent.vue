@@ -69,7 +69,8 @@ export default {
       });
 
       // 将消息编码为字节数组并发送给 WebSocket 服务器
-      this.socket.send(new TextEncoder().encode(msg));
+      const textEncoder=new TextEncoder();
+      this.socket.send(textEncoder.encode(msg));
 
       // 将 WebSocket 输入输出与终端连接
       this.term.onData((data) => {
@@ -84,6 +85,11 @@ export default {
         }
         this.socket.send(payload); // 发送数据到 WebSocket
       });
+      this.term.onResize(({ cols, rows }) => {
+      const msg = JSON.stringify({ columns: cols, rows: rows });
+      socket?.send(textEncoder.encode('1' + msg));
+      //fitAddon.fit();
+    })
 
       this.socket.onmessage = (event) => {
         // 解码接收到的二进制数据
