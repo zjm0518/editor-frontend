@@ -126,7 +126,7 @@ const getDirStructure = function (path: string) {
   currentFolder.value = path;
   axios({
     method: "get",
-    url: "/getDirStructure",
+    url: "/GetDirStructure",
     baseURL: "api/",
     params: {
       path: path,
