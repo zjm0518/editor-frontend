@@ -9,6 +9,9 @@ declare module 'vue' {
   export interface GlobalComponents {
     ElButton: typeof import('element-plus/es')['ElButton']
     ElInput: typeof import('element-plus/es')['ElInput']
+    ElOption: typeof import('element-plus/es')['ElOption']
+    ElSelect: typeof import('element-plus/es')['ElSelect']
+    ElSlider: typeof import('element-plus/es')['ElSlider']
     ElTree: typeof import('element-plus/es')['ElTree']
     FolderTree: typeof import('./src/components/FolderTree.vue')['default']
     IXterm: typeof import('./src/components/IXterm.vue')['default']

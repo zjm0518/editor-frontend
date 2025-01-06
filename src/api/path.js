@@ -44,3 +44,25 @@ export function setJKSScriptPath(data = {}, headers = {}, config = {}){
 export function getBatteryInfo(data = {}, headers = {}, config = {}){
   return http.get("/GetBatteryInfo", data, headers, config);
 }
+
+export function getCameraParams(data = {}, headers = {}, config = {}){
+  return http.get("/GetParams", data, headers, config);
+}
+export function setCameraParam(data = {}, headers = {}, config = {}){
+  return http.post("/api/SetParams", data, headers, config);
+}
+export function getCameraSNList_(data = {}, headers = {}, config = {}){
+  return http.get("/GetCameraSNList", data, headers, config);
+}
+export function openCameraBySN(data = {}, headers = {}, config = {}){
+  return http.get("/OpenCameraBySN", data, headers, config);
+}
+export function closeCamera_(data = {}, headers = {}, config = {}){
+  return http.get("/CloseCamera", data, headers, config);
+}
+export function stopGrabImage(data = {}, headers = {}, config = {}){
+  return http.get("/StopGrabImage", data, headers, config);
+}
+export function getImage(data = {}, headers = {}, config = {}){
+  return http.get("/GetImage", data, headers, config);
+}
