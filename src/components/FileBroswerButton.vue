@@ -160,8 +160,8 @@ const defaultProps = {
 };
 
 const fileData = ref<Resource | null>();
-const emit = defineEmits<{
-  (e: "selectLib", libPath: string): void;
+  const emit = defineEmits<{
+  (e: "selectDir", dirPath: string): void;
 }>();
 const showLimit = ref<number>(50);
 const base64 = (name: string) => Base64.encodeURI(name);
@@ -312,15 +312,7 @@ const fetchData = async () => {
   fileStore.reload = false;
   fileStore.selected = null;
   fileStore.multiple = false;
-  layoutStore.closeHovers();
 
-  // Set loading to true and reset the error.
-  if (
-    window.sessionStorage.getItem("listFrozen") !== "true" &&
-    window.sessionStorage.getItem("modified") !== "true"
-  ) {
-    layoutStore.loading = true;
-  }
   // error.value = null;
 
   const url = selectPath.value;
@@ -355,42 +347,25 @@ const fetchDiskData = async () => {
   fileStore.reload = false;
   fileStore.selected = null;
   fileStore.multiple = false;
-  layoutStore.closeHovers();
-
-  // Set loading to true and reset the error.
-  if (
-    window.sessionStorage.getItem("listFrozen") !== "true" &&
-    window.sessionStorage.getItem("modified") !== "true"
-  ) {
-    layoutStore.loading = true;
-  }
   // error.value = null;
 
-  const url = selectPath.value;
   try {
     getDiskResources().then((res) => {
 
       const data = res as Resource;
 
-      data.url = `/files${url}`;
+
       data.isDir=true
       if (data.isDir) {
-        if (!data.url.endsWith("/")) data.url += "/";
+
         // Perhaps change the any
         data.items = data.items.map((item: any, index: any) => {
           item.index = index;
-          item.url = `${data.url}${encodeURIComponent(item.name)}`;
-
-          if (item.isDir) {
-            item.url += "/";
-          }
 
           return item;
         });
       }
-      fileData.value = data;
-      console.log("getDiskResources:",fileData.value )
-      fileStore.updateRequest(fileData.value as Resource,res.path);
+      fileStore.updateRequest(data as Resource,"/");
     });
 
     //document.title = `${res.name} - ${t("files.files")} - ${name}`;
@@ -399,24 +374,21 @@ const fetchDiskData = async () => {
       error.value = err;
     }
   } finally {
-    layoutStore.loading = false;
+
   }
 };
 const handelConfirm = function () {
-  /* if (!selectNode.value) {
-    return;
-  }
-  if (selectNode.value.isDir) {
-    return;
-  }
-  emit("selectLib", selectPath.value); */
+  if(fileStore.selected == null || fileStore.req==null) return
+  if(!fileStore.req.items[fileStore.selected].isDir) return
+  selectPath.value=fileStore.req.items[fileStore.selected].path
+  emit("selectDir", selectPath.value);
   visible.value = false;
 };
 onMounted( async ()=>{
   //fetchDiskData()
-  selectPath.value="C:/Users/wy156/Documents/WeChat Files/wxid_scq1chz7v4ax21/FileStorage/File/2025-01"
-  await fetchData()
-  //await fetchDiskData()
+  //selectPath.value="C:/Users/wy156/Documents/WeChat Files/wxid_scq1chz7v4ax21/FileStorage/File/2025-01"
+  //await fetchData()
+  await fetchDiskData()
   // Check the columns size for the first time.
   colunmsResize();
 

@@ -81,11 +81,11 @@ watch(
     } else {
       console.log("in monaco editor,text change");
       editor.setValue(newvalue);
-      let label=props.path.replace(/\\$/, ""); // 去掉末尾的 \\
-      label=label.split("\\").pop() || "";
+      let label=props.path.replace(/\/$/, ""); // 去掉末尾的 \\
+      label=label.split("/").pop() || "";
       console.log("language",getFileLanguage(label))
       monaco.editor.setModelLanguage(editor.getModel(),getFileLanguage(label))
-    } 
+    }
   }
 );
 watch(isDark, (value) => {

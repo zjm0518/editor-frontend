@@ -102,6 +102,7 @@ const doubleclick = () => {
 };
 
 const open = () => {
+  console.log("props.path",props.path)
   getResources({ path: props.path }).then((res) => {
     const data = res as Resource;
 

@@ -9,7 +9,7 @@ import { v4 as uuidv4 } from "uuid";
 import { type FileData } from "@/utils";
 import axios from "axios";
 import { deleteFile, postFile, renameFile } from "@/api/path";
-import RemoteTreeFile from "../RemoteTreeFile.vue";
+//import RemoteTreeFile from "../RemoteTreeFile.vue";
 import FileBroswerButton from "../FileBroswerButton.vue";
 interface Tree {
   [key: string]: any;
@@ -64,7 +64,7 @@ const treeData = ref<Array<FileData>>([]);
 const currentFolder = ref("");
 
 const baseDirName = computed(() => {
-  console.log(treeData.value.length);
+  console.log(treeData.value);
   if (!props.baseDir && treeData.value.length === 1) {
     return treeData.value[0].label;
   } else if (props.baseDir) {
@@ -135,7 +135,7 @@ const getDirStructure = function (path: string) {
   })
     .then((res) => {
       treeData.value = convertToTreeData(res.data.data);
-      console.log(treeData.value);
+      console.log("treeData.value",treeData.value);
     })
     .catch((err) => {
       console.log(err);
@@ -428,7 +428,7 @@ function hiddenSearch() {
       <span class="base-dir">{{ baseDirName }}</span>
       <div>
    <!--      <RemoteTreeFile @select-dir="getDirStructure"></RemoteTreeFile> -->
-      <FileBroswerButton></FileBroswerButton>
+      <FileBroswerButton @select-dir="getDirStructure"></FileBroswerButton>
         <i
           class="icon iconfont vs-find cursor-pointer"
           title="查找文件"

@@ -1,6 +1,6 @@
 <template>
   <div class="breadcrumbs">
-    <span  :to="base || ''" aria-label="Home" title="Home">
+    <span  @click="toHome" aria-label="Home" title="Home">
       <i class="material-icons breadpath">home</i>
     </span>
 
@@ -32,6 +32,9 @@ interface BreadCrumb {
 const jump=function(path:string){
   filestore.getRequest(path)
 
+}
+const toHome=function(){
+  filestore.fetchDiskFile()
 }
 const items = computed(() => {
   //const relativePath = route.path.replace(props.base, "");
