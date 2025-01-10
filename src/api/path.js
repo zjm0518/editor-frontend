@@ -1,15 +1,14 @@
 import http from "./http.js"
 
-// 获取文件系统
-export function getDisk(params = {}, headers = {}, config = {}) {
-  return http.get("/GetDisk", params, headers, config);
-}
 
 // 获取桌面文件
 export function getDesktopPath(params = {}, headers = {}, config = {}) {
   return http.get("/GetDesktopPath", params, headers, config);
 }
-
+// 获取文件系统
+export function getDisk(params = {}, headers = {}, config = {}) {
+  return http.get("/GetDisk", params, headers, config);
+}
 // 获取文件
 export function getPath(data = {}, headers = {}, config = {}) {
   return http.post("/getPath", data, headers, config);
@@ -65,4 +64,12 @@ export function stopGrabImage(data = {}, headers = {}, config = {}){
 }
 export function getImage(data = {}, headers = {}, config = {}){
   return http.get("/GetImage", data, headers, config);
+}
+
+export function getResources(data = {}, headers = {}, config = {}){
+  return http.get("/GetResources", data, headers, config);
+}
+// 获取文件系统
+export function getDiskResources(params = {}, headers = {}, config = {}) {
+  return http.get("/GetDiskResources", params, headers, config);
 }

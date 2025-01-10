@@ -10,6 +10,7 @@ import { type FileData } from "@/utils";
 import axios from "axios";
 import { deleteFile, postFile, renameFile } from "@/api/path";
 import RemoteTreeFile from "../RemoteTreeFile.vue";
+import FileBroswerButton from "../FileBroswerButton.vue";
 interface Tree {
   [key: string]: any;
 }
@@ -426,7 +427,8 @@ function hiddenSearch() {
     <div class="header">
       <span class="base-dir">{{ baseDirName }}</span>
       <div>
-        <RemoteTreeFile @select-dir="getDirStructure"></RemoteTreeFile>
+   <!--      <RemoteTreeFile @select-dir="getDirStructure"></RemoteTreeFile> -->
+      <FileBroswerButton></FileBroswerButton>
         <i
           class="icon iconfont vs-find cursor-pointer"
           title="查找文件"

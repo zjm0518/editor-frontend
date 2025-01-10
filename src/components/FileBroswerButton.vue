@@ -1,0 +1,472 @@
+<template>
+  <div style="display: inline;">
+    <i
+      class="icon iconfont2 icon2-a-Openfolder"
+      style="cursor: pointer"
+      title="打开文件夹"
+      @click="handleTree"
+    ></i>
+    <el-dialog title="请选择文件夹" v-model="visible" width="70%" height="70%" align-center>
+
+      <div v-if="layoutStore.loading">
+        <h2 class="message delayed">
+          <div class="spinner">
+            <div class="bounce1"></div>
+            <div class="bounce2"></div>
+            <div class="bounce3"></div>
+          </div>
+          <span>loading</span>
+        </h2>
+      </div>
+      <template v-else >
+        <div class="filelist">
+
+        <div
+          v-if="
+            (fileStore.req?.numDirs ?? 0) + (fileStore.req?.numFiles ?? 0) == 0
+          "
+        >
+          <h2 class="message">
+            <i class="material-icons">sentiment_dissatisfied</i>
+            <span>No data</span>
+          </h2>
+        </div>
+        <div v-else id="listing" ref="listing" class="file-icons list">
+          <bread-crumbs base="/" class="bread-crumbs"></bread-crumbs>
+          <div>
+            <div class="item header">
+              <div></div>
+              <div>
+                <p
+                  :class="{ active: nameSorted }"
+                  class="name"
+                  role="button"
+                  tabindex="0"
+                  @click="sort('name')"
+                  title="sortByName"
+                  aria-label="sortByName"
+                >
+                  <span>name</span>
+                  <i class="material-icons">{{ nameIcon }}</i>
+                </p>
+
+                <p
+                  :class="{ active: sizeSorted }"
+                  class="size"
+                  role="button"
+                  tabindex="0"
+                  @click="sort('size')"
+                  title="sortBySize"
+                  aria-label="sortBySize"
+                >
+                  <span>size</span>
+                  <i class="material-icons">{{ sizeIcon }}</i>
+                </p>
+                <p
+                  :class="{ active: modifiedSorted }"
+                  class="modified"
+                  role="button"
+                  tabindex="0"
+                  @click="sort('modified')"
+                  title="sortByLastModified"
+                  aria-label="sortByLastModified"
+                >
+                  <span>lastModified</span>
+                  <i class="material-icons">{{ modifiedIcon }}</i>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <h2 v-if="fileStore.req?.numDirs ?? false">folders</h2>
+          <div v-if="fileStore.req?.numDirs ?? false">
+            <item
+              v-for="item in dirs"
+              :key="base64(item.name)"
+              v-bind:index="item.index"
+              v-bind:name="item.name"
+              v-bind:isDir="item.isDir"
+              v-bind:url="item.url"
+              v-bind:modified="item.modified"
+              v-bind:type="item.type"
+              v-bind:size="item.size"
+              v-bind:path="item.path"
+            >
+            </item>
+          </div>
+
+          <h2 v-if="fileStore.req?.numFiles ?? false">files</h2>
+          <div v-if="fileStore.req?.numFiles ?? false">
+            <item
+              v-for="item in files"
+              :key="base64(item.name)"
+              v-bind:index="item.index"
+              v-bind:name="item.name"
+              v-bind:isDir="item.isDir"
+              v-bind:url="item.url"
+              v-bind:modified="item.modified"
+              v-bind:type="item.type"
+              v-bind:size="item.size"
+              v-bind:path="item.path"
+            >
+            </item>
+          </div>
+
+        </div>
+        </div>
+      </template>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="visible = false">取 消</el-button>
+          <el-button type="primary" @click="handelConfirm">确 定</el-button>
+        </span>
+      </template>
+    </el-dialog>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ElDialog, ElButton } from "element-plus";
+import { getResources, getDiskResources } from "@/api/path";
+import { ref, watch, computed, onMounted,nextTick } from "vue";
+import { useFileStore } from "@/stores/file";
+import { useLayoutStore } from "@/stores/layout";
+import { StatusError, type Resource } from "@/stores/types";
+import { Base64 } from "js-base64";
+import { storeToRefs } from "pinia";
+import Item from "@/components/ListingItem.vue";
+import Breadcrumbs from "./Breadcrumbs.vue";
+import "@/css/_variables.css"
+import "@/css/fonts.css"
+import "@/css/listing-icons.css"
+import "@/css/listing.css"
+
+import css from "@/utils/css";
+const layoutStore = useLayoutStore();
+const fileStore = useFileStore();
+const visible = ref(false);
+const selectPath = ref("");
+const filterText = ref("");
+const tree = ref(null);
+const error = ref<StatusError | null>(null);
+const width = ref<number>(window.innerWidth);
+  const columnWidth = ref<number>(280);
+  const { req } = storeToRefs(fileStore);
+const itemWeight = ref<number>(0);
+  const listing = ref<HTMLElement | null>(null);
+const defaultProps = {
+  children: "children",
+  label: "label",
+};
+
+const fileData = ref<Resource | null>();
+const emit = defineEmits<{
+  (e: "selectLib", libPath: string): void;
+}>();
+const showLimit = ref<number>(50);
+const base64 = (name: string) => Base64.encodeURI(name);
+const handleTree = function () {
+  visible.value = true;
+ // selectNode.value = "";
+  selectPath.value = "";
+  //GetDisk();
+};
+
+watch(req, () => {
+  // Reset the show value
+  if (
+    window.sessionStorage.getItem("listFrozen") !== "true" &&
+    window.sessionStorage.getItem("modified") !== "true"
+  ) {
+    showLimit.value = 50;
+
+    nextTick(() => {
+      // Ensures that the listing is displayed
+      // How much every listing item affects the window height
+      setItemWeight();
+
+      // Fill and fit the window with listing items
+      fillWindow(true);
+    });
+  }
+  if (req.value?.isDir) {
+    window.sessionStorage.setItem("listFrozen", "false");
+    window.sessionStorage.setItem("modified", "false");
+  }
+});
+const dirs = computed(() => items.value.dirs.slice(0, showLimit.value));
+
+const items = computed(() => {
+  const dirs: any[] = [];
+  const files: any[] = [];
+
+  fileStore.req?.items.forEach((item) => {
+    if (item.isDir) {
+      dirs.push(item);
+    } else {
+      files.push(item);
+    }
+  });
+
+  return { dirs, files };
+});
+
+const files = computed((): Resource[] => {
+  let _showLimit = showLimit.value - items.value.dirs.length;
+
+  if (_showLimit < 0) _showLimit = 0;
+
+  return items.value.files.slice(0, _showLimit);
+});
+const sort = async (by: string) => {
+  console.log("sort:",by)
+}
+const nameSorted = computed(() =>
+  fileStore.req ? fileStore.req.sorting.by === "name" : false
+);
+
+const sizeSorted = computed(() =>
+  fileStore.req ? fileStore.req.sorting.by === "size" : false
+);
+
+const modifiedSorted = computed(() =>
+  fileStore.req ? fileStore.req.sorting.by === "modified" : false
+);
+
+const ascOrdered = computed(() =>
+  fileStore.req ? fileStore.req.sorting.asc : false
+);
+
+const nameIcon = computed(() => {
+  if (nameSorted.value && !ascOrdered.value) {
+    return "arrow_upward";
+  }
+
+  return "arrow_downward";
+});
+
+const sizeIcon = computed(() => {
+  if (sizeSorted.value && ascOrdered.value) {
+    return "arrow_downward";
+  }
+
+  return "arrow_upward";
+});
+
+const modifiedIcon = computed(() => {
+  if (modifiedSorted.value && ascOrdered.value) {
+    return "arrow_downward";
+  }
+
+  return "arrow_upward";
+});
+const setItemWeight = () => {
+  // Listing element is not displayed
+  if (listing.value === null || fileStore.req === null) return;
+
+  let itemQuantity = fileStore.req.numDirs + fileStore.req.numFiles;
+  if (itemQuantity > showLimit.value) itemQuantity = showLimit.value;
+
+  // How much every listing item affects the window height
+  itemWeight.value = listing.value.offsetHeight / itemQuantity;
+};
+
+const fillWindow = (fit = false) => {
+  if (fileStore.req === null) return;
+
+  const totalItems = fileStore.req.numDirs + fileStore.req.numFiles;
+
+  // More items are displayed than the total
+  if (showLimit.value >= totalItems && !fit) return;
+
+  const windowHeight = window.innerHeight;
+
+  // Quantity of items needed to fill 2x of the window height
+  const showQuantity = Math.ceil(
+    (windowHeight + windowHeight * 2) / itemWeight.value
+  );
+
+  // Less items to display than current
+  if (showLimit.value > showQuantity && !fit) return;
+
+  // Set the number of displayed items
+  showLimit.value = showQuantity > totalItems ? totalItems : showQuantity;
+};
+
+const colunmsResize = () => {
+  // Update the columns size based on the window width.
+  const items_ = css(["#listing.mosaic .item", ".mosaic#listing .item"]);
+  if (items_ === null) return;
+
+  let columns = Math.floor(
+    (document.querySelector("main")?.offsetWidth ?? 0) / columnWidth.value
+  );
+  if (columns === 0) columns = 1;
+
+  items_.style.width = `calc(${100 / columns}% - 1em)`;
+};
+
+// Define functions
+const fetchData = async () => {
+  // Reset view information.
+  fileStore.reload = false;
+  fileStore.selected = null;
+  fileStore.multiple = false;
+  layoutStore.closeHovers();
+
+  // Set loading to true and reset the error.
+  if (
+    window.sessionStorage.getItem("listFrozen") !== "true" &&
+    window.sessionStorage.getItem("modified") !== "true"
+  ) {
+    layoutStore.loading = true;
+  }
+  // error.value = null;
+
+  const url = selectPath.value;
+  try {
+    getResources({ path: url }).then((res) => {
+      const data = res as Resource;
+
+      if (data.isDir) {
+        // Perhaps change the any
+        data.items = data.items.map((item: any, index: any) => {
+          item.index = index;
+          return item;
+        });
+      }
+      fileData.value = data;
+      fileStore.updateRequest(fileData.value as Resource,res.path);
+    });
+
+
+    //document.title = `${res.name} - ${t("files.files")} - ${name}`;
+  } catch (err) {
+    if (err instanceof Error) {
+      error.value = err;
+    }
+  } finally {
+    layoutStore.loading = false;
+  }
+};
+
+const fetchDiskData = async () => {
+  // Reset view information.
+  fileStore.reload = false;
+  fileStore.selected = null;
+  fileStore.multiple = false;
+  layoutStore.closeHovers();
+
+  // Set loading to true and reset the error.
+  if (
+    window.sessionStorage.getItem("listFrozen") !== "true" &&
+    window.sessionStorage.getItem("modified") !== "true"
+  ) {
+    layoutStore.loading = true;
+  }
+  // error.value = null;
+
+  const url = selectPath.value;
+  try {
+    getDiskResources().then((res) => {
+
+      const data = res as Resource;
+
+      data.url = `/files${url}`;
+      data.isDir=true
+      if (data.isDir) {
+        if (!data.url.endsWith("/")) data.url += "/";
+        // Perhaps change the any
+        data.items = data.items.map((item: any, index: any) => {
+          item.index = index;
+          item.url = `${data.url}${encodeURIComponent(item.name)}`;
+
+          if (item.isDir) {
+            item.url += "/";
+          }
+
+          return item;
+        });
+      }
+      fileData.value = data;
+      console.log("getDiskResources:",fileData.value )
+      fileStore.updateRequest(fileData.value as Resource,res.path);
+    });
+
+    //document.title = `${res.name} - ${t("files.files")} - ${name}`;
+  } catch (err) {
+    if (err instanceof Error) {
+      error.value = err;
+    }
+  } finally {
+    layoutStore.loading = false;
+  }
+};
+const handelConfirm = function () {
+  /* if (!selectNode.value) {
+    return;
+  }
+  if (selectNode.value.isDir) {
+    return;
+  }
+  emit("selectLib", selectPath.value); */
+  visible.value = false;
+};
+onMounted( async ()=>{
+  //fetchDiskData()
+  selectPath.value="C:/Users/wy156/Documents/WeChat Files/wxid_scq1chz7v4ax21/FileStorage/File/2025-01"
+  await fetchData()
+  //await fetchDiskData()
+  // Check the columns size for the first time.
+  colunmsResize();
+
+  // How much every listing item affects the window height
+  setItemWeight();
+
+  // Fill and fit the window with listing items
+  fillWindow(true);
+})
+</script>
+
+<style lang="css" scoped>
+.filelist {
+  height: 100%;
+  overflow-y: auto;
+}
+.filelist::-webkit-scrollbar {
+  width: 5px;
+  height: 3px;
+}
+.filelist::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255);
+}
+.filelist::-webkit-scrollbar-thumb {
+  background: #e4e7ed;
+  border-radius: 3px;
+}
+:deep(.el-dialog) {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0;
+  margin-top: 0 !important;
+  height: 80vh;
+  overflow: hidden;
+}
+:deep(.el-dialog__body) {
+  height: 90%;
+  overflow-y: auto;  /* 内容超出时显示滚动条 */
+  padding: 10px 0 ;    /* 可选，增加左右内边距 */
+}
+:deep(.el-dialog__header){
+  height: 5%;
+  padding-bottom: 0;
+}
+:deep(.el-dialog__footer){
+  height: 5%;
+  padding: 0;
+}
+.list-container{
+  overflow-y: auto;
+}
+</style>
