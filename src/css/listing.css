@@ -162,6 +162,7 @@ html[dir="rtl"] #listing {
   width: 100%;
   max-width: 100%;
   margin: 0;
+  overflow-y: auto;
 }
 
 #listing.list .item {
@@ -202,23 +203,34 @@ html[dir="rtl"] #listing {
 }
 
 #listing.list .item p.name:not(#listing.list .item.header .name) {
-  margin-right: -3em;
+  
 }
 
 #listing.list .item .name {
 
   width: calc(50% - 3em);
   white-space: nowrap; 
+  text-overflow: ellipsis;
+
+  box-sizing: border-box;
+}
+#listing.list .item.header .name {
+
+  width: 50%;
+  white-space: nowrap; 
   overflow: hidden;
   text-overflow: ellipsis;
 
   box-sizing: border-box;
 }
-
 #listing.list .item .size {
   width: 25%;
-}
 
+  align-items: center;
+}
+#listing.list .item .modified {
+  width: 25%;
+}
 #listing .item.header {
   display: none !important;
   background-color: var(--iconTertiary);

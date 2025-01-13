@@ -19,8 +19,8 @@
         </h2>
       </div>
       <template v-else >
-        <div class="filelist">
-
+        <div>
+          <bread-crumbs base="/" class="bread-crumbs"></bread-crumbs>
         <div
           v-if="
             (fileStore.req?.numDirs ?? 0) + (fileStore.req?.numFiles ?? 0) == 0
@@ -32,7 +32,7 @@
           </h2>
         </div>
         <div v-else id="listing" ref="listing" class="file-icons list">
-          <bread-crumbs base="/" class="bread-crumbs"></bread-crumbs>
+
           <div>
             <div class="item header">
               <div></div>
@@ -163,7 +163,7 @@ const fileData = ref<Resource | null>();
   const emit = defineEmits<{
   (e: "selectDir", dirPath: string): void;
 }>();
-const showLimit = ref<number>(50);
+const showLimit = ref<number>(100);
 const base64 = (name: string) => Base64.encodeURI(name);
 const handleTree = function () {
   visible.value = true;
@@ -401,8 +401,12 @@ onMounted( async ()=>{
 </script>
 
 <style lang="css" scoped>
+.bread-crumbs{
+  height: 5%;
+
+}
 .filelist {
-  height: 100%;
+  height: 95%;
   overflow-y: auto;
 }
 .filelist::-webkit-scrollbar {
@@ -427,8 +431,8 @@ onMounted( async ()=>{
 }
 :deep(.el-dialog__body) {
   height: 90%;
-  overflow-y: auto;  /* 内容超出时显示滚动条 */
-  padding: 10px 0 ;    /* 可选，增加左右内边距 */
+  overflow-y: auto;
+  padding: 10px 2px ;    /* 可选，增加左右内边距 */
 }
 :deep(.el-dialog__header){
   height: 5%;
@@ -438,7 +442,5 @@ onMounted( async ()=>{
   height: 5%;
   padding: 0;
 }
-.list-container{
-  overflow-y: auto;
-}
+
 </style>

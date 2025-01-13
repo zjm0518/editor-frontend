@@ -15,14 +15,17 @@ export interface Resource extends ResourceBase {
   items: ResourceItem[];
   numDirs: number;
   numFiles: number;
-  sorting: Sorting;
   hash?: string;
   token?: string;
   index: number;
   subtitles?: string[];
   content?: string;
+  sorting?:Sorting
 }
-
+export interface Sorting {
+  by: string;
+  asc: boolean;
+}
 export interface ResourceItem extends ResourceBase {
   index: number;
   subtitles?: string[];

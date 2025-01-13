@@ -47,7 +47,7 @@ export const useFileStore = defineStore("file", {
     getRequest(path:string){
       getResources({path: path} ).then((res) => {
         const data = res as Resource;
-
+        
         if (data.isDir) {
           // Perhaps change the any
           data.items = data.items.map((item: any, index: any) => {
