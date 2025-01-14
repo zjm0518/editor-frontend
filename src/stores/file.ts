@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import type { Resource } from "./types";
-import {getResources,getDiskResources} from "@/api/path"
+import {getResources,getUserResources} from "@/api/path"
 export const useFileStore = defineStore("file", {
   // convert to a function
   state: (): {
@@ -11,6 +11,7 @@ export const useFileStore = defineStore("file", {
     multiple: boolean;
     isFiles: boolean;
     path:string;
+    userHomeDir:string;
   } => ({
     req: null,
     oldReq: null,
@@ -18,7 +19,8 @@ export const useFileStore = defineStore("file", {
     selected: null,
     multiple: false,
     isFiles: false,
-    path:""
+    path:"",
+    userHomeDir:""
   }),
   getters: {
    // selectedCount: (state) => state.selected.length,
@@ -47,7 +49,7 @@ export const useFileStore = defineStore("file", {
     getRequest(path:string){
       getResources({path: path} ).then((res) => {
         const data = res as Resource;
-        
+
         if (data.isDir) {
           // Perhaps change the any
           data.items = data.items.map((item: any, index: any) => {
@@ -61,10 +63,11 @@ export const useFileStore = defineStore("file", {
         this.updateRequest(data as Resource,res.path);
       });
     },
-    fetchDiskFile(){
+    fetchUserHomeFile(){
       this.selected=null
-      getDiskResources().then((res) => {
 
+      getUserResources().then((res) => {
+        this.userHomeDir=res.userHome
         const data = res as Resource;
 
 
@@ -78,7 +81,6 @@ export const useFileStore = defineStore("file", {
             return item;
           });
         }
-        console.log("data",data)
         this.updateRequest(data as Resource,"/");
       });
     },

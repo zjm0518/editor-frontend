@@ -73,3 +73,6 @@ export function getResources(data = {}, headers = {}, config = {}){
 export function getDiskResources(params = {}, headers = {}, config = {}) {
   return http.get("/GetDiskResources", params, headers, config);
 }
+export function getUserResources(params = {}, headers = {}, config = {}) {
+  return http.get("/GetUserResources", params, headers, config);
+}

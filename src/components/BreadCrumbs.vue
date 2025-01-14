@@ -26,7 +26,6 @@ const props = defineProps<{
 }>();
 interface BreadCrumb {
     name: string;
-    url: string;
     path:string,
   }
 const jump=function(path:string){
@@ -34,11 +33,24 @@ const jump=function(path:string){
 
 }
 const toHome=function(){
-  filestore.fetchDiskFile()
+  filestore.fetchUserHomeFile()
 }
 const items = computed(() => {
+  const breadcrumbs: BreadCrumb[] = [];
+  let filepath=filestore.path
+  const basepath=filestore.userHomeDir
+   // 去掉前面的根目录路径部分
+   if (filepath.startsWith(basepath)) {
+    filepath = filepath.replace(basepath, ''); // 删除前缀部分
+  }else{
+    return breadcrumbs;
+  }
+  if (filepath.startsWith("/")) {
+    filepath = filepath.slice(1);  // 删除前导的斜杠
+  }
   //const relativePath = route.path.replace(props.base, "");
-  const parts = filestore.path.split("/");
+  const parts = filepath.split("/");
+
 
   if (parts[0] === "") {
     parts.shift();
@@ -48,19 +60,17 @@ const items = computed(() => {
     parts.pop();
   }
 
-  const breadcrumbs: BreadCrumb[] = [];
+
 
   for (let i = 0; i < parts.length; i++) {
     if (i === 0) {
       breadcrumbs.push({
         name: decodeURIComponent(parts[i]),
-        url: props.base + "/" + parts[i] + "/",
-        path:parts[0]+"/"
+        path:basepath+"/"+parts[0]+"/"
       });
     } else {
       breadcrumbs.push({
         name: decodeURIComponent(parts[i]),
-        url: breadcrumbs[i - 1].url + parts[i] + "/",
         path:breadcrumbs[i-1].path+parts[i]+ "/",
       });
     }

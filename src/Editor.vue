@@ -111,11 +111,7 @@ onMounted(() => {
           <lay-split-panel-item>
             <!--  <TerminalComponent class="terminal" ref="term" />  -->
              <IXterm  class="terminal" ref="term"></IXterm>
-            <!-- <lay-split-panel>
-              <lay-split-panel-item>
-                <IXterm  class="terminal" ref="term"></IXterm>
-              </lay-split-panel-item>
-            </lay-split-panel> -->
+        
 
           </lay-split-panel-item>
         </lay-split-panel>

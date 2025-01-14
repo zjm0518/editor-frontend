@@ -176,7 +176,6 @@ const onSocketData = function (event: MessageEvent) {
   const rawData = event.data as ArrayBuffer;
   const cmd = String.fromCharCode(new Uint8Array(rawData)[0]);
   const data = rawData.slice(1);
-  console.log("cmd:",cmd)
   switch (cmd) {
     case Command.OUTPUT:
       writeFunc(data);

@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { computed, watch, reactive, ref, nextTick } from "vue";
-import { getFileIcon, convertToTreeData } from "./utils/utils";
+import { getFileIcon, convertToTreeData,sortDirTree } from "./utils/utils";
 import { ElTree, ElInput } from "element-plus";
 import { ArrowRightBold } from "@element-plus/icons-vue";
 import RightContentMenu from "./components/RightContentMenu.vue";
 import { errorInfo } from "./config/config";
 import { v4 as uuidv4 } from "uuid";
 import { type FileData } from "@/utils";
+
 import axios from "axios";
 import { deleteFile, postFile, renameFile } from "@/api/path";
 //import RemoteTreeFile from "../RemoteTreeFile.vue";
@@ -134,8 +135,11 @@ const getDirStructure = function (path: string) {
     },
   })
     .then((res) => {
-      treeData.value = convertToTreeData(res.data.data);
-      console.log("treeData.value",treeData.value);
+      const dir=res.data.data
+      sortDirTree(dir)
+      treeData.value = convertToTreeData(dir);
+
+     // console.log("treeData.value",treeData.value);
     })
     .catch((err) => {
       console.log(err);

@@ -127,7 +127,7 @@
 
 <script setup lang="ts">
 import { ElDialog, ElButton } from "element-plus";
-import { getResources, getDiskResources } from "@/api/path";
+import { getResources, getUserResources } from "@/api/path";
 import { ref, watch, computed, onMounted,nextTick } from "vue";
 import { useFileStore } from "@/stores/file";
 import { useLayoutStore } from "@/stores/layout";
@@ -306,76 +306,8 @@ const colunmsResize = () => {
   items_.style.width = `calc(${100 / columns}% - 1em)`;
 };
 
-// Define functions
-const fetchData = async () => {
-  // Reset view information.
-  fileStore.reload = false;
-  fileStore.selected = null;
-  fileStore.multiple = false;
-
-  // error.value = null;
-
-  const url = selectPath.value;
-  try {
-    getResources({ path: url }).then((res) => {
-      const data = res as Resource;
-
-      if (data.isDir) {
-        // Perhaps change the any
-        data.items = data.items.map((item: any, index: any) => {
-          item.index = index;
-          return item;
-        });
-      }
-      fileData.value = data;
-      fileStore.updateRequest(fileData.value as Resource,res.path);
-    });
-
-
-    //document.title = `${res.name} - ${t("files.files")} - ${name}`;
-  } catch (err) {
-    if (err instanceof Error) {
-      error.value = err;
-    }
-  } finally {
-    layoutStore.loading = false;
-  }
-};
-
-const fetchDiskData = async () => {
-  // Reset view information.
-  fileStore.reload = false;
-  fileStore.selected = null;
-  fileStore.multiple = false;
-  // error.value = null;
-
-  try {
-    getDiskResources().then((res) => {
-
-      const data = res as Resource;
-
-
-      data.isDir=true
-      if (data.isDir) {
-
-        // Perhaps change the any
-        data.items = data.items.map((item: any, index: any) => {
-          item.index = index;
-
-          return item;
-        });
-      }
-      fileStore.updateRequest(data as Resource,"/");
-    });
-
-    //document.title = `${res.name} - ${t("files.files")} - ${name}`;
-  } catch (err) {
-    if (err instanceof Error) {
-      error.value = err;
-    }
-  } finally {
-
-  }
+const fetchDiskData = () => {
+  fileStore.fetchUserHomeFile()
 };
 const handelConfirm = function () {
   if(fileStore.selected == null || fileStore.req==null) return
