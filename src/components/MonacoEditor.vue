@@ -17,7 +17,8 @@ import {
   useDarkGlobal,
   getFileLanguage,
 } from "../utils";
-import JKSLibButton from "./JKSLibButton.vue";
+import JKSLibButton from "./JKSLibButton2.vue";
+
 import { setJKSScriptPath, getJKSScriptPath } from "@/api/path";
 const props = defineProps<{
   path: string;
@@ -68,12 +69,24 @@ onMounted(() => {
     theme: "vs-dark",
   });
 
-  emit("change", editorValue.value);
+
   getJKSScriptPath().then((res) => {
     jksLibPath.value = res["jks_script_path"];
   });
-});
 
+  container.value?.addEventListener("keydown", saveHandler);
+});
+const saveHandler=(event) => {
+        if (event.ctrlKey && event.key === "s") {
+          event.preventDefault(); // 阻止默认的保存行为
+          Save();
+          saved.value="已保存"
+          setTimeout(()=>{
+            saved.value=""
+
+          },2000)
+        }
+      }
 watch(
   () => props.textValue,
   (newvalue, oldValue) => {
@@ -101,6 +114,7 @@ const editorObserver = useResizeObserver(container, () => {
 onUnmounted(() => {
   editor?.dispose();
   editorObserver.stop();
+  container.value?.removeEventListener("keydown",saveHandler)
 });
 
 const Save = function () {
@@ -125,6 +139,7 @@ const getLibPath = function (libPath: string) {
     jksLibPath.value = libPath;
   });
 };
+const saved=ref("")
 </script>
 
 <template>
@@ -138,6 +153,7 @@ const getLibPath = function (libPath: string) {
         ></i>
         <i class="icon iconfont2 icon2-yunhang" title="运行" @click="Run"></i>
         <i class="icon iconfont2 icon2-tingzhi" title="停止" @click="Stop"></i>
+        <i >{{ saved }}</i>
       </div>
       <div class="header-right">
         <span class="jks-lib" title="脚本库路径">{{ jksLibPath }}</span>
@@ -145,7 +161,7 @@ const getLibPath = function (libPath: string) {
       </div>
     </div>
 
-    <div ref="container" style="height: 93%"></div>
+    <div ref="container" style="height: 94%"></div>
   </div>
 </template>
 
@@ -178,6 +194,7 @@ const getLibPath = function (libPath: string) {
   font-size: 16px;
   margin-right: 15px; /* 可以根据需要调整间距 */
   cursor: pointer;
+
 }
 
 .header .header-right {

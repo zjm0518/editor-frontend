@@ -15,10 +15,10 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import { useFileStore } from "@/stores/file";
+import { useFileStore2 } from "@/stores/file";
 import "@/css/_variables.css"
 import "@/css/fonts.css"
-const filestore=useFileStore()
+const filestore=useFileStore2()
 
 interface BreadCrumb {
     name: string;
@@ -93,7 +93,6 @@ const items = computed(() => {
 
 }
 .breadpath{
-
   align-items: center;
   text-align: center;
   cursor: pointer;

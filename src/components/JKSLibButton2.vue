@@ -1,14 +1,14 @@
 <template>
   <div style="display: inline;">
     <i
-      class="icon iconfont2 icon2-a-Openfolder"
-      style="cursor: pointer"
-      title="打开文件夹"
+      class="icon iconfont2 icon2-jiaobenshezhi"
+      style="cursor: pointer; font-size: 16px; align-items: center"
+      title="选择脚本库"
       @click="handleTree"
     ></i>
     <el-dialog title="请选择文件夹" v-model="visible" width="70%" height="70%" align-center>
 
-      <div v-if="layoutStore.loading">
+      <div v-if="false">
         <h2 class="message delayed">
           <div class="spinner">
             <div class="bounce1"></div>
@@ -20,7 +20,7 @@
       </div>
       <template v-else >
         <div>
-          <bread-crumbs base="/" class="bread-crumbs"></bread-crumbs>
+          <bread-crumbs2 class="bread-crumbs"></bread-crumbs2>
         <div
           v-if="
             (fileStore.req?.numDirs ?? 0) + (fileStore.req?.numFiles ?? 0) == 0
@@ -128,21 +128,21 @@
 <script setup lang="ts">
 import { ElDialog, ElButton } from "element-plus";
 import { ref, watch, computed, onMounted,nextTick } from "vue";
-import { useFileStore } from "@/stores/file";
-import { useLayoutStore } from "@/stores/layout";
-import { StatusError, type Resource } from "@/stores/types";
+import { useFileStore2 } from "@/stores/file";
+import {  type Resource } from "@/stores/types";
 import { Base64 } from "js-base64";
 import { storeToRefs } from "pinia";
-import Item from "@/components/ListingItem.vue";
-import Breadcrumbs from "./Breadcrumbs.vue";
+import Item from "@/components/ListingItem2.vue";
+
+import BreadCrumbs2 from "./Breadcrumbs2.vue";
 import "@/css/_variables.css"
 import "@/css/fonts.css"
 import "@/css/listing-icons.css"
 import "@/css/listing.css"
 
 import css from "@/utils/css";
-const layoutStore = useLayoutStore();
-const fileStore = useFileStore();
+
+const fileStore = useFileStore2();
 const visible = ref(false);
 const selectPath = ref("");
 
@@ -150,14 +150,9 @@ const selectPath = ref("");
   const { req } = storeToRefs(fileStore);
 const itemWeight = ref<number>(0);
   const listing = ref<HTMLElement | null>(null);
-const defaultProps = {
-  children: "children",
-  label: "label",
-};
 
-const fileData = ref<Resource | null>();
   const emit = defineEmits<{
-  (e: "selectDir", dirPath: string): void;
+  (e: "selectLib", libPath: string): void;
 }>();
 const showLimit = ref<number>(100);
 const base64 = (name: string) => Base64.encodeURI(name);
@@ -307,9 +302,9 @@ const fetchDiskData = () => {
 };
 const handelConfirm = function () {
   if(fileStore.selected == null || fileStore.req==null) return
-  if(!fileStore.req.items[fileStore.selected].isDir) return
+  if(fileStore.req.items[fileStore.selected].isDir) return
   selectPath.value=fileStore.req.items[fileStore.selected].path
-  emit("selectDir", selectPath.value);
+  emit("selectLib", selectPath.value);
   visible.value = false;
 };
 onMounted( async ()=>{

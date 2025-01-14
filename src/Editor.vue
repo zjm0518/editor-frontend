@@ -111,7 +111,7 @@ onMounted(() => {
           <lay-split-panel-item>
             <!--  <TerminalComponent class="terminal" ref="term" />  -->
              <IXterm  class="terminal" ref="term"></IXterm>
-        
+
 
           </lay-split-panel-item>
         </lay-split-panel>
@@ -187,7 +187,7 @@ body {
 :deep(.lay-split-panel-vertical){
  >.lay-split-panel-line {
   width: 100%;
-  height: 2px; /* 垂直分隔线的初始高度 */
+  height: 3px;
   &:hover{
     border: 3px solid #626060;
     cursor: s-resize;
@@ -197,8 +197,7 @@ body {
     cursor: s-resize;
 
   }
-}
-}
+ }}
 
 
 :deep(.lay-split-panel-horizontal){
@@ -214,5 +213,5 @@ body {
   }
 }
 }
-
+ 
 </style>
