@@ -1,13 +1,18 @@
 <template>
-  <div style="display: inline;">
+  <div style="display: inline">
     <i
       class="icon iconfont2 icon2-a-Openfolder"
       style="cursor: pointer"
       title="打开文件夹"
       @click="handleTree"
     ></i>
-    <el-dialog title="请选择文件夹" v-model="visible" width="70%" height="70%" align-center>
-
+    <el-dialog
+      title="请选择文件夹"
+      v-model="visible"
+      width="70%"
+      height="70%"
+      align-center
+    >
       <div v-if="layoutStore.loading">
         <h2 class="message delayed">
           <div class="spinner">
@@ -18,101 +23,100 @@
           <span>loading</span>
         </h2>
       </div>
-      <template v-else >
+      <template v-else>
         <div>
           <bread-crumbs base="/" class="bread-crumbs"></bread-crumbs>
-        <div
-          v-if="
-            (fileStore.req?.numDirs ?? 0) + (fileStore.req?.numFiles ?? 0) == 0
-          "
-        >
-          <h2 class="message">
-            <i class="material-icons">sentiment_dissatisfied</i>
-            <span>No data</span>
-          </h2>
-        </div>
-        <div v-else id="listing" ref="listing" class="file-icons list">
+          <div
+            v-if="
+              (fileStore.req?.numDirs ?? 0) + (fileStore.req?.numFiles ?? 0) ==
+              0
+            "
+          >
+            <h2 class="message">
+              <i class="material-icons">sentiment_dissatisfied</i>
+              <span>No data</span>
+            </h2>
+          </div>
+          <div v-else id="listing" ref="listing" class="file-icons list">
+            <div>
+              <div class="item header">
+                <div></div>
+                <div>
+                  <p
+                    :class="{ active: nameSorted }"
+                    class="name"
+                    role="button"
+                    tabindex="0"
+                    @click="sort('name')"
+                    title="sortByName"
+                    aria-label="sortByName"
+                  >
+                    <span>name</span>
+                    <i class="material-icons">{{ nameIcon }}</i>
+                  </p>
 
-          <div>
-            <div class="item header">
-              <div></div>
-              <div>
-                <p
-                  :class="{ active: nameSorted }"
-                  class="name"
-                  role="button"
-                  tabindex="0"
-                  @click="sort('name')"
-                  title="sortByName"
-                  aria-label="sortByName"
-                >
-                  <span>name</span>
-                  <i class="material-icons">{{ nameIcon }}</i>
-                </p>
-
-                <p
-                  :class="{ active: sizeSorted }"
-                  class="size"
-                  role="button"
-                  tabindex="0"
-                  @click="sort('size')"
-                  title="sortBySize"
-                  aria-label="sortBySize"
-                >
-                  <span>size</span>
-                  <i class="material-icons">{{ sizeIcon }}</i>
-                </p>
-                <p
-                  :class="{ active: modifiedSorted }"
-                  class="modified"
-                  role="button"
-                  tabindex="0"
-                  @click="sort('modified')"
-                  title="sortByLastModified"
-                  aria-label="sortByLastModified"
-                >
-                  <span>lastModified</span>
-                  <i class="material-icons">{{ modifiedIcon }}</i>
-                </p>
+                  <p
+                    :class="{ active: sizeSorted }"
+                    class="size"
+                    role="button"
+                    tabindex="0"
+                    @click="sort('size')"
+                    title="sortBySize"
+                    aria-label="sortBySize"
+                  >
+                    <span>size</span>
+                    <i class="material-icons">{{ sizeIcon }}</i>
+                  </p>
+                  <p
+                    :class="{ active: modifiedSorted }"
+                    class="modified"
+                    role="button"
+                    tabindex="0"
+                    @click="sort('modified')"
+                    title="sortByLastModified"
+                    aria-label="sortByLastModified"
+                  >
+                    <span>lastModified</span>
+                    <i class="material-icons">{{ modifiedIcon }}</i>
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
 
-          <h2 v-if="fileStore.req?.numDirs ?? false">folders</h2>
-          <div v-if="fileStore.req?.numDirs ?? false">
-            <item
-              v-for="item in dirs"
-              :key="base64(item.name)"
-              v-bind:index="item.index"
-              v-bind:name="item.name"
-              v-bind:isDir="item.isDir"
-              v-bind:url="item.url"
-              v-bind:modified="item.modified"
-              v-bind:type="item.type"
-              v-bind:size="item.size"
-              v-bind:path="item.path"
-            >
-            </item>
-          </div>
+            <h2 v-if="fileStore.req?.numDirs ?? false">folders</h2>
+            <div v-if="fileStore.req?.numDirs ?? false">
+              <item
+                v-for="item in dirs"
+                :key="base64(item.name)"
+                v-bind:index="item.index"
+                v-bind:name="item.name"
+                v-bind:isDir="item.isDir"
+                v-bind:url="item.url"
+                v-bind:modified="item.modified"
+                v-bind:type="item.type"
+                v-bind:size="item.size"
+                v-bind:path="item.path"
+              >
+              </item>
+            </div>
 
-          <h2 v-if="fileStore.req?.numFiles ?? false">files</h2>
-          <div v-if="fileStore.req?.numFiles ?? false">
-            <item
-              v-for="item in files"
-              :key="base64(item.name)"
-              v-bind:index="item.index"
-              v-bind:name="item.name"
-              v-bind:isDir="item.isDir"
-              v-bind:url="item.url"
-              v-bind:modified="item.modified"
-              v-bind:type="item.type"
-              v-bind:size="item.size"
-              v-bind:path="item.path"
-            >
-            </item>
+            <h2 v-if="fileStore.req?.numFiles ?? false">files</h2>
+            <div v-if="fileStore.req?.numFiles ?? false">
+              <item
+                v-for="item in files"
+                :key="base64(item.name)"
+                v-bind:index="item.index"
+                v-bind:name="item.name"
+                v-bind:isDir="item.isDir"
+                v-bind:url="item.url"
+                v-bind:modified="item.modified"
+                v-bind:type="item.type"
+                v-bind:size="item.size"
+                v-bind:path="item.path"
+              >
+              </item>
+            </div>
           </div>
-
-        </div>
         </div>
       </template>
       <template #footer>
@@ -127,7 +131,7 @@
 
 <script setup lang="ts">
 import { ElDialog, ElButton } from "element-plus";
-import { ref, watch, computed, onMounted,nextTick } from "vue";
+import { ref, watch, computed, onMounted, nextTick } from "vue";
 import { useFileStore } from "@/stores/file";
 import { useLayoutStore } from "@/stores/layout";
 import { StatusError, type Resource } from "@/stores/types";
@@ -135,10 +139,10 @@ import { Base64 } from "js-base64";
 import { storeToRefs } from "pinia";
 import Item from "@/components/ListingItem.vue";
 import Breadcrumbs from "./Breadcrumbs.vue";
-import "@/css/_variables.css"
-import "@/css/fonts.css"
-import "@/css/listing-icons.css"
-import "@/css/listing.css"
+import "@/css/_variables.css";
+import "@/css/fonts.css";
+import "@/css/listing-icons.css";
+import "@/css/listing.css";
 
 import css from "@/utils/css";
 const layoutStore = useLayoutStore();
@@ -146,25 +150,21 @@ const fileStore = useFileStore();
 const visible = ref(false);
 const selectPath = ref("");
 
-  const columnWidth = ref<number>(280);
-  const { req } = storeToRefs(fileStore);
+const columnWidth = ref<number>(280);
+const { req } = storeToRefs(fileStore);
 const itemWeight = ref<number>(0);
-  const listing = ref<HTMLElement | null>(null);
-const defaultProps = {
-  children: "children",
-  label: "label",
-};
+const listing = ref<HTMLElement | null>(null);
 
-const fileData = ref<Resource | null>();
-  const emit = defineEmits<{
+const emit = defineEmits<{
   (e: "selectDir", dirPath: string): void;
 }>();
 const showLimit = ref<number>(100);
 const base64 = (name: string) => Base64.encodeURI(name);
 const handleTree = function () {
   visible.value = true;
- // selectNode.value = "";
+  // selectNode.value = "";
   selectPath.value = "";
+  fetchDiskData();
   //GetDisk();
 };
 
@@ -215,8 +215,8 @@ const files = computed((): Resource[] => {
   return items.value.files.slice(0, _showLimit);
 });
 const sort = async (by: string) => {
-  console.log("sort:",by)
-}
+  console.log("sort:", by);
+};
 const nameSorted = computed(() =>
   fileStore.req ? fileStore.req.sorting.by === "name" : false
 );
@@ -303,20 +303,25 @@ const colunmsResize = () => {
 };
 
 const fetchDiskData = () => {
-  fileStore.fetchUserHomeFile()
+  fileStore.fetchUserHomeFile();
 };
 const handelConfirm = function () {
-  if(fileStore.selected == null || fileStore.req==null) return
-  if(!fileStore.req.items[fileStore.selected].isDir) return
-  selectPath.value=fileStore.req.items[fileStore.selected].path
+  if (fileStore.req == null) return;
+  if (fileStore.selected == null) {
+    selectPath.value=fileStore.path
+  } else {
+    if (!fileStore.req.items[fileStore.selected].isDir) return;
+    selectPath.value = fileStore.req.items[fileStore.selected].path;
+  }
+
   emit("selectDir", selectPath.value);
   visible.value = false;
 };
-onMounted( async ()=>{
+onMounted(async () => {
   //fetchDiskData()
   //selectPath.value="C:/Users/wy156/Documents/WeChat Files/wxid_scq1chz7v4ax21/FileStorage/File/2025-01"
   //await fetchData()
-  await fetchDiskData()
+  await fetchDiskData();
   // Check the columns size for the first time.
   colunmsResize();
 
@@ -325,13 +330,12 @@ onMounted( async ()=>{
 
   // Fill and fit the window with listing items
   fillWindow(true);
-})
+});
 </script>
 
 <style lang="css" scoped>
-.bread-crumbs{
+.bread-crumbs {
   height: 5%;
-
 }
 .filelist {
   height: 95%;
@@ -360,15 +364,14 @@ onMounted( async ()=>{
 :deep(.el-dialog__body) {
   height: 90%;
   overflow-y: auto;
-  padding: 10px 2px ;    /* 可选，增加左右内边距 */
+  padding: 10px 2px; /* 可选，增加左右内边距 */
 }
-:deep(.el-dialog__header){
+:deep(.el-dialog__header) {
   height: 5%;
   padding-bottom: 0;
 }
-:deep(.el-dialog__footer){
+:deep(.el-dialog__footer) {
   height: 5%;
   padding: 0;
 }
-
 </style>

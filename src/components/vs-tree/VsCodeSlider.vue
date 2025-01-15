@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, watch, reactive, ref, nextTick } from "vue";
+import { computed, watch, reactive, ref, nextTick, onMounted } from "vue";
 import { getFileIcon, convertToTreeData,sortDirTree } from "./utils/utils";
 import { ElTree, ElInput } from "element-plus";
 import { ArrowRightBold } from "@element-plus/icons-vue";
@@ -9,7 +9,7 @@ import { v4 as uuidv4 } from "uuid";
 import { type FileData } from "@/utils";
 
 import axios from "axios";
-import { deleteFile, postFile, renameFile } from "@/api/path";
+import { deleteFile, postFile, renameFile,getUserHomePath } from "@/api/path";
 //import RemoteTreeFile from "../RemoteTreeFile.vue";
 import FileBroswerButton from "../FileBroswerButton.vue";
 interface Tree {
@@ -151,23 +151,6 @@ function openNode() {
       const currentNode = elTreeRef.value.getCurrentNode();
       const node = elTreeRef.value.getNode(currentNode.key);
       node.expanded = true;
-
-      /*          if (currentNode&&currentNode.isDir) {
-                let childNodes = elTreeRef.value.store.root.childNodes;
-                let path = currentNode.path.split("\\").filter(item => item !== '');
-                let index =  0;
-                while(index < path.length) {
-                    let node = childNodes.find(item => item.data.label === path[index]);
-                    if (index === path.length - 1) {
-                        node.expanded = true;
-                        break;
-                    } else {
-                        childNodes = node.childNodes;
-                    }
-                    index++;
-                }
-
-            } */
 
       setTimeout(() => {
         resolve();
@@ -418,6 +401,12 @@ function hiddenSearch() {
   searchText.value = "";
   showSearchStatus.value = false;
 }
+onMounted(()=>{
+  getUserHomePath().then(res=>{
+    getDirStructure(res.userHomePath)
+
+  })
+})
 </script>
 
 <template>

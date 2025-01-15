@@ -76,3 +76,7 @@ export function getDiskResources(params = {}, headers = {}, config = {}) {
 export function getUserResources(params = {}, headers = {}, config = {}) {
   return http.get("/GetUserResources", params, headers, config);
 }
+
+export function getUserHomePath(params = {}, headers = {}, config = {}) {
+  return http.get("/GetUserHomePath", params, headers, config);
+}

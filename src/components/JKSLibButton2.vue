@@ -118,7 +118,7 @@
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="visible = false">取 消</el-button>
-          <el-button type="primary" @click="handelConfirm">确 定</el-button>
+          <el-button type="primary" @click="handleConfirm">确 定</el-button>
         </span>
       </template>
     </el-dialog>
@@ -160,7 +160,7 @@ const handleTree = function () {
   visible.value = true;
  // selectNode.value = "";
   selectPath.value = "";
-  //GetDisk();
+  fetchDiskData()
 };
 
 watch(req, () => {
@@ -298,9 +298,9 @@ const colunmsResize = () => {
 };
 
 const fetchDiskData = () => {
-  fileStore.fetchUserHomeFile()
+  fileStore.fetchDiskFile()
 };
-const handelConfirm = function () {
+const handleConfirm = function () {
   if(fileStore.selected == null || fileStore.req==null) return
   if(fileStore.req.items[fileStore.selected].isDir) return
   selectPath.value=fileStore.req.items[fileStore.selected].path

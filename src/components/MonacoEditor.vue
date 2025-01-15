@@ -80,11 +80,6 @@ const saveHandler=(event) => {
         if (event.ctrlKey && event.key === "s") {
           event.preventDefault(); // 阻止默认的保存行为
           Save();
-          saved.value="已保存"
-          setTimeout(()=>{
-            saved.value=""
-
-          },2000)
         }
       }
 watch(
@@ -120,9 +115,14 @@ onUnmounted(() => {
 const Save = function () {
   console.log("save");
   emit("save", editor.getValue());
+  saved.value="已保存"
+          setTimeout(()=>{
+            saved.value=""
+
+          },2000)
 };
 const Run = function () {
-  console.log("run");
+
   emit("run");
 };
 const Stop = function () {

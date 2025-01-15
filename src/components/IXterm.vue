@@ -248,13 +248,21 @@ onMounted(()=>{
 onBeforeUnmount(()=>{
   dispose();
 });
-const Run=async function(jkspath) {
-      let jks_script_app_path;
+const Run=async function(filepath:string) {
+  const ext=getExtension(filepath)
+  console.log("ext:",ext)
+  let data=""
+  if(ext==".jks"){
+    let jks_script_app_path;
       await getJKSScriptPath().then((res) => {
         jks_script_app_path = res["jks_script_path"];
       });
       //console.log(jks_script_app_path)
-      const data = jks_script_app_path + " " + jkspath + "\r\n";
+      data = jks_script_app_path + " " + filepath + "\r\n";
+  }else if(ext==".exe" || ext == ".bat"){
+    data=filepath+"\r\n"
+  }
+  if(data.length==0) return
 
       for (let j = 0; j < data.length; j++) {
         const commandPrefix = "0"; // Command.INPUT 对应 '0'
@@ -281,6 +289,13 @@ const Stop=function() {
       }
       socket.send(payload); // 发送数据到 WebSocket
     };
+const getExtension = (fileName: string): string => {
+  const lastDotIndex = fileName.lastIndexOf(".");
+  if (lastDotIndex === -1) {
+    return fileName;
+  }
+  return fileName.substring(lastDotIndex);
+};
 defineExpose({
   Run,
   Stop
