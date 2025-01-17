@@ -313,7 +313,7 @@ const handelConfirm = function () {
     if (!fileStore.req.items[fileStore.selected].isDir) return;
     selectPath.value = fileStore.req.items[fileStore.selected].path;
   }
-
+  console.log(selectPath.value);
   emit("selectDir", selectPath.value);
   visible.value = false;
 };

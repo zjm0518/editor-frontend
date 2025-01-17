@@ -179,7 +179,7 @@ export function convertToTreeData(data: any) {
       path: item.path,
       key: uuidv4(),
     };
-
+    
     if (item.is_directory && item.children && item.children.length > 0) {
       treeNode.children = convertToTreeData(item.children); // 递归处理子目录
     } else if (item.is_directory) {

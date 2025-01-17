@@ -138,6 +138,7 @@ const getDirStructure = function (path: string) {
       const dir=res.data.data
       sortDirTree(dir)
       treeData.value = convertToTreeData(dir);
+      defaultExpandKeys.value = [treeData.value[0].key];
 
      // console.log("treeData.value",treeData.value);
     })
@@ -418,7 +419,7 @@ onMounted(()=>{
     }"
   >
     <div class="header">
-      <span class="base-dir">{{ baseDirName }}</span>
+      <span class="base-dir"><!-- {{ baseDirName }} --></span>
       <div>
    <!--      <RemoteTreeFile @select-dir="getDirStructure"></RemoteTreeFile> -->
       <FileBroswerButton @select-dir="getDirStructure"></FileBroswerButton>

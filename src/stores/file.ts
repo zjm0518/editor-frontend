@@ -59,6 +59,7 @@ export const useFileStore = defineStore("file", {
 
       getUserResources().then((res) => {
         this.userHomeDir=res.userHome
+
         const data = res as Resource;
 
 
@@ -72,7 +73,7 @@ export const useFileStore = defineStore("file", {
             return item;
           });
         }
-        this.updateRequest(data as Resource,"/");
+        this.updateRequest(data as Resource,res.path);
       });
     },
 

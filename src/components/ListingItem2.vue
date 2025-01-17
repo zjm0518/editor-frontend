@@ -13,8 +13,7 @@
     :title="name"
   >
     <div>
-      <img v-if="type === 'image' && isThumbsEnabled" />
-      <i v-else class="material-icons"></i>
+      <i class="material-icons"></i>
     </div>
 
     <div>
