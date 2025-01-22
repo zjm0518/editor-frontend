@@ -94,7 +94,7 @@ import {
   stopGrabImage,
   getImage,
 } from "@/api/path";
-import previewImage from "../public/preview.png";
+
 const videoRef = ref(null);
 let ctx;
 let socket: WebSocket;

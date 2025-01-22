@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont2"; /* Project id 4783281 */
-  src: url('iconfont.woff2?t=1734588701813') format('woff2'),
-       url('iconfont.woff?t=1734588701813') format('woff'),
-       url('iconfont.ttf?t=1734588701813') format('truetype');
+  src: url('iconfont.woff2?t=1737102835574') format('woff2'),
+       url('iconfont.woff?t=1737102835574') format('woff'),
+       url('iconfont.ttf?t=1737102835574') format('truetype');
 }
 
 .iconfont2 {
@@ -13,19 +13,47 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-.icon2-down:before {
+.icon2-side-bar-fill:before {
+  content: "\e71a";
+}
+
+.icon2-side-bar-line:before {
+  content: "\e71b";
+}
+
+.icon2-bottom_panel_open:before {
+  content: "\e600";
+}
+
+.icon2-bottom_panel_close:before {
+  content: "\e601";
+}
+
+.icon2-ic_toggle-sidebar:before {
+  content: "\e64d";
+}
+
+.icon2-left_panel_open:before {
+  content: "\e61e";
+}
+
+.icon2-left_panel_close:before {
+  content: "\e61f";
+}
+
+.icon2-shangxiazuoyouTriangle11:before {
   content: "\e690";
 }
 
-.icon2-up:before {
+.icon2-shangxiazuoyouTriangle13:before {
   content: "\e691";
 }
 
-.icon2-right:before {
+.icon2-shangxiazuoyouTriangle12:before {
   content: "\e692";
 }
 
-.icon2-left:before {
+.icon2-shangxiazuoyouTriangle14:before {
   content: "\e693";
 }
 

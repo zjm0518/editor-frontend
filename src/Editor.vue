@@ -6,10 +6,15 @@ import axios from "axios";
 //import TerminalComponent from "./components/TerminalComponent.vue";
 //import RemoteTreeFile from "./components/RemoteTreeFile.vue";
 import VsCodeSlider from "./components/vs-tree";
-import { LaySplitPanel, LaySplitPanelItem } from "@layui/layui-vue";
-import "@layui/layui-vue/es/splitPanel/index.css";
+//import { LaySplitPanel, LaySplitPanelItem } from "@layui/layui-vue";
+//import "@layui/layui-vue/es/splitPanel/index.css";
 import IXterm from "./components/IXterm.vue";
-
+import { useLayoutStore } from "./stores/layout";
+import { storeToRefs } from "pinia";
+import { Splitpanes, Pane } from 'splitpanes'
+import 'splitpanes/dist/splitpanes.css'
+const layoutStore = useLayoutStore();
+const {showTerminal}=storeToRefs(layoutStore)
 interface TreeNode {
   label: string;
   children?: TreeNode[];
@@ -81,8 +86,8 @@ onMounted(() => {
 
 <template>
   <div class="container">
-    <lay-split-panel class="Panel" :min-size="200">
-      <lay-split-panel-item :space="300">
+    <splitpanes  class="Panel" >
+      <pane size="15" min-size="10">
         <div class="folder">
           <!--      <FolderTree
             class="file"
@@ -95,10 +100,10 @@ onMounted(() => {
             @get-text-from-path="getTextFromServer"
           ></VsCodeSlider>
         </div>
-      </lay-split-panel-item>
-      <lay-split-panel-item>
-        <lay-split-panel :vertical="true" :min-size="150">
-          <lay-split-panel-item :space="400">
+      </pane>
+      <pane>
+        <splitpanes  horizontal >
+          <pane min-size="20">
             <MonacoEditor
               class="editor"
               :text-value="text"
@@ -107,16 +112,16 @@ onMounted(() => {
               @run="RunJKS"
               @stop="Stop"
             />
-          </lay-split-panel-item>
-          <lay-split-panel-item>
+          </pane>
+          <pane v-if="showTerminal" min-size="20" size="30">
             <!--  <TerminalComponent class="terminal" ref="term" />  -->
              <IXterm  class="terminal" ref="term"></IXterm>
 
 
-          </lay-split-panel-item>
-        </lay-split-panel>
-      </lay-split-panel-item>
-    </lay-split-panel>
+          </pane>
+        </splitpanes >
+      </pane>
+    </splitpanes >
   </div>
 </template>
 
@@ -213,5 +218,40 @@ body {
   }
 }
 }
- 
+:deep(.splitpanes--vertical)  {
+  > .splitpanes__splitter{
+      min-width: 3px;
+  background: #626060;
+  &:hover{
+    border: 3px solid #626060;
+    cursor: w-resize;
+  }
+  &:active{
+    border: 3px solid #626060;
+    cursor: w-resize;
+
+  }
+  }
+
+}
+:deep(.splitpanes--horizontal)  {
+  > .splitpanes__splitter{
+      min-height: 3px;
+  background: #626060;
+  &:hover{
+    border: 3px solid #626060;
+    cursor: s-resize;
+  }
+  &:active{
+    border: 3px solid #626060;
+    cursor: s-resize;
+
+  }
+  }
+  > .splitpanes__pane{
+    transition: none;
+  }
+
+}
+
 </style>

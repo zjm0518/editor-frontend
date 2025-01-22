@@ -8,7 +8,7 @@ import { WebLinksAddon } from "xterm-addon-web-links";
 import { FitAddon } from "xterm-addon-fit";
 import { getJKSScriptPath } from "@/api/path";
 import { termOptions, flowControl, Command } from "@/utils/xtermConfigs";
-import { onMounted, ref,onBeforeUnmount } from "vue";
+import { onMounted, ref,onBeforeUnmount, onUnmounted } from "vue";
 import "@xterm/xterm/css/xterm.css";
 
 const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
@@ -30,7 +30,8 @@ const tokenUrl = [
 ].join("");
 
 const options = {
-  wsUrl: "ws://localhost:7681",
+  wsUrl: "ws://localhost:8080/ws",
+  //wsUrl: "ws://localhost:7681",
   tokenUrl : tokenUrl,
   flowControl: flowControl,
   termOptions: termOptions,
@@ -61,7 +62,8 @@ let reconnect = true;
 let doReconnect = true;
 let written = 0;
 let pending = 0;
-const writeFunc = (data: ArrayBuffer) => writeData(new Uint8Array(data));
+//const writeFunc = (data: ArrayBuffer) => writeData(new Uint8Array(data));
+const writeFunc = (data: string) => writeData(data);
 const writeData = function (data: string | Uint8Array) {
   const { limit, highWater, lowWater } = options.flowControl;
 
@@ -158,8 +160,8 @@ const onSocketOpen = function () {
     columns: terminal.cols,
     rows: terminal.rows,
   });
-  socket?.send(textEncoder.encode(msg));
-
+  //socket?.send(textEncoder.encode(msg));
+  //socket?.send(textEncoder.encode("0\r\n"));
   if (opened) {
     terminal.reset();
     terminal.options.disableStdin = false;
@@ -173,8 +175,11 @@ const onSocketOpen = function () {
   terminal.focus();
 };
 const onSocketData = function (event: MessageEvent) {
-  const rawData = event.data as ArrayBuffer;
-  const cmd = String.fromCharCode(new Uint8Array(rawData)[0]);
+  // console.log(event.data)
+  const rawData = event.data as string;
+  //const cmd = String.fromCharCode(new Uint8Array(rawData)[0]);
+  const cmd = rawData[0];
+  //console.log(`[ttyd] received command: ${cmd}`);
   const data = rawData.slice(1);
   switch (cmd) {
     case Command.OUTPUT:
@@ -186,6 +191,7 @@ const onSocketData = function (event: MessageEvent) {
       break;
     default:
       console.warn(`[ttyd] unknown command: ${cmd}`);
+      //writeFunc(data);
       break;
   }
 };
@@ -211,6 +217,13 @@ const onSocketClose=function(event: CloseEvent) {
             //overlayAddon.showOverlay('Press ⏎ to Reconnect');
         }
     }
+
+  const closeConnection = function () {
+  if (socket && socket.readyState === WebSocket.OPEN) {
+    socket.close();
+    console.log("WebSocket connection closed.");
+  }
+};
 const refreshToken = async function () {
   try {
     const resp = await fetch(options.tokenUrl);
@@ -232,7 +245,7 @@ const open = function (parent: HTMLElement) {
   fitAddon.fit();
 };
 const connect = function () {
-  socket = new WebSocket(options.wsUrl, ["tty"]);
+  socket = new WebSocket(options.wsUrl);
   socket.binaryType = "arraybuffer";
   register(addEventListener(socket, "open", onSocketOpen));
   register(addEventListener(socket, "message", onSocketData as EventListener));
@@ -245,6 +258,10 @@ onMounted(()=>{
   open(terminalRef.value);
   connect();
 });
+onUnmounted(()=>{
+  closeConnection();
+  dispose();
+})
 onBeforeUnmount(()=>{
   dispose();
 });

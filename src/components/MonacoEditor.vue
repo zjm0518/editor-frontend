@@ -18,8 +18,10 @@ import {
   getFileLanguage,
 } from "../utils";
 import JKSLibButton from "./JKSLibButton2.vue";
-
+import { useLayoutStore } from "@/stores/layout";
 import { setJKSScriptPath, getJKSScriptPath } from "@/api/path";
+import "@/css/fonts.css";
+const layoutStore = useLayoutStore();
 const props = defineProps<{
   path: string;
   textValue: string;
@@ -69,19 +71,18 @@ onMounted(() => {
     theme: "vs-dark",
   });
 
-
   getJKSScriptPath().then((res) => {
     jksLibPath.value = res["jks_script_path"];
   });
 
   container.value?.addEventListener("keydown", saveHandler);
 });
-const saveHandler=(event) => {
-        if (event.ctrlKey && event.key === "s") {
-          event.preventDefault(); // 阻止默认的保存行为
-          Save();
-        }
-      }
+const saveHandler = (event) => {
+  if (event.ctrlKey && event.key === "s") {
+    event.preventDefault(); // 阻止默认的保存行为
+    Save();
+  }
+};
 watch(
   () => props.textValue,
   (newvalue, oldValue) => {
@@ -89,10 +90,10 @@ watch(
     } else {
       console.log("in monaco editor,text change");
       editor.setValue(newvalue);
-      let label=props.path.replace(/\/$/, ""); // 去掉末尾的 \\
-      label=label.split("/").pop() || "";
-      console.log("language",getFileLanguage(label))
-      monaco.editor.setModelLanguage(editor.getModel(),getFileLanguage(label))
+      let label = props.path.replace(/\/$/, ""); // 去掉末尾的 \\
+      label = label.split("/").pop() || "";
+      console.log("language", getFileLanguage(label));
+      monaco.editor.setModelLanguage(editor.getModel(), getFileLanguage(label));
     }
   }
 );
@@ -109,20 +110,18 @@ const editorObserver = useResizeObserver(container, () => {
 onUnmounted(() => {
   editor?.dispose();
   editorObserver.stop();
-  container.value?.removeEventListener("keydown",saveHandler)
+  container.value?.removeEventListener("keydown", saveHandler);
 });
 
 const Save = function () {
   console.log("save");
   emit("save", editor.getValue());
-  saved.value="已保存"
-          setTimeout(()=>{
-            saved.value=""
-
-          },2000)
+  saved.value = "已保存";
+  setTimeout(() => {
+    saved.value = "";
+  }, 2000);
 };
 const Run = function () {
-
   emit("run");
 };
 const Stop = function () {
@@ -139,7 +138,7 @@ const getLibPath = function (libPath: string) {
     jksLibPath.value = libPath;
   });
 };
-const saved=ref("")
+const saved = ref("");
 </script>
 
 <template>
@@ -153,7 +152,17 @@ const saved=ref("")
         ></i>
         <i class="icon iconfont2 icon2-yunhang" title="运行" @click="Run"></i>
         <i class="icon iconfont2 icon2-tingzhi" title="停止" @click="Stop"></i>
-        <i >{{ saved }}</i>
+        <i
+          class="icon iconfont2"
+          :class="
+            layoutStore.showTerminal
+              ? 'icon2-bottom_panel_close'
+              : 'icon2-bottom_panel_open'
+          "
+          title="终端"
+          @click="layoutStore.toggleShell()"
+        ></i>
+        <i>{{ saved }}</i>
       </div>
       <div class="header-right">
         <span class="jks-lib" title="脚本库路径">{{ jksLibPath }}</span>
@@ -161,7 +170,7 @@ const saved=ref("")
       </div>
     </div>
 
-    <div ref="container" style="height: 94%"></div>
+    <div ref="container"  class="editor-container" ></div>
   </div>
 </template>
 
@@ -175,7 +184,7 @@ const saved=ref("")
   width: 100%;
 }
 .header {
-  height: 7%;
+  height: 25px;
   width: 100%;
   display: flex;
   flex-direction: row;
@@ -194,7 +203,6 @@ const saved=ref("")
   font-size: 16px;
   margin-right: 15px; /* 可以根据需要调整间距 */
   cursor: pointer;
-
 }
 
 .header .header-right {
@@ -206,5 +214,9 @@ const saved=ref("")
   font-size: 13px;
   margin-right: 15px; /* 可以根据需要调整间距 */
   font-family: Consolas, "Courier New", monospace;
+}
+.editor-container {
+
+  height: calc(101% - 25px);
 }
 </style>
