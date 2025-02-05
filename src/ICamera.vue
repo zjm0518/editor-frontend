@@ -17,7 +17,9 @@
               :value="item.value"
             >
             </el-option>
+
           </el-select>
+          <el-button plain style="margin-left: 5px">添加相机</el-button>
           <div style="margin-top: 10px">
             <span>当前可用相机：</span>
             <el-select
@@ -36,6 +38,7 @@
             <el-button plain @click="editCamera" style="margin-left: 5px">{{
               editCameraText
             }}</el-button>
+
           </div>
         </el-card>
         <el-card class="cameraList">
@@ -125,7 +128,7 @@ const showVideo = function () {
 
 const openConnection = function () {
   socket = new WebSocket(
-    "ws://localhost:8080/GetVideoStream?cameraType=" + cameraTypePick.value
+    "ws://localhost:8080/GetVideoStream?cameraType=" + cameraTypePick.value+"&cameraSN="+cameraSNPick.value
   );
   // WebSocket 连接成功
   socket.onopen = () => {
@@ -156,12 +159,12 @@ const closeConnection = function () {
 };
 
 const getSingleImage = function () {
-  getImage({ cameraType: cameraTypePick.value }).then((res) => {
+  getImage({ cameraType: cameraTypePick.value, cameraSN: cameraSNPick.value }).then((res) => {
     image.src = "data:image/jpeg;base64," + res.image;
   });
 };
 const getCamerap = function () {
-  getCameraParams({ cameraType: cameraTypePick.value })
+  getCameraParams({ cameraType: cameraTypePick.value,cameraSN: cameraSNPick.value })
     .then((res) => {
       console.log(res);
       exposureTime.value = res.ExposureTime;
@@ -174,6 +177,7 @@ const getCamerap = function () {
 const changeExposure = function (newvalue) {
   const postData = {
     cameraType: cameraTypePick.value,
+    cameraSN: cameraSNPick.value,
     key: "ExposureTime",
     value: newvalue,
   };
@@ -187,6 +191,7 @@ const changeExposure = function (newvalue) {
 const changeGain = function (newvalue) {
   const postData = {
     cameraType: cameraTypePick.value,
+    cameraSN: cameraSNPick.value,
     key: "Gain",
     value: newvalue,
   };
@@ -245,7 +250,7 @@ const openCamera = function () {
     });
 };
 const closeCamera = function () {
-  closeCamera_({ cameraType: cameraTypePick.value });
+  closeCamera_({ cameraType: cameraTypePick.value,cameraSN : cameraSNPick.value });
 };
 onMounted(() => {
   ctx = videoRef.value.getContext("2d");

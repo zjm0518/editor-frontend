@@ -10,6 +10,7 @@ declare module 'vue' {
     Breadcrumbs: typeof import('./src/components/Breadcrumbs.vue')['default']
     BreadCrumbs: typeof import('./src/components/BreadCrumbs.vue')['default']
     BreadCrumbs2: typeof import('./src/components/BreadCrumbs2.vue')['default']
+    CameraView: typeof import('./src/components/cameraView.vue')['default']
     copy: typeof import('./src/components/ListingItem copy.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElInput: typeof import('element-plus/es')['ElInput']
