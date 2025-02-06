@@ -1,7 +1,7 @@
 <template>
-  <div class="camera">
-    <el-row :gutter="20" class="camera-row">
-      <el-col :span="10" class="camera-col">
+
+    <div class="camera-row">
+      <div class="camera-col">
         <el-card class="cameraList">
           相机类型：
           <el-select
@@ -18,7 +18,8 @@
             >
             </el-option>
           </el-select>
-          <el-button plain style="margin-left: 5px">添加相机</el-button>
+          <el-button plain style="margin-left: 5px" @click="addCamera">添加相机</el-button>
+
           <div >
             <span>当前可用相机：</span>
             <el-select
@@ -65,27 +66,25 @@
           <el-button plain @click="getSingleImage">单次采集</el-button>
           <el-button plain @click="showVideo">实时采集</el-button>
           <el-button plain @click="closeConnection">停止实时采集</el-button>
-        </el-card></el-col
+        </el-card></div
       >
-      <el-col :span="10">
-        <el-card id="videoCard">
+      <div>
+        <el-card  id="videoCard" >
           <div class="cameraText">预览窗口</div>
-          <canvas id="videoCanvas" ref="videoRef"></canvas>
+          <canvas id="videoCanvas" ref="videoRef" width="400" height="200"></canvas>
         </el-card>
-      </el-col>
-    </el-row>
-  </div>
+      </div>
+    </div>
+
 </template>
 <script setup lang="ts">
 import {
-  ElRow,
-  ElCol,
   ElCard,
   ElSlider,
   ElSelect,
   ElOption,
 } from "element-plus";
-import { onMounted, ref } from "vue";
+import { onMounted, ref,defineEmits } from "vue";
 import {
   getCameraParams,
   setCameraParam,
@@ -96,6 +95,9 @@ import {
   getImage,
 } from "@/api/path";
 
+const emit = defineEmits<{
+  (e: "addCamera"): void;
+}>();
 const videoRef = ref(null);
 let ctx;
 let socket: WebSocket;
@@ -123,7 +125,9 @@ const cameraSNPick = ref("");
 const showVideo = function () {
   openConnection();
 };
-
+const addCamera = function () {
+  emit("addCamera");
+};
 const openConnection = function () {
   socket = new WebSocket(
     "ws://localhost:8080/GetVideoStream?cameraType=" +
@@ -264,7 +268,8 @@ const closeCamera = function () {
 };
 onMounted(() => {
   ctx = videoRef.value.getContext("2d");
-
+  videoRef.value.width = 400;
+  videoRef.value.height = 200;
   image.src = "/preview.png";
   image.onload = function () {
     ctx.drawImage(image, 0, 0, videoRef.value.width, videoRef.value.height);
@@ -272,27 +277,9 @@ onMounted(() => {
 });
 </script>
 <style scoped>
-.camera {
-  height: 300px;
-  width: 100%;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-}
-el-row {
-  margin-left: 10px;
-  margin-right: 20px;
-}
-el-col {
-  border-radius: 4px;
-  margin-left: 10px;
-  margin-right: 20px;
-}
 .camera-row {
+  height: 30%;
   width: 100%;
-  height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -303,11 +290,13 @@ el-col {
   justify-content: center;
   align-items: center;
   height: 90%;
+  width: 30%;
 }
 
 .cameraList {
   width: 100%;
-  margin-top: 10px;
+
+
 }
 .cameraSelect {
   width: 35%;
@@ -320,9 +309,8 @@ el-col {
 #videoCard {
   display: flex;
   flex-direction: column;
-  /* justify-content: space-between; 保证内容有间距，避免内容拥挤 */
+
   height: 100%;
-  margin-top: 10px;
 
 }
 #videoCanvas {
