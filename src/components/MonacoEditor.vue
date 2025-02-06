@@ -178,8 +178,7 @@ const saved = ref("");
 .MonacoEditor {
   height: 100%;
   width: 100%;
-  display: flex;
-  flex-direction: column;
+
 }
 :deep(el-button) {
   height: 50%;
@@ -219,9 +218,9 @@ const saved = ref("");
   font-family: Consolas, "Courier New", monospace;
 }
 .editor-container {
-  height: calc(101% - 25px);
+  height: calc(102% - 25px);
 }
 :deep(.monaco-editor) {
-  --vscode-focusBorder: #333232; 
+  --vscode-focusBorder: #333232;
 }
 </style>
