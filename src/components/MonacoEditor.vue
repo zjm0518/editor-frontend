@@ -170,7 +170,7 @@ const saved = ref("");
       </div>
     </div>
 
-    <div ref="container"  class="editor-container" ></div>
+    <div ref="container" class="editor-container"></div>
   </div>
 </template>
 
@@ -178,6 +178,8 @@ const saved = ref("");
 .MonacoEditor {
   height: 100%;
   width: 100%;
+  display: flex;
+  flex-direction: column;
 }
 :deep(el-button) {
   height: 50%;
@@ -191,6 +193,7 @@ const saved = ref("");
   justify-content: space-between;
   padding: 0 10px;
   background-color: #333232;
+
   color: #fff;
 }
 .header .header-left {
@@ -216,7 +219,9 @@ const saved = ref("");
   font-family: Consolas, "Courier New", monospace;
 }
 .editor-container {
-
   height: calc(101% - 25px);
+}
+:deep(.monaco-editor) {
+  --vscode-focusBorder: #333232; 
 }
 </style>
