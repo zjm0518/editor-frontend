@@ -8,20 +8,12 @@
 </template>
 <script setup lang="ts">
 import { ElCard} from "element-plus";
-import { onMounted, ref, defineEmits, inject, computed} from "vue";
+import { onMounted, ref, inject, computed} from "vue";
 import {
-  getCameraParams,
-  setCameraParam,
-  getCameraSNList_,
-  openCameraBySN,
-  closeCamera_,
   stopGrabImage,
   getImage,
 } from "@/api/path";
 
-const emit = defineEmits<{
-  (e: "selectCamera"): void;
-}>();
 const props = defineProps<{
   cameraIndex:number,
   cameraType:string,

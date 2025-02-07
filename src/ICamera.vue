@@ -1,5 +1,15 @@
 <template>
   <div class="camera-container">
+    <div class="camera-video">
+        <camera-card
+      v-for="index in cameraNum"
+      :key="index"
+      :camera-index="index"
+      :ref="el=>getCameraCardRef(el,index)"
+      :camera-type="cameraParamsList[index-1].cameraType"
+      :camera-s-n="cameraParamsList[index-1].cameraSN"
+    ></camera-card>
+      </div>
     <div class="camera-col" ref="fixedElement">
         <el-card class="cameraList">
           相机类型：
@@ -67,21 +77,12 @@
           <el-button plain @click="closeConnection">停止实时采集</el-button>
         </el-card></div
       >
-      <div class="camera-video">
-        <camera-card
-      v-for="index in cameraNum"
-      :key="index"
-      :camera-index="index"
-      :ref="el=>getCameraCardRef(el,index)"
-      :camera-type="cameraParamsList[index-1].cameraType"
-      :camera-s-n="cameraParamsList[index-1].cameraSN"
-    ></camera-card>
-      </div>
+
 
   </div>
 </template>
 <script setup lang="ts">
-import { computed, nextTick, onMounted, provide, ref, useTemplateRef, watch } from "vue";
+import { computed, provide, ref } from "vue";
 import CameraCard from "./components/CameraCard.vue";
 import {
   ElCard,
@@ -95,8 +96,6 @@ import {
   getCameraSNList_,
   openCameraBySN,
   closeCamera_,
-  stopGrabImage,
-  getImage,
 } from "@/api/path";
 
 const cameraNum = ref(1);
@@ -104,18 +103,8 @@ const cameraCardRefs = ref<HTMLElement[]>([]); // 存储所有 camera-card 的�
 const cameraTypePick = computed(()=>{
   return cameraParamsList.value[selectedIndex.value-1].cameraType
 });
-const precameraTypePick = computed(()=>{
-  return cameraParamsList.value[selectedIndex.value-1].precameraType
-});
-const cameraSNOptions = ref<Array<object>>([]);
 const cameraSNPick = computed(()=>{
   return cameraParamsList.value[selectedIndex.value-1].cameraSN
-});
-const exposureTime = computed(()=>{
-  return cameraParamsList.value[selectedIndex.value-1].exposureTime
-});
-const gain =computed(()=>{
-  return cameraParamsList.value[selectedIndex.value-1].gain
 });
 const cameraTypeOptions = ref([
   {
@@ -316,13 +305,13 @@ onMounted(() => {
   display: flex;
   justify-content: center;
   align-items: center;
-
   overflow: auto;
   /* position: relative; */
+  flex-direction: column;
 }
 .camera-col {
   display: flex;
-  flex-direction: column;
+   flex-direction: column;
   justify-content: center;
   align-items: center;
   height: 100%;
@@ -330,7 +319,6 @@ onMounted(() => {
 /*   position: fixed;
   top:20px;
   left:0px */
-
 }
 .cameraList {
   width: 100%;
@@ -346,8 +334,10 @@ onMounted(() => {
 }
 .camera-video {
   display: flex;
-  flex-direction: column;
+ /*  flex-direction: column; */
   overflow-y: auto;
+ flex-wrap: wrap;
+
 
 }
 </style>
