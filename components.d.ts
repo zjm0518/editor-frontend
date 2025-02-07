@@ -14,6 +14,7 @@ declare module 'vue' {
     CameraView: typeof import('./src/components/cameraView.vue')['default']
     copy: typeof import('./src/components/ListingItem copy.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
+    ElCard: typeof import('element-plus/es')['ElCard']
     ElCol: typeof import('element-plus/es')['ElCol']
     ElInput: typeof import('element-plus/es')['ElInput']
     ElOption: typeof import('element-plus/es')['ElOption']
