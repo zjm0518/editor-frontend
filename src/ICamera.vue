@@ -1,10 +1,10 @@
 <template>
   <div class="camera-container">
-    <div class="camera-col">
+    <div class="camera-col" ref="fixedElement">
         <el-card class="cameraList">
           相机类型：
           <el-select
-            v-model="cameraTypePick"
+            v-model="cameraParamsList[selectedIndex-1].cameraType"
             placeholder="请选择"
             class="cameraSelect"
             @change="getCameraSNList"
@@ -22,12 +22,12 @@
           <div >
             <span>当前可用相机：</span>
             <el-select
-              v-model="cameraSNPick"
+              v-model="cameraParamsList[selectedIndex-1].cameraSN"
               placeholder="请选择"
               class="cameraSelect"
             >
               <el-option
-                v-for="item in cameraSNOptions"
+                v-for="item in cameraParamsList[selectedIndex-1].cameraSNOptions"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
@@ -43,7 +43,7 @@
           <div class="slider">
             <span style="margin-right: 10px">曝光：</span>
             <el-slider
-              v-model="exposureTime"
+              v-model="cameraParamsList[selectedIndex-1].exposureTime"
               show-input
               :min="0"
               :max="20000"
@@ -54,7 +54,7 @@
           <div class="slider">
             <span style="margin-right: 10px">增益：</span
             ><el-slider
-              v-model="gain"
+              v-model="cameraParamsList[selectedIndex-1].gain"
               show-input
               :min="0"
               :max="10"
@@ -72,13 +72,16 @@
       v-for="index in cameraNum"
       :key="index"
       :camera-index="index"
+      :ref="el=>getCameraCardRef(el,index)"
+      :camera-type="cameraParamsList[index-1].cameraType"
+      :camera-s-n="cameraParamsList[index-1].cameraSN"
     ></camera-card>
       </div>
 
   </div>
 </template>
 <script setup lang="ts">
-import { provide, ref } from "vue";
+import { computed, nextTick, onMounted, provide, ref, useTemplateRef, watch } from "vue";
 import CameraCard from "./components/CameraCard.vue";
 import {
   ElCard,
@@ -95,13 +98,25 @@ import {
   stopGrabImage,
   getImage,
 } from "@/api/path";
+
 const cameraNum = ref(1);
-const cameraTypePick = ref("");
-const precameraTypePick = ref("");
+const cameraCardRefs = ref<HTMLElement[]>([]); // 存储所有 camera-card 的引用
+const cameraTypePick = computed(()=>{
+  return cameraParamsList.value[selectedIndex.value-1].cameraType
+});
+const precameraTypePick = computed(()=>{
+  return cameraParamsList.value[selectedIndex.value-1].precameraType
+});
 const cameraSNOptions = ref<Array<object>>([]);
-const cameraSNPick = ref("");
-//const exposureTime = ref(0);
-//const gain = ref(0);
+const cameraSNPick = computed(()=>{
+  return cameraParamsList.value[selectedIndex.value-1].cameraSN
+});
+const exposureTime = computed(()=>{
+  return cameraParamsList.value[selectedIndex.value-1].exposureTime
+});
+const gain =computed(()=>{
+  return cameraParamsList.value[selectedIndex.value-1].gain
+});
 const cameraTypeOptions = ref([
   {
     value: "DaHeng",
@@ -118,24 +133,60 @@ const cameraTypeOptions = ref([
 ]);
 const selectedIndex=ref(1)
 provide("selectedIndex",selectedIndex)
-const cameraParams = ref({
-  cameraTypePick: "",
-  cameraSNPick: "",
+const getCameraCardRef = (el:any,index:number) => {
+
+  if(el) cameraCardRefs.value[index-1]=el
+
+  return `cameraCard${index}`; // 通过不同的索引来生成唯一的 ref 名
+};
+
+interface CameraParams {
+  cameraType: string;
+  cameraSN: string;
+  exposureTime: number;
+  gain: number;
+  precameraType:string;
+  precameraSN:string;
+  isOpened:boolean;
+  cameraSNOptions:Array<object>
+
+}
+const cameraParamsList = ref<Array<CameraParams>>([{
+  cameraType: "",
+  cameraSN: "",
   exposureTime: 0,
   gain: 0,
-});
+  precameraType:"",
+  precameraSN:"",
+  isOpened:false,
+  cameraSNOptions:[]
+}]);
 const addCamera = () => {
   cameraNum.value++;
+  cameraParamsList.value.push({
+    cameraType: "",
+    cameraSN: "",
+    exposureTime: 0,
+    gain: 0,
+    precameraType:"",
+    precameraSN:"",
+    isOpened:false,
+    cameraSNOptions:[]
+
+  });
 };
-const editCameraText = ref("打开设备");
+const editCameraText = computed(()=>{
+  return cameraParamsList.value[selectedIndex.value-1].isOpened ? "关闭设备" : "打开设备"
+});
+
 const editCamera = function () {
   if (editCameraText.value == "打开设备") {
     openCamera();
   } else {
     closeCamera();
-    editCameraText.value = "打开设备";
+    /* editCameraText.value = "打开设备";
     exposureTime.value = 0;
-    gain.value = 0;
+    gain.value = 0; */
   }
 };
 const openCamera = function () {
@@ -145,7 +196,8 @@ const openCamera = function () {
   })
     .then((res) => {
       console.log("res", res);
-      editCameraText.value = "关闭设备";
+      //editCameraText.value = "关闭设备";
+      cameraParamsList.value[selectedIndex.value-1].isOpened=true
       getCamerap();
     })
     .catch((err) => {
@@ -156,6 +208,10 @@ const closeCamera = function () {
   closeCamera_({
     cameraType: cameraTypePick.value,
     cameraSN: cameraSNPick.value,
+  }).then(res=>{
+    cameraParamsList.value[selectedIndex.value-1].isOpened=false
+    cameraParamsList.value[selectedIndex.value-1].exposureTime=0
+    cameraParamsList.value[selectedIndex.value-1].gain=0
   });
 };
 
@@ -166,29 +222,38 @@ const getCamerap = function () {
   })
     .then((res) => {
       console.log(res);
-      exposureTime.value = res.ExposureTime;
-      gain.value = res.Gain;
+      //exposureTime.value = res.ExposureTime;
+      //gain.value = res.Gain;
+      cameraParamsList.value[selectedIndex.value-1].exposureTime=res.ExposureTime
+      cameraParamsList.value[selectedIndex.value-1].gain=res.Gain
     })
     .catch((err) => {
       console.log(err);
     });
 };
 const getCameraSNList = function (value) {
-  cameraSNOptions.value = [];
-  cameraSNPick.value = "";
-  if (precameraTypePick.value != "") {
-    closeCamera_({ cameraType: precameraTypePick.value });
+  //cameraSNOptions.value = [];
+  cameraParamsList.value[selectedIndex.value-1].cameraSNOptions=[];
+  cameraParamsList.value[selectedIndex.value-1].cameraSN = "";
+  if (cameraParamsList.value[selectedIndex.value-1].precameraType != "") {
+    closeCamera_({ cameraType: cameraParamsList.value[selectedIndex.value-1].precameraType,
+      cameraSN:cameraParamsList.value[selectedIndex.value-1].precameraSN
+     });
   }
 
-  precameraTypePick.value = value;
-  editCameraText.value = "打开设备";
-  exposureTime.value = 0;
-  gain.value = 0;
+  cameraParamsList.value[selectedIndex.value-1].precameraType = value;
+  //editCameraText.value = "打开设备";
+  //exposureTime.value = 0;
+  //gain.value = 0;
   getCameraSNList_({ cameraType: value }).then((res) => {
-    console.log(res);
+    console.log("res:",res);
+
+    if ( !res) {
+      return
+    }
     const SNList = res.cameraSN;
     for (const sn of SNList) {
-      cameraSNOptions.value.push({
+      cameraParamsList.value[selectedIndex.value-1].cameraSNOptions.push({
         value: sn,
         label: sn,
       });
@@ -223,7 +288,28 @@ const changeGain = function (newvalue) {
     console.log(res);
   });
 };
+const getSingleImage = function () {
+  cameraCardRefs.value[selectedIndex.value-1].getSingleImage();
+};
+const showVideo = function () {
+  cameraCardRefs.value[selectedIndex.value-1].showVideo();
+};
+const closeConnection = function () {
+  cameraCardRefs.value[selectedIndex.value-1].closeConnection();
+};
+/* const fixedElement = ref(null);
 
+const updateWidth = () => {
+  const parentWidth = fixedElement.value?.parentElement.offsetWidth || 0;
+  if (fixedElement.value) {
+    fixedElement.value.style.width = `${parentWidth * 0.4}px`; // 设置宽度为父元素的40%
+  }
+};
+
+onMounted(() => {
+  updateWidth(); // 初始加载时设置宽度
+  window.addEventListener('resize', updateWidth); // 监听窗口大小变化
+}); */
 </script>
 <style scoped>
 .camera-container {
@@ -232,14 +318,19 @@ const changeGain = function (newvalue) {
   align-items: center;
 
   overflow: auto;
+  /* position: relative; */
 }
 .camera-col {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 90%;
+  height: 100%;
   width: 40%;
+/*   position: fixed;
+  top:20px;
+  left:0px */
+
 }
 .cameraList {
   width: 100%;
@@ -256,7 +347,7 @@ const changeGain = function (newvalue) {
 .camera-video {
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
 
-  height: 100%;
 }
 </style>

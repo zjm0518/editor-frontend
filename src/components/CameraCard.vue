@@ -23,7 +23,9 @@ const emit = defineEmits<{
   (e: "selectCamera"): void;
 }>();
 const props = defineProps<{
-  cameraIndex:number
+  cameraIndex:number,
+  cameraType:string,
+  cameraSN:string,
 }>();
 const selectedIndex=inject("selectedIndex")
 const isSelected = computed(()=>{
@@ -36,13 +38,7 @@ const videoRef = ref(null);
 let ctx;
 let socket: WebSocket;
 const image = new Image(); // 创建一个 Image 对象
-const exposureTime = ref(0);
-const gain = ref(0);
 
-const cameraTypePick = ref("");
-const precameraTypePick = ref("");
-const cameraSNOptions = ref<Array<object>>([]);
-const cameraSNPick = ref("");
 const showVideo = function () {
   openConnection();
 };
@@ -50,9 +46,9 @@ const showVideo = function () {
 const openConnection = function () {
   socket = new WebSocket(
     "ws://localhost:8080/GetVideoStream?cameraType=" +
-      cameraTypePick.value +
+      props.cameraType +
       "&cameraSN=" +
-      cameraSNPick.value
+      props.cameraSN
   );
   // WebSocket 连接成功
   socket.onopen = () => {
@@ -79,15 +75,15 @@ const closeConnection = function () {
     socket.close();
     console.log("WebSocket connection closed.");
   }
-  stopGrabImage({ cameraType: cameraTypePick.value });
+  stopGrabImage({ cameraType: props.cameraType, cameraSN: props.cameraSN });
 };
 
 
 
 const getSingleImage = function () {
   getImage({
-    cameraType: cameraTypePick.value,
-    cameraSN: cameraSNPick.value,
+    cameraType: props.cameraType,
+    cameraSN: props.cameraSN,
   }).then((res) => {
     image.src = "data:image/jpeg;base64," + res.image;
   });
@@ -102,6 +98,11 @@ onMounted(() => {
   };
   console.log("selectedIndex",selectedIndex.value)
   console.log("props.cameraIndex",props.cameraIndex)
+});
+defineExpose({
+  getSingleImage,
+  closeConnection,
+  showVideo,
 });
 </script>
 <style scoped>
