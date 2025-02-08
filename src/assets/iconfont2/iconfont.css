@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont2"; /* Project id 4783281 */
-  src: url('iconfont.woff2?t=1737102835574') format('woff2'),
-       url('iconfont.woff?t=1737102835574') format('woff'),
-       url('iconfont.ttf?t=1737102835574') format('truetype');
+  src: url('iconfont.woff2?t=1738983851566') format('woff2'),
+       url('iconfont.woff?t=1738983851566') format('woff'),
+       url('iconfont.ttf?t=1738983851566') format('truetype');
 }
 
 .iconfont2 {
@@ -13,6 +13,34 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon2-upload_folder1:before {
+  content: "\e6e2";
+}
+
+.icon2-upload-folder:before {
+  content: "\e941";
+}
+
+.icon2-a-uploadfolder:before {
+  content: "\e709";
+}
+
+.icon2-upload-file:before {
+  content: "\e753";
+}
+
+.icon2-upload_folder:before {
+  content: "\e69e";
+}
+
+.icon2-upload_file:before {
+  content: "\e8f5";
+}
+
+.icon2-upload:before {
+  content: "\e682";
+}
+
 .icon2-side-bar-fill:before {
   content: "\e71a";
 }
@@ -21,11 +49,11 @@
   content: "\e71b";
 }
 
-.icon2-bottom_panel_open:before {
+.icon2-bottom_panel_open_wght300_24px:before {
   content: "\e600";
 }
 
-.icon2-bottom_panel_close:before {
+.icon2-bottom_panel_close_wght300_24px:before {
   content: "\e601";
 }
 

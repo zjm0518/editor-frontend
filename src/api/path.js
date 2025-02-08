@@ -80,3 +80,10 @@ export function getUserResources(params = {}, headers = {}, config = {}) {
 export function getUserHomePath(params = {}, headers = {}, config = {}) {
   return http.get("/GetUserHomePath", params, headers, config);
 }
+
+export function uploadFiles(data = {}, headers = {}, config = {}) {
+  return http.post("/api/UploadFiles", data, headers, config);
+}
+export function uploadDir(data = {}, headers = {}, config = {}) {
+  return http.post("/api/UploadDir", data, headers, config);
+}

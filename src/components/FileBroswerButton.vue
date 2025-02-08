@@ -2,7 +2,7 @@
   <div style="display: inline">
     <i
       class="icon iconfont2 icon2-a-Openfolder"
-      style="cursor: pointer"
+      style="cursor: pointer;margin: 0 4px;"
       title="打开文件夹"
       @click="handleTree"
     ></i>

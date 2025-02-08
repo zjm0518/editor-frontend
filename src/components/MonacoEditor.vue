@@ -67,7 +67,6 @@ const editorValue = useStorage<Record<string, any>>(
 onMounted(() => {
   editor = monaco.editor.create(container.value!, {
     language: "python",
-    //theme: isDark.value ? 'vs-dark' : 'vs',
     theme: "vs-dark",
   });
 
@@ -219,6 +218,7 @@ const saved = ref("");
 }
 .editor-container {
   height: calc(102% - 25px);
+  width: 100%;
 }
 :deep(.monaco-editor) {
   --vscode-focusBorder: #333232;

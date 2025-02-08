@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, watch, reactive, ref, nextTick, onMounted } from "vue";
-import { getFileIcon, convertToTreeData,sortDirTree } from "./utils/utils";
+import { getFileIcon, convertToTreeData, sortDirTree } from "./utils/utils";
 import { ElTree, ElInput } from "element-plus";
 import { ArrowRightBold } from "@element-plus/icons-vue";
 import RightContentMenu from "./components/RightContentMenu.vue";
@@ -9,7 +9,14 @@ import { v4 as uuidv4 } from "uuid";
 import { type FileData } from "@/utils";
 
 import axios from "axios";
-import { deleteFile, postFile, renameFile,getUserHomePath } from "@/api/path";
+import {
+  deleteFile,
+  postFile,
+  renameFile,
+  getUserHomePath,
+  uploadFiles,
+  uploadDir,
+} from "@/api/path";
 //import RemoteTreeFile from "../RemoteTreeFile.vue";
 import FileBroswerButton from "../FileBroswerButton.vue";
 interface Tree {
@@ -63,7 +70,7 @@ const defaultProps = {
 };
 const treeData = ref<Array<FileData>>([]);
 const currentFolder = ref("");
-
+const selectedFolder = ref("");
 const baseDirName = computed(() => {
   console.log(treeData.value);
   if (!props.baseDir && treeData.value.length === 1) {
@@ -92,6 +99,11 @@ function handleNodeClick(obj, node, TreeNode, Event) {
   currentNodeData.node = node;
   if (!obj.isDir) {
     emits("getTextFromPath", obj.path);
+    console.log("fileClick", obj.path);
+    selectedFolder.value = obj.path.substring(0, obj.path.lastIndexOf('\\'));
+
+  }else{
+    selectedFolder.value = obj.path;
   }
   //emits('fileClick', obj, node, TreeNode, Event);
 }
@@ -126,6 +138,7 @@ function expandRecursive(node, value) {
 }
 const getDirStructure = function (path: string) {
   currentFolder.value = path;
+  selectedFolder.value = path;
   axios({
     method: "get",
     url: "/GetDirStructure",
@@ -135,12 +148,12 @@ const getDirStructure = function (path: string) {
     },
   })
     .then((res) => {
-      const dir=res.data.data
-      sortDirTree(dir)
+      const dir = res.data.data;
+      sortDirTree(dir);
       treeData.value = convertToTreeData(dir);
       defaultExpandKeys.value = [treeData.value[0].key];
 
-     // console.log("treeData.value",treeData.value);
+      // console.log("treeData.value",treeData.value);
     })
     .catch((err) => {
       console.log(err);
@@ -402,12 +415,57 @@ function hiddenSearch() {
   searchText.value = "";
   showSearchStatus.value = false;
 }
-onMounted(()=>{
-  getUserHomePath().then(res=>{
-    getDirStructure(res.userHomePath)
+const fileInput = ref(null);
+const dirInput = ref(null);
+const triggerFileUpload = function () {
+  fileInput.value.click();
+};
+const triggerDirUpload = function () {
+  dirInput.value.click();
+};
+const handleFileUpload = async function (event) {
+  const files = event.target.files;
+  if (!files.length) return;
+  console.log("files", files);
+  const formData = new FormData();
+  formData.append("targetPath", selectedFolder.value);
+  console.log("selectedFolder.value", selectedFolder.value);
+  for (const file of files) {
+    formData.append("files", file);
+  }
 
-  })
-})
+  uploadFiles(formData, { "Content-Type": "multipart/form-data" }).then(
+    (res) => {
+      console.log(res);
+      getDirStructure(currentFolder.value);//刷新目录
+    }
+  );
+};
+
+const handleDirUpload = async function (event) {
+  const files = event.target.files;
+  if (!files.length) return;
+  console.log("files", files);
+  const formData = new FormData();
+  formData.append("targetPath", selectedFolder.value);
+  console.log("selectedFolder.value", selectedFolder.value);
+  for (const file of files) {
+    formData.append("files", file);
+    formData.append("paths", file.webkitRelativePath); // 额外传递路径
+  }
+
+  uploadDir(formData, { "Content-Type": "multipart/form-data" }).then(
+    (res) => {
+      console.log(res);
+      getDirStructure(currentFolder.value);//刷新目录
+    }
+  );
+};
+onMounted(() => {
+  getUserHomePath().then((res) => {
+    getDirStructure(res.userHomePath);
+  });
+});
 </script>
 
 <template>
@@ -421,8 +479,32 @@ onMounted(()=>{
     <div class="header">
       <span class="base-dir"><!-- {{ baseDirName }} --></span>
       <div>
-   <!--      <RemoteTreeFile @select-dir="getDirStructure"></RemoteTreeFile> -->
-      <FileBroswerButton @select-dir="getDirStructure"></FileBroswerButton>
+        <!--      <RemoteTreeFile @select-dir="getDirStructure"></RemoteTreeFile> -->
+        <i
+          class="icon iconfont2 icon2-upload_file cursor-pointer"
+          title="上传文件"
+          @click="triggerFileUpload"
+        ></i>
+        <input
+          ref="fileInput"
+          type="file"
+          multiple
+          class="hidden"
+          @change="handleFileUpload"
+        />
+        <i
+          class="icon iconfont2 icon2-upload-folder cursor-pointer"
+          title="上传文件夹"
+          @click="triggerDirUpload"
+        ></i>
+        <input
+          ref="dirInput"
+          type="file"
+          webkitdirectory
+          class="hidden"
+          @change="handleDirUpload"
+        />
+        <FileBroswerButton @select-dir="getDirStructure"></FileBroswerButton>
         <i
           class="icon iconfont vs-find cursor-pointer"
           title="查找文件"
@@ -684,7 +766,9 @@ onMounted(()=>{
     width: 100%;
   }
 }
-
+.hidden {
+  display: none;
+}
 .icon-y {
   color: #f4ea2a;
 }

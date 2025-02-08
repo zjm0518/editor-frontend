@@ -12,6 +12,7 @@ declare module 'vue' {
     CameraCard: typeof import('./src/components/CameraCard.vue')['default']
     CameraView: typeof import('./src/components/cameraView.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
+    ElUpload: typeof import('element-plus/es')['ElUpload']
     FileBroswerButton: typeof import('./src/components/FileBroswerButton.vue')['default']
     FolderTree: typeof import('./src/components/FolderTree.vue')['default']
     IXterm: typeof import('./src/components/IXterm.vue')['default']
