@@ -1,4 +1,4 @@
-<script setup lang="ts">
+heme<script setup lang="ts">
 import { computed, watch, reactive, ref, nextTick, onMounted } from "vue";
 import { getFileIcon, convertToTreeData, sortDirTree } from "./utils/utils";
 import { ElTree, ElInput } from "element-plus";
@@ -71,6 +71,7 @@ const defaultProps = {
 const treeData = ref<Array<FileData>>([]);
 const currentFolder = ref("");
 const selectedFolder = ref("");
+const currentNode = ref(null);
 const baseDirName = computed(() => {
   console.log(treeData.value);
   if (!props.baseDir && treeData.value.length === 1) {
@@ -97,6 +98,7 @@ const showAddFolder = computed(() => {
 function handleNodeClick(obj, node, TreeNode, Event) {
   currentNodeData.data = obj;
   currentNodeData.node = node;
+
   if (!obj.isDir) {
     emits("getTextFromPath", obj.path);
     console.log("fileClick", obj.path);
@@ -153,7 +155,7 @@ const getDirStructure = function (path: string) {
       treeData.value = convertToTreeData(dir);
       defaultExpandKeys.value = [treeData.value[0].key];
 
-      // console.log("treeData.value",treeData.value);
+      //console.log("treeData.value",treeData.value);
     })
     .catch((err) => {
       console.log(err);
@@ -391,12 +393,7 @@ const showRenameInput = function () {
     }
   });
 };
-function allowDrop(draggingNode, dropNode, type) {
-  if (!dropNode.data.isDir) {
-    return false;
-  }
-  return true;
-}
+
 
 watch(searchText, (val) => {
   elTreeRef.value!.filter(val);
@@ -442,7 +439,7 @@ const handleFileUpload = async function (event) {
   );
 };
 
-const handleDirUpload = async function (event) {
+const handleDirUpload = async function (event:Event) {
   const files = event.target.files;
   if (!files.length) return;
   console.log("files", files);
@@ -461,6 +458,75 @@ const handleDirUpload = async function (event) {
     }
   );
 };
+const readFiles = async function(item,currentPath = ''){
+  if (item.isDirectory) {
+    // 是一个文件夹
+    console.log('=======文件夹=======');
+    const directoryReader = item.createReader();
+    // readEntries是一个异步方法
+    const entries = await new Promise((resolve, reject) => {
+      directoryReader.readEntries(resolve, reject);
+    });
+
+    let files = [];
+    for (const entry of entries) {
+      const resultFiles = await readFiles(entry, currentPath + item.name + '/');
+      files = files.concat(resultFiles);
+    }
+    return files;
+  } else {
+    // 是一个文件
+
+    // file也是一个异步方法
+    const file = await new Promise((resolve, reject) => {
+      item.file(resolve, reject);
+    });
+    const fileRelativePath = currentPath + file.name;
+
+    //console.log('fileRelativePath', fileRelativePath);
+    const fileItems = {
+      fullPath: fileRelativePath,
+      file: file,
+    }
+    //console.log('[ file ] >', fileItems);
+    return [fileItems];
+  }
+}
+const handleDrop=async function(event:DragEvent){
+ event.preventDefault();
+
+  const promises = [];
+  for (const item of event.dataTransfer.items) {
+    const entry = item.webkitGetAsEntry();
+    //console.log('[ entry ] >', entry);
+    promises.push(readFiles(entry));
+  }
+
+  const resultFilesArrays = await Promise.all(promises);
+  const allFiles = resultFilesArrays.flat();
+
+  console.log('[ All files ] >', allFiles);
+  const formData = new FormData();
+  formData.append("targetPath", selectedFolder.value);
+  for(const file of allFiles){
+    formData.append("files", file.file);
+    formData.append("paths", file.fullPath); // 额外传递路径
+  }
+  uploadDir(formData, { "Content-Type": "multipart/form-data" }).then(
+    (res) => {
+      console.log(res);
+      getDirStructure(currentFolder.value);//刷新目录
+    }
+  );
+}
+const handleDragOver=function(event:Event){
+  event.preventDefault();
+  event.stopPropagation();
+  //console.log("dragover",event);
+  //event.target.classList.add("drag_over");
+
+}
+
 onMounted(() => {
   getUserHomePath().then((res) => {
     getDirStructure(res.userHomePath);
@@ -470,11 +536,16 @@ onMounted(() => {
 
 <template>
   <div
-    class="vs-slider"
-    :class="theme"
+    class="vs-slider dark"
+
     :style="{
       backgroundColor: props.bgColor,
     }"
+
+
+    @drop="handleDrop"
+    @dragover="handleDragOver"
+
   >
     <div class="header">
       <span class="base-dir"><!-- {{ baseDirName }} --></span>
@@ -552,17 +623,19 @@ onMounted(() => {
         ref="elTreeRef"
         :data="treeData"
         :default-expanded-keys="defaultExpandKeys"
-        :draggable="!!props.allowDrag"
+
         :filter-node-method="filterNode"
         :icon="ArrowRightBold"
         node-key="key"
         :highlight-current="true"
         :props="defaultProps"
-        :allow-drop="allowDrop"
+
         @node-click="handleNodeClick"
         @node-contextmenu="handleContentMenuClick"
+
+
       >
-        <template #default="{ node, data }">
+        <template #default="{ node, data }" >
           <span class="custom-tree-node">
             <i v-if="!data.isDir" :class="getFileIcon(data.label)"></i>
             <i
@@ -749,6 +822,7 @@ onMounted(() => {
     width: 100%;
     position: relative;
   }
+
 }
 
 .cursor-pointer {
@@ -803,5 +877,9 @@ onMounted(() => {
 
 .icon-cyan {
   color: #6b8e23;
+}
+
+.highlight {
+  background-color: #f2f2f2;
 }
 </style>

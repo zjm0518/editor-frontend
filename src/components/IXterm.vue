@@ -268,6 +268,7 @@ onBeforeUnmount(()=>{
 const Run=async function(filepath:string) {
   const ext=getExtension(filepath)
   console.log("ext:",ext)
+  const workdir=filepath.substring(0,filepath.lastIndexOf("\\")) // remove filename
   let data=""
   if(ext==".jks"){
     let jks_script_app_path;
@@ -275,9 +276,12 @@ const Run=async function(filepath:string) {
         jks_script_app_path = res["jks_script_path"];
       });
       //console.log(jks_script_app_path)
-      data = jks_script_app_path + " " + filepath + "\r\n";
+
+      data="cd"+" "+workdir+"\r\n"
+      data += jks_script_app_path + " " + filepath + "\r\n";
   }else if(ext==".exe" || ext == ".bat"){
-    data=filepath+"\r\n"
+     data="cd"+" "+workdir+"\r\n"
+    data+=filepath+"\r\n"
   }
   if(data.length==0) return
 
