@@ -37,7 +37,7 @@ const showVideo = function () {
 
 const openConnection = function () {
   socket = new WebSocket(
-    "ws://localhost:8080/GetVideoStream?cameraType=" +
+    "ws://localhost:3669/GetVideoStream?cameraType=" +
       props.cameraType +
       "&cameraSN=" +
       props.cameraSN

@@ -7,11 +7,19 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    2: typeof import('./src/components/config/ConfigPage3 copy 2.vue')['default']
     BreadCrumbs: typeof import('./src/components/BreadCrumbs.vue')['default']
     BreadCrumbs2: typeof import('./src/components/BreadCrumbs2.vue')['default']
     CameraCard: typeof import('./src/components/CameraCard.vue')['default']
     CameraView: typeof import('./src/components/cameraView.vue')['default']
+    ConfigPage1: typeof import('./src/components/config/ConfigPage1.vue')['default']
+    ConfigPage2: typeof import('./src/components/config/ConfigPage2.vue')['default']
+    ConfigPage3: typeof import('./src/components/config/ConfigPage3.vue')['default']
+    ConfigPage4: typeof import('./src/components/config/ConfigPage4.vue')['default']
+    ConfigPage5: typeof import('./src/components/config/ConfigPage5.vue')['default']
+    copy: typeof import('./src/components/config/ConfigPage1 copy.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
+    ElInput: typeof import('element-plus/es')['ElInput']
     ElUpload: typeof import('element-plus/es')['ElUpload']
     FileBroswerButton: typeof import('./src/components/FileBroswerButton.vue')['default']
     FolderTree: typeof import('./src/components/FolderTree.vue')['default']
@@ -21,11 +29,13 @@ declare module 'vue' {
     ListingItem: typeof import('./src/components/ListingItem.vue')['default']
     ListingItem2: typeof import('./src/components/ListingItem2.vue')['default']
     MonacoEditor: typeof import('./src/components/MonacoEditor.vue')['default']
+    MonacoEditorLog: typeof import('./src/components/MonacoEditorLog.vue')['default']
     RemoteTreeFile: typeof import('./src/components/RemoteTreeFile.vue')['default']
     RightContentMenu: typeof import('./src/components/vs-tree/components/RightContentMenu.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     TerminalComponent: typeof import('./src/components/TerminalComponent.vue')['default']
     VsCodeSlider: typeof import('./src/components/vs-tree/VsCodeSlider.vue')['default']
+    VsCodeSliderLog: typeof import('./src/components/vs-tree-log/VsCodeSliderLog.vue')['default']
   }
 }

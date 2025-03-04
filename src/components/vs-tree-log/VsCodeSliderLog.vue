@@ -1,0 +1,521 @@
+heme
+<script setup lang="ts">
+import { computed, watch, reactive, ref, onMounted } from "vue";
+import { getFileIcon, convertToTreeData, sortDirTree } from "./utils/utils";
+import { ElTree, ElInput } from "element-plus";
+import { ArrowRightBold } from "@element-plus/icons-vue";
+
+import { type FileData } from "@/utils";
+import axios from "axios";
+import { getDir } from "@/api/path";
+
+interface Tree {
+  [key: string]: any;
+}
+
+const props = defineProps<{
+  theme: string;
+}>();
+
+const emits = defineEmits<{
+  (e: "fileClick"): void;
+  (e: "getTextFromPath", path: string | undefined): void;
+}>();
+
+const elTreeRef = ref(null);
+
+const errorInfoRef = ref(null);
+const errorInfoPosition = reactive({
+  left: 0,
+  top: 0,
+  width: 0,
+});
+const searchText = ref("");
+const showSearchStatus = ref(false);
+
+const openAllState = ref(false);
+const defaultExpandKeys = ref([]);
+const currentNodeData = reactive({
+  data: null,
+  node: null,
+});
+const createError = ref("");
+
+const defaultProps = {
+  children: "children",
+  label: "label",
+};
+const treeData = ref<Array<FileData>>([]);
+const currentFolder = ref("");
+const selectedFolder = ref("");
+
+const theme = computed(() => {
+  if (["dark", "light"].includes(props.theme)) {
+    return props.theme;
+  }
+  return "";
+});
+
+function handleNodeClick(obj, node, TreeNode, Event) {
+  currentNodeData.data = obj;
+  currentNodeData.node = node;
+
+  if (!obj.isDir) {
+    emits("getTextFromPath", obj.path);
+    console.log("fileClick", obj.path);
+    selectedFolder.value = obj.path.substring(0, obj.path.lastIndexOf("\\"));
+  } else {
+    selectedFolder.value = obj.path;
+  }
+  //emits('fileClick', obj, node, TreeNode, Event);
+}
+
+function openAll() {
+  openAllState.value = true;
+  expandRecursive(elTreeRef.value.store.root, openAllState.value);
+}
+
+function closeAll() {
+  openAllState.value = false;
+  expandRecursive(elTreeRef.value.store.root, openAllState.value);
+}
+
+function expandRecursive(node, value) {
+  if (node.childNodes && node.childNodes.length > 0) {
+    node.childNodes.forEach((child) => {
+      child.expanded = value;
+      expandRecursive(child, value);
+    });
+  }
+}
+const getDirStructure = function (path: string, refresh = false) {
+  currentFolder.value = path;
+  selectedFolder.value = path;
+  getDir({
+    path: path,
+  })
+    .then((res) => {
+      const dir = res.data;
+      sortDirTree(dir);
+      treeData.value = convertToTreeData(dir);
+      if (refresh) {
+        defaultExpandKeys.value = [treeData.value[0].path];
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
+/**
+ * 取消选中状态
+ * @param event
+ */
+function cancelCurrentClick() {
+  currentNodeData.data = null;
+  currentNodeData.node = null;
+  elTreeRef.value.setCurrentKey(null);
+}
+
+
+/**
+ * 定位文件
+ */
+function locationFile() {}
+
+watch(searchText, (val) => {
+  elTreeRef.value!.filter(val);
+});
+
+function filterNode(value: string, data: Tree, node) {
+  if (!value) return true;
+  return data.label.includes(value);
+}
+
+function showSearch() {
+  showSearchStatus.value = true;
+}
+
+function hiddenSearch() {
+  searchText.value = "";
+  showSearchStatus.value = false;
+}
+
+const readFiles = async function (item, currentPath = "") {
+  if (item.isDirectory) {
+    // 是一个文件夹
+    console.log("=======文件夹=======");
+    const directoryReader = item.createReader();
+    // readEntries是一个异步方法
+    const entries = await new Promise((resolve, reject) => {
+      directoryReader.readEntries(resolve, reject);
+    });
+
+    let files = [];
+    for (const entry of entries) {
+      const resultFiles = await readFiles(entry, currentPath + item.name + "/");
+      files = files.concat(resultFiles);
+    }
+    return files;
+  } else {
+    // 是一个文件
+
+    // file也是一个异步方法
+    const file = await new Promise((resolve, reject) => {
+      item.file(resolve, reject);
+    });
+    const fileRelativePath = currentPath + file.name;
+
+    //console.log('fileRelativePath', fileRelativePath);
+    const fileItems = {
+      fullPath: fileRelativePath,
+      file: file,
+    };
+    //console.log('[ file ] >', fileItems);
+    return [fileItems];
+  }
+};
+
+const handleNodeCollapse = function (data, node, instance) {
+  const index = defaultExpandKeys.value.findIndex((item) => item === data.path);
+
+  if (index !== -1) {
+    defaultExpandKeys.value.splice(index, 1); // 删除该元素
+  }
+  console.log(" defaultExpandKeys.value", defaultExpandKeys.value);
+};
+const handleNodeExpand = function (data, node, instance) {
+  defaultExpandKeys.value.push(data.path);
+  //console.log(" defaultExpandKeys.value", defaultExpandKeys.value);
+};
+const handleDownload=function() {
+  if(currentNodeData.data==null) return;
+  const selectedPath=currentNodeData.data.path;
+  const label= selectedPath.split("\\").pop() || ""
+  const isDir=currentNodeData.data.isDir;
+  axios({
+    method: "get",
+    url: "/DownloadFile",
+    baseURL: "api/",
+    params:{path:selectedPath,name:label},
+    responseType: 'blob',
+  })
+    .then((response) => {
+      const blob = new Blob([response.data]); // 创建Blob对象
+      const a = document.createElement('a');
+      if(isDir){
+        a.download = label+".zip";
+      }else{
+        a.download = label;
+      }
+
+      a.style.display = 'none';
+      const url = URL.createObjectURL(blob);
+      a.href = url;
+      document.body.appendChild(a);
+      a.click();
+      URL.revokeObjectURL(url); // 释放URL
+      document.body.removeChild(a);
+    })
+    .catch(error => {
+      console.error('下载失败:', error);
+    });
+}
+onMounted(() => {
+  getDirStructure(
+    "C:\\Users\\wy156\\Documents\\WeChat Files\\wxid_scq1chz7v4ax21\\FileStorage\\File\\2025-03\\log\\log",
+    true
+  );
+});
+</script>
+
+<template>
+  <div class="vs-slider light">
+    <div class="header">
+      <span class="base-dir"><!-- {{ baseDirName }} --></span>
+      <div>
+        <i class="icon iconfont2 icon2-xiazai cursor-pointer" title="下载文件" @click="handleDownload"></i>
+        <i
+          class="icon iconfont vs-find cursor-pointer"
+          title="查找文件"
+          @click="showSearch"
+        ></i>
+        <i
+          class="icon iconfont vs-target cursor-pointer"
+          title="定位文件"
+          @click="locationFile"
+        ></i>
+        <i
+          v-if="!openAllState"
+          class="icon iconfont vs-open-all cursor-pointer"
+          title="展开所有文件"
+          @click="openAll"
+        ></i>
+        <i
+          v-else
+          class="icon iconfont vs-close-all cursor-pointer"
+          title="关闭所有文件"
+          @click="closeAll"
+        ></i>
+      </div>
+      <div v-if="showSearchStatus" class="search">
+        <ElInput v-model="searchText" size="mini" placeholder="输入文件名称" />
+        <el-button size="mini" type="text" @click="hiddenSearch"
+          >取消</el-button
+        >
+      </div>
+    </div>
+    <div class="el-tree-view" @contextmenu.prevent @click="cancelCurrentClick">
+      <ElTree
+        ref="elTreeRef"
+        :data="treeData"
+        :default-expanded-keys="defaultExpandKeys"
+        :filter-node-method="filterNode"
+        :icon="ArrowRightBold"
+        node-key="path"
+        :highlight-current="true"
+        :props="defaultProps"
+        @node-click="handleNodeClick"
+        @node-expand="handleNodeExpand"
+        @node-collapse="handleNodeCollapse"
+        draggable
+        :allow-drag="
+          () => {
+            return false;
+          }
+        "
+      >
+        <template #default="{ node, data }">
+          <span
+            class="custom-tree-node"
+            @dragover="handleDragOver"
+            @dragleave="handleDragLeave"
+            @drop="handleNodeDrop($event, node, data)"
+          >
+            <i v-if="!data.isDir" :class="getFileIcon(data.label)"></i>
+            <i
+              v-else
+              class="icon iconfont"
+              :class="theme === 'light' ? 'vs-folder-line' : 'vs-folder'"
+            ></i>
+            <span v-if="!data.isNew && !data.isRename" class="label">{{
+              data.label
+            }}</span>
+
+            <span></span>
+          </span>
+        </template>
+      </ElTree>
+      <div
+        v-if="createError"
+        ref="errorInfoRef"
+        class="error-info"
+        :style="{
+          left: errorInfoPosition.left + 'px',
+          top: errorInfoPosition.top + 'px',
+          width: errorInfoPosition.width + 'px',
+        }"
+      >
+        {{ createError }}
+      </div>
+    </div>
+  </div>
+</template>
+
+<style lang="scss" scoped>
+.vs-slider {
+  position: relative;
+  background-color: #222222;
+  font-family: Consolas, "Courier New", monospace;
+}
+
+.error-info {
+  font-size: 14px;
+  background-color: rgb(255, 210, 210);
+  position: fixed;
+  width: 100%;
+  padding: 5px;
+  color: #616162;
+  border: 1px solid red;
+}
+
+.base-dir {
+  font-weight: bold;
+}
+
+.vs-slider {
+  height: 100%;
+  width: 100%;
+}
+
+:deep(.el-tree-node) {
+  &:focus > .el-tree-node__content {
+    background-color: rgba(200, 200, 200, 0.2);
+  }
+
+  &:hover > .el-tree-node__content {
+    background-color: rgba(200, 200, 200, 0.15);
+  }
+
+  &.is-current > .el-tree-node__content {
+    background-color: rgba(170, 189, 250, 0.3) !important;
+    border: 1px solid #9bc0f4;
+    color: white;
+  }
+
+  &.is-drop > .el-tree-node__content {
+    background-color: rgba(182, 194, 234, 0.3) !important;
+
+    color: white;
+  }
+}
+
+.dark {
+  background-color: #222222;
+  color: #fff;
+}
+
+.light {
+  background-color: #f2f2f2;
+  color: #303133;
+
+  .icon-w {
+    color: #616162;
+  }
+}
+::-webkit-scrollbar {
+  width: 15px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(111, 113, 117, 0.4);
+}
+.vscode-theme {
+  background-color: #f2f2f2;
+  color: #333333;
+
+  .icon-w {
+    color: #616162;
+  }
+}
+
+.header {
+  display: flex;
+  flex-direction: row;
+  height: 30px;
+  justify-content: space-between;
+  padding: 0 10px;
+
+  .search {
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: flex;
+    width: 100%;
+    background-color: #f2f2f2;
+
+    :deep(.el-input__wrapper) {
+      border-radius: 0;
+    }
+
+    :deep(.el-button) {
+      margin: 0 5px;
+    }
+  }
+}
+
+.header .icon {
+  margin: 0 4px;
+}
+
+:deep(.el-tree) {
+  background-color: inherit;
+  color: inherit;
+}
+
+.custom-tree-node {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+
+  .iconfont {
+    margin-right: 4px;
+  }
+
+  .name {
+    padding-right: 8px;
+  }
+
+  :deep(.el-input) {
+    height: 26px;
+  }
+
+  :deep(.el-input__wrapper) {
+    border-radius: 0;
+  }
+
+  .create_file {
+    width: 100%;
+    position: relative;
+  }
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.el-tree-view {
+  width: 100%;
+  height: calc(100% - 100px);
+  overflow-y: scroll;
+  overflow-x: hidden;
+
+  :deep(.el-tree) {
+    min-width: max-content;
+    width: 100%;
+  }
+}
+.hidden {
+  display: none;
+}
+.icon-y {
+  color: #f4ea2a;
+}
+
+.icon-r {
+  color: #d81e06;
+}
+
+.icon-b {
+  color: #1296db;
+}
+
+.icon-g {
+  color: #42b883;
+}
+
+.icon-w {
+  color: white;
+}
+
+.icon-pink {
+  color: #df744a;
+}
+
+.icon-purple {
+  color: #a239ca;
+}
+
+.icon-wine-red {
+  color: #d4237a;
+}
+
+.icon-cyan {
+  color: #6b8e23;
+}
+
+.highlight {
+  background-color: #f2f2f2;
+}
+</style>

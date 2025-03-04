@@ -30,7 +30,7 @@ const tokenUrl = [
 ].join("");
 
 const options = {
-  wsUrl: "ws://localhost:8080/ws",
+  wsUrl: "ws://localhost:3669/ws",
   //wsUrl: "ws://localhost:7681",
   tokenUrl : tokenUrl,
   flowControl: flowControl,

@@ -13,12 +13,18 @@ export function getDisk(params = {}, headers = {}, config = {}) {
 export function getPath(data = {}, headers = {}, config = {}) {
   return http.post("/getPath", data, headers, config);
 }
+export function getDir(params = {}, headers = {}, config = {}) {
+  return http.get("/GetDirStructure", params, headers, config);
+}
 
 // 获取文件以及文件夹
 export function getPathAndFile(data = {}, headers = {}, config = {}) {
   return http.get("/GetPathAndFile", data, headers, config);
 }
 
+export function getTextFromPath(data = {}, headers = {}, config = {}) {
+  return http.get("/getTextFromPath", data, headers, config);
+}
 // 运行文件
 export function runFile(data = {}, headers = {}, config = {}) {
   return http.post("/runFile", data, headers, config);
@@ -86,4 +92,11 @@ export function uploadFiles(data = {}, headers = {}, config = {}) {
 }
 export function uploadDir(data = {}, headers = {}, config = {}) {
   return http.post("/api/UploadDir", data, headers, config);
+}
+
+export function downloadFile(data = {}, headers = {}, config = {}) {
+  return http.get("/DownloadFile", data, headers, config);
+}
+export function getMachineCode(params = {}, headers = {}, config = {}) {
+  return http.get("/GetMachineCode", params, headers, config);
 }
