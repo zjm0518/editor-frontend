@@ -78,3 +78,6 @@ export interface PopupProps {
 }
 
 
+export interface InitRecord{
+  ip:string
+}

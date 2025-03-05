@@ -100,3 +100,6 @@ export function downloadFile(data = {}, headers = {}, config = {}) {
 export function getMachineCode(params = {}, headers = {}, config = {}) {
   return http.get("/GetMachineCode", params, headers, config);
 }
+export function postInitConfig(data = {}, headers = {}, config = {}) {
+  return http.post("/api/HandleInitConfig", data, headers, config);
+}
