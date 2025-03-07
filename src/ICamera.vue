@@ -1,4 +1,5 @@
 <template>
+
   <div class="camera-container">
     <div class="camera-video">
         <camera-card
@@ -9,7 +10,8 @@
       :camera-type="cameraParamsList[index-1].cameraType"
       :camera-s-n="cameraParamsList[index-1].cameraSN"
     ></camera-card>
-      </div>
+
+    </div>
     <div class="camera-col" ref="fixedElement">
         <el-card class="cameraList">
           相机类型：
@@ -77,9 +79,9 @@
           <el-button plain @click="closeConnection">停止实时采集</el-button>
         </el-card></div
       >
+    </div>
 
 
-  </div>
 </template>
 <script setup lang="ts">
 import { computed, provide, ref } from "vue";
@@ -308,17 +310,27 @@ onMounted(() => {
   overflow: auto;
   /* position: relative; */
   flex-direction: column;
+  height: 100vh;
+}
+.camera-video {
+  display: flex;
+ /*  flex-direction: column; */
+  overflow-y: auto;
+  justify-content: center;
+ flex-wrap: wrap;
+
 }
 .camera-col {
   display: flex;
    flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100%;
+
+  margin-top: auto;
+  height: 280px;
   width: 40%;
-/*   position: fixed;
-  top:20px;
-  left:0px */
+  bottom: 0px;
+
 }
 .cameraList {
   width: 100%;
@@ -332,12 +344,5 @@ onMounted(() => {
   margin-top: 10px;
   margin-bottom: 10px;
 }
-.camera-video {
-  display: flex;
- /*  flex-direction: column; */
-  overflow-y: auto;
- flex-wrap: wrap;
 
-
-}
 </style>

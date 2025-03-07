@@ -2,16 +2,17 @@
 
     <el-card id="videoCard" :class="{'selected-card':isSelected}" @click="selectThisCamera">
       <div class="cameraText">预览窗口</div>
-      <canvas id="videoCanvas" ref="videoRef" width="400" height="200"></canvas>
+      <canvas id="videoCanvas" ref="videoRef"></canvas>
     </el-card>
 
 </template>
 <script setup lang="ts">
+
 import { ElCard} from "element-plus";
-import { onMounted, ref, inject, computed} from "vue";
+import { onMounted, ref, inject, computed, onUnmounted} from "vue";
 import {
   stopGrabImage,
-  getImage,
+  getImage,closeCamera_
 } from "@/api/path";
 
 const props = defineProps<{
@@ -59,6 +60,7 @@ const openConnection = function () {
 
   // WebSocket 连接关闭
   socket.onclose = () => {
+
     console.log("WebSocket connection closed.");
   };
 };
@@ -82,15 +84,40 @@ const getSingleImage = function () {
 };
 onMounted(() => {
   ctx = videoRef.value.getContext("2d");
-  videoRef.value.width = 400;
-  videoRef.value.height = 200;
+  const ratio = window.devicePixelRatio || 1;
+
+  //videoRef.value.width = 400*ratio;
+  //videoRef.value.height = 250*ratio;
+  videoRef.value.style.width=`400px`
+  videoRef.value.style.height=`250px`
+ // ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+ image.onload = drawImage
   image.src = "/preview.png";
-  image.onload = function () {
-    ctx.drawImage(image, 0, 0, videoRef.value.width, videoRef.value.height);
-  };
-  console.log("selectedIndex",selectedIndex.value)
-  console.log("props.cameraIndex",props.cameraIndex)
+
+  ctx.scale(ratio, ratio);
+  window.addEventListener('beforeunload', sendRequestBeforeRefresh);
+
 });
+
+const drawImage=function(){
+  videoRef.value.width=image.naturalWidth;
+  videoRef.value.height=image.naturalHeight;
+  ctx.drawImage(image, 0, 0, image.naturalWidth, image.naturalHeight);
+
+}
+onUnmounted(()=>{
+  window.removeEventListener('beforeunload', sendRequestBeforeRefresh);
+
+})
+const sendRequestBeforeRefresh = function (event) {
+ //event.preventDefault();
+  //closeConnection();
+  closeCamera_({
+    cameraType: props.cameraType,
+    cameraSN: props.cameraSN,
+  });
+
+};
 defineExpose({
   getSingleImage,
   closeConnection,
@@ -109,11 +136,13 @@ defineExpose({
   flex-direction: column;
   margin: 2px;
   padding: 2px;
-  height: 100%;
+  height: 350px;
+
 }
 #videoCanvas {
-  width: 100%;
-  height: 60%;
+  /* width: 100%;
+  height: 60%; */
+  flex:1;
   border: 2px #e8e6e6 solid;
 }
 .selected-card{
