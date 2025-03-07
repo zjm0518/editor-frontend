@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont2"; /* Project id 4783281 */
-  src: url('iconfont.woff2?t=1740993337824') format('woff2'),
-       url('iconfont.woff?t=1740993337824') format('woff'),
-       url('iconfont.ttf?t=1740993337824') format('truetype');
+  src: url('iconfont.woff2?t=1741333932798') format('woff2'),
+       url('iconfont.woff?t=1741333932798') format('woff'),
+       url('iconfont.ttf?t=1741333932798') format('truetype');
 }
 
 .iconfont2 {
@@ -11,6 +11,22 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon2-zoomin:before {
+  content: "\e898";
+}
+
+.icon2-zoom-in:before {
+  content: "\e683";
+}
+
+.icon2-zoomout:before {
+  content: "\e6e1";
+}
+
+.icon2-zoom:before {
+  content: "\e6e3";
 }
 
 .icon2-xiazai:before {
