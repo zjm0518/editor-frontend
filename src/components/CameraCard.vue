@@ -1,16 +1,32 @@
 <template>
   <el-card
     id="videoCard"
-    :class="{ 'selected-card': isSelected, 'zoom-in': isZoomed }"
+    :class="{ 'selected-card': isSelected, 'zoom-in':  isZoomed }"
     @click="selectThisCamera"
   >
-    <div class="cameraText">预览窗口</div>
+    <div class="header">
+      <div class="cameraText">预览窗口</div>
+      <i
+        class="iconfont2 icon2-guanbi1 close"
+        style="font-size: x-large; cursor: pointer"
+        v-if="cameraNum > 1"
+        @click.stop="closeCamera"
+      ></i>
+    </div>
+
     <canvas id="videoCanvas" ref="videoRef"></canvas>
-    <div>
+    <div style="display:flex;justify-content:flex-end;">
       <i
         class="iconfont2 icon2-zoomin"
         @click.stop="toggleZoom"
         style="font-size: x-large; cursor: pointer"
+        v-if="!isZoomed"
+      ></i>
+      <i
+        class="iconfont2 icon2-zoom-in"
+        @click.stop="toggleZoom"
+        style="font-size: x-large; cursor: pointer"
+        v-if="isZoomed"
       ></i>
     </div>
   </el-card>
@@ -26,19 +42,25 @@ const props = defineProps<{
   cameraSN: string;
 }>();
 const selectedIndex = inject("selectedIndex");
+const cameraNum = inject("cameraNum");
+const zoomedCardIndex:number|null|undefined=inject("zoomedCardIndex")
 const isSelected = computed(() => {
   return selectedIndex.value == props.cameraIndex;
 });
 const selectThisCamera = function () {
+  //console.log(zoomedCardIndex.value,props.cameraIndex,isZoomed.value)
   selectedIndex.value = props.cameraIndex;
 };
 const videoRef = ref(null);
 let ctx;
 const dpr = window.devicePixelRatio || 1;
-const isZoomed = ref(false);
+const isZoomed = computed(() => zoomedCardIndex.value === props.cameraIndex);
 let socket: WebSocket;
 const image = new Image(); // 创建一个 Image 对象
-
+const emits = defineEmits<{
+  (e: "closeByIndex", cameraIndex: number): void;
+  (e:"connectionSuccess",isGrabbing:boolean):void;
+}>();
 const showVideo = function () {
   openConnection();
 };
@@ -53,6 +75,8 @@ const openConnection = function () {
   // WebSocket 连接成功
   socket.onopen = () => {
     console.log("WebSocket connection established.");
+    emits("connectionSuccess", true);
+
   };
 
   // 接收来自服务器的消息（图像数据）
@@ -76,6 +100,28 @@ const closeConnection = function () {
     console.log("WebSocket connection closed.");
   }
   stopGrabImage({ cameraType: props.cameraType, cameraSN: props.cameraSN });
+  emits("connectionSuccess", false);
+};
+const closeCamera = function () {
+  if (zoomedCardIndex.value === props.cameraIndex) {
+    zoomedCardIndex.value =  null;// 关闭时取消放大状态
+    videoRef.value.style.width = "400px"; // 恢复宽度
+    videoRef.value.style.height = "250px"; // 恢复高度
+  }
+  console.log("zoomedCardIndex.value",zoomedCardIndex.value)
+  if (props.cameraType == "" || props.cameraSN == "") {
+    emits("closeByIndex", props.cameraIndex);
+    return;
+  }
+  if (socket && socket.readyState === WebSocket.OPEN) {
+    socket.close();
+    console.log("WebSocket connection closed.");
+  }
+  closeCamera_({
+    cameraType: props.cameraType,
+    cameraSN: props.cameraSN,
+  });
+  emits("closeByIndex", props.cameraIndex);
 };
 
 const getSingleImage = function () {
@@ -84,17 +130,21 @@ const getSingleImage = function () {
     cameraSN: props.cameraSN,
   }).then((res) => {
     image.src = "data:image/jpeg;base64," + res.image;
+    emits("connectionSuccess", false);
   });
 };
 const toggleZoom = function () {
-  isZoomed.value = !isZoomed.value;
-  if (isZoomed.value) {
-    videoRef.value.style.width = `60vw`;
-    videoRef.value.style.height = `70vh`;
-  } else {
+  console.log("toggle",props.cameraIndex)
+  if (zoomedCardIndex.value === props.cameraIndex) {
+    zoomedCardIndex.value = null; // 取消放大
     videoRef.value.style.width = `400px`;
     videoRef.value.style.height = `250px`;
+  } else {
+    zoomedCardIndex.value = props.cameraIndex; // 只放大当前卡片
+   videoRef.value.style.width = `60vw`;
+    videoRef.value.style.height = `70vh`;
   }
+
 };
 onMounted(() => {
   ctx = videoRef.value.getContext("2d");
@@ -126,6 +176,9 @@ onUnmounted(() => {
 const sendRequestBeforeRefresh = function (event) {
   //event.preventDefault();
   //closeConnection();
+  if (props.cameraType == "" || props.cameraSN == "") {
+    return;
+  }
   closeCamera_({
     cameraType: props.cameraType,
     cameraSN: props.cameraSN,
@@ -161,15 +214,15 @@ defineExpose({
 }
 
 .zoom-in {
-  transition: transform 0.1s ease-in-out, width 0.1s ease-in-out,
-    height 0.1s ease-in-out;
   position: fixed; /* 固定在屏幕上 */
-
   width: 70vw; /* 让它填满整个屏幕 */
   height: 90vh;
   z-index: 1000; /* 提高层级，确保在最上面 */
 }
-.zoom-in #videoCanvas {
-  border: none;
+
+.header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
 </style>

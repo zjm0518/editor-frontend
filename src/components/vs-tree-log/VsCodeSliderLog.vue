@@ -7,7 +7,7 @@ import { ArrowRightBold } from "@element-plus/icons-vue";
 
 import { type FileData } from "@/utils";
 import axios from "axios";
-import { getDir } from "@/api/path";
+import { getDir,getUserHomePath } from "@/api/path";
 
 interface Tree {
   [key: string]: any;
@@ -222,10 +222,9 @@ const handleDownload=function() {
     });
 }
 onMounted(() => {
-  getDirStructure(
-    "C:\\Users\\wy156\\Documents\\WeChat Files\\wxid_scq1chz7v4ax21\\FileStorage\\File\\2025-03\\log\\log",
-    true
-  );
+  getUserHomePath().then((res) => {
+    getDirStructure(res.userHomePath, true);
+  });
 });
 </script>
 
