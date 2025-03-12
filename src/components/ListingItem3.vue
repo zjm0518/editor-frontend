@@ -30,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-import { useFileStore2 } from "@/stores/file";
+import { useFileStore3 } from "@/stores/file";
 
 //import { enableThumbs } from "@/utils/constants";
 
@@ -61,7 +61,7 @@ const props = defineProps<{
   path?: string;
 }>();
 
-const fileStore = useFileStore2();
+const fileStore = useFileStore3();
 
 const isSelected = computed(() => selected.value == props.index);
 

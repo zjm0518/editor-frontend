@@ -1,7 +1,6 @@
 <script lang="ts" setup>
-import { ref, defineExpose, reactive, computed, nextTick } from "vue";
+import { ref, reactive, computed, nextTick } from "vue";
 
-import { breakpointsElement } from "@vueuse/core";
 const menuList = [
   {
     label: "重命名",
@@ -12,23 +11,6 @@ const menuList = [
     key: "DELETE",
   },
   ];
-  /*   {
-            label: '创建文件夹',
-            key: 'CREATE_FOLDER'
-        },
-        {
-            label: '创建文件',
-            key: 'CREATE_FILE'
-        },
-        {
-            label: '复制',
-            key: 'COPY'
-        },
-        {
-            label: '粘贴',
-            key: 'PASTE'
-        },
- */
 
 const inputRef = ref(null);
 const showMenuStatus = ref(false);

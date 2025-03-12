@@ -46,6 +46,12 @@ export function getJKSScriptPath(data = {}, headers = {}, config = {}){
 export function setJKSScriptPath(data = {}, headers = {}, config = {}){
   return http.post("/api/SetJKSPath", data, headers, config);
 }
+export function getLogtPath_(data = {}, headers = {}, config = {}){
+  return http.get("/GetLogPath", data, headers, config);
+}
+export function setLogPath_(data = {}, headers = {}, config = {}){
+  return http.post("/api/SetLogPath", data, headers, config);
+}
 export function getBatteryInfo(data = {}, headers = {}, config = {}){
   return http.get("/GetBatteryInfo", data, headers, config);
 }

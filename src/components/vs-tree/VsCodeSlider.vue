@@ -587,7 +587,7 @@ onMounted(() => {
     <div class="header">
       <span class="base-dir"><!-- {{ baseDirName }} --></span>
       <div>
-        <!--      <RemoteTreeFile @select-dir="getDirStructure"></RemoteTreeFile> -->
+     
         <i
           class="icon iconfont2 icon2-upload_file cursor-pointer"
           title="上传文件"

@@ -35,6 +35,7 @@ const items = computed(() => {
   const breadcrumbs: BreadCrumb[] = [];
   let filepath=filestore.path
   const basepath=filestore.userHomeDir
+
    // 去掉前面的根目录路径部分
    if (filepath.startsWith(basepath)) {
     filepath = filepath.replace(basepath, ''); // 删除前缀部分

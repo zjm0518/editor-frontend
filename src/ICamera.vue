@@ -3,7 +3,7 @@
     <div class="camera-video">
       <camera-card
        v-for="(camera, index) in cameraParamsList"
-        :key="index"
+        :key="camera.cameraSN"
         :camera-index="index"
         :ref="(el) => getCameraCardRef(el, index)"
         :camera-type="camera.cameraType"
@@ -131,7 +131,6 @@ provide("cameraNum",cameraNum)
 provide("zoomedCardIndex",zoomedCardIndex)
 const getCameraCardRef = (el: any, index: number) => {
   if (el) cameraCardRefs.value[index] = el;
-
   return `cameraCard${index}`; // 通过不同的索引来生成唯一的 ref 名
 };
 
@@ -257,16 +256,24 @@ const getCamerap = function () {
 };
 const getCameraSNList = function (value) {
   //cameraSNOptions.value = [];
+  cameraParamsList.value[selectedIndex.value].precameraType = value;
+  cameraParamsList.value[selectedIndex.value].precameraSN=cameraParamsList.value[selectedIndex.value].cameraSN
+
+  
   cameraParamsList.value[selectedIndex.value].cameraSNOptions = [];
   cameraParamsList.value[selectedIndex.value].cameraSN = "";
+
   if (cameraParamsList.value[selectedIndex.value].precameraType != "") {
+
+    cameraCardRefs.value[selectedIndex.value].closeConnection();
     closeCamera_({
       cameraType: cameraParamsList.value[selectedIndex.value].precameraType,
       cameraSN: cameraParamsList.value[selectedIndex.value].precameraSN,
     });
+
   }
 
-  cameraParamsList.value[selectedIndex.value].precameraType = value;
+
   //editCameraText.value = "打开设备";
   //exposureTime.value = 0;
   //gain.value = 0;

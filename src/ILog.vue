@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <splitpanes class="Panel">
-      <pane size="15" min-size="10">
+      <pane size="25" min-size="15">
         <div class="folder">
           <VsCodeSliderLog
             class="file"
@@ -11,7 +11,7 @@
         </div>
       </pane>
 
-        <pane min-size="20">
+        <pane min-size="40">
           <MonacoEditorLog
             class="logeditor"
             :text-value="text"
@@ -38,7 +38,7 @@ const getTextFromServer = function (path: string | undefined) {
     },
   )
     .then((res) => {
-      console.log(res);
+
       text.value = res["file-text"];
     })
     .catch((err) => {
@@ -53,7 +53,7 @@ body {
   height: 100%;
   margin: 0;
   padding: 0;
-  background-color: #1e1e1e;
+  background-color: #f2f2f2;
   font-family: Consolas, "Courier New", monospace;
   color: #d4d4d4;
 }

@@ -7,8 +7,8 @@ import { ArrowRightBold } from "@element-plus/icons-vue";
 
 import { type FileData } from "@/utils";
 import axios from "axios";
-import { getDir,getUserHomePath } from "@/api/path";
-
+import { getDir,getLogtPath_,setLogPath_ } from "@/api/path";
+import LogButton from "../LogButton.vue";
 interface Tree {
   [key: string]: any;
 }
@@ -106,7 +106,10 @@ const getDirStructure = function (path: string, refresh = false) {
       console.log(err);
     });
 };
-
+const setLogPath=function(path: string){
+  getDirStructure(path)
+  setLogPath_({log_path:path})
+}
 /**
  * 取消选中状态
  * @param event
@@ -222,8 +225,9 @@ const handleDownload=function() {
     });
 }
 onMounted(() => {
-  getUserHomePath().then((res) => {
-    getDirStructure(res.userHomePath, true);
+  getLogtPath_().then((res) => {
+    console.log(res)
+    getDirStructure(res.log_path, true);
   });
 });
 </script>
@@ -234,6 +238,7 @@ onMounted(() => {
       <span class="base-dir"><!-- {{ baseDirName }} --></span>
       <div>
         <i class="icon iconfont2 icon2-xiazai cursor-pointer" title="下载文件" @click="handleDownload"></i>
+        <LogButton @select-log-path="setLogPath"></LogButton>
         <i
           class="icon iconfont vs-find cursor-pointer"
           title="查找文件"

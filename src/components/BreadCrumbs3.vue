@@ -15,10 +15,10 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import { useFileStore2 } from "@/stores/file";
+import { useFileStore3 } from "@/stores/file";
 import "@/css/_variables.css"
 import "@/css/fonts.css"
-const filestore=useFileStore2()
+const filestore=useFileStore3()
 
 interface BreadCrumb {
     name: string;
@@ -29,14 +29,13 @@ const jump=function(path:string){
 
 }
 const toHome=function(){
-  //filestore.fetchUserHomeFile()
-  filestore.fetchDiskFile()
+  filestore.fetchUserHomeFile()
 }
 const items = computed(() => {
   const breadcrumbs: BreadCrumb[] = [];
   let filepath=filestore.path
-  const basepath=""
-  console.log(filepath)
+  const basepath=filestore.userHomeDir
+  console.log("basepath",basepath)
    // 去掉前面的根目录路径部分
    if (filepath.startsWith(basepath)) {
     filepath = filepath.replace(basepath, ''); // 删除前缀部分
@@ -64,7 +63,7 @@ const items = computed(() => {
     if (i === 0) {
       breadcrumbs.push({
         name: decodeURIComponent(parts[i]),
-        path:parts[0]+"/"
+        path:basepath+"/"+parts[0]+"/"
       });
     } else {
       breadcrumbs.push({
@@ -81,7 +80,7 @@ const items = computed(() => {
 
     breadcrumbs[0].name = "...";
   }
-  console.log(breadcrumbs)
+
   return breadcrumbs;
 });
 

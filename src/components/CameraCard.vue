@@ -99,14 +99,21 @@ const closeConnection = function () {
     socket.close();
     console.log("WebSocket connection closed.");
   }
-  stopGrabImage({ cameraType: props.cameraType, cameraSN: props.cameraSN });
-  emits("connectionSuccess", false);
+  image.src = "";
+  stopGrabImage({ cameraType: props.cameraType, cameraSN: props.cameraSN }).then(res=>{
+    emits("connectionSuccess", false);
+  });
+
 };
 const closeCamera = function () {
   if (zoomedCardIndex.value === props.cameraIndex) {
     zoomedCardIndex.value =  null;// 关闭时取消放大状态
     videoRef.value.style.width = "400px"; // 恢复宽度
     videoRef.value.style.height = "250px"; // 恢复高度
+  }
+   // **清除 Canvas 内容**
+   if (ctx) {
+    ctx.clearRect(0, 0, videoRef.value.width, videoRef.value.height);
   }
   console.log("zoomedCardIndex.value",zoomedCardIndex.value)
   if (props.cameraType == "" || props.cameraSN == "") {
@@ -172,6 +179,7 @@ const drawImage = function () {
 };
 onUnmounted(() => {
   window.removeEventListener("beforeunload", sendRequestBeforeRefresh);
+  closeConnection();
 });
 const sendRequestBeforeRefresh = function (event) {
   //event.preventDefault();

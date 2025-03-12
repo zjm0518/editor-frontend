@@ -163,6 +163,6 @@ onUnmounted(() => {
   width: 100%;
 }
 :deep(.monaco-editor) {
-  --vscode-focusBorder: #333232;
+  --vscode-focusBorder: #f2f2f2;
 }
 </style>
