@@ -8,9 +8,17 @@ import { WebLinksAddon } from "xterm-addon-web-links";
 import { FitAddon } from "xterm-addon-fit";
 import { getJKSScriptPath } from "@/api/path";
 import { termOptions, flowControl, Command } from "@/utils/xtermConfigs";
-import { onMounted, ref,onBeforeUnmount, onUnmounted } from "vue";
+import { onMounted, ref,onBeforeUnmount, onUnmounted,defineEmits,getCurrentInstance  } from "vue";
 import "@xterm/xterm/css/xterm.css";
+const props = defineProps<{
+  sessionID: string,
+  index:number
 
+}>()
+const emits=defineEmits<{
+  (e:"selectIndex",index:number):void
+}>()
+const instance=getCurrentInstance()
 const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
 const path = window.location.pathname.replace(/[/]+$/, "");
 const wsUrl = [
@@ -30,7 +38,7 @@ const tokenUrl = [
 ].join("");
 
 const options = {
-  wsUrl: "ws://localhost:3669/ws",
+  wsUrl: "ws://localhost:3669/ws?session_id="+props.sessionID,
   //wsUrl: "ws://localhost:7681",
   tokenUrl : tokenUrl,
   flowControl: flowControl,
@@ -124,6 +132,7 @@ const initListeners = function () {
       fitAddon.fit();
     })
   );
+    addEventListener(instance?.refs.terminalRef,"click",select)
   const resizeObserver = new ResizeObserver(() => {
       //console.log("resize");
       fitAddon.fit();
@@ -252,11 +261,16 @@ const connect = function () {
   register(addEventListener(socket, "close", onSocketClose as EventListener));
   register(addEventListener(socket, "error", () => (doReconnect = false)));
 };
-const terminalRef=ref<HTMLElement | null>(null)
+const terminalRef=ref<HTMLElement|null>(null)
+const select=function(){
+  emits("selectIndex",props.index)
+ 
+}
 onMounted(()=>{
   //await refreshToken();
   open(terminalRef.value);
   connect();
+
 });
 onUnmounted(()=>{
   closeConnection();

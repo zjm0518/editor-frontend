@@ -81,11 +81,11 @@
   content: "\e71b";
 }
 
-.icon2-bottom_panel_open_wght300_24px:before {
+.icon2-bottom_panel_open:before {
   content: "\e600";
 }
 
-.icon2-bottom_panel_close_wght300_24px:before {
+.icon2-bottom_panel_close:before {
   content: "\e601";
 }
 

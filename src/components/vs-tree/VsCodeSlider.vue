@@ -25,14 +25,14 @@ interface Tree {
 }
 
 const props = defineProps<{
-  baseDir: string;
+  baseDir?: string;
   theme: string;
-  width: number;
-  files: Array<FileData>;
+  width?: number;
+  files?: Array<FileData>;
   allowDrag?: boolean;
-  bgColor: string;
-  defaultOpen: string;
-  currentFile: string;
+  bgColor?: string;
+  defaultOpen?: string;
+  currentFile?: string;
 }>();
 
 const emits = defineEmits<{
@@ -587,7 +587,7 @@ onMounted(() => {
     <div class="header">
       <span class="base-dir"><!-- {{ baseDirName }} --></span>
       <div>
-     
+
         <i
           class="icon iconfont2 icon2-upload_file cursor-pointer"
           title="上传文件"

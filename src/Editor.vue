@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import MonacoEditor from "./components/MonacoEditor.vue";
-import { onMounted } from "vue";
+
 import { ref } from "vue";
 import axios from "axios";
 //import TerminalComponent from "./components/TerminalComponent.vue";
@@ -11,23 +11,23 @@ import VsCodeSlider from "./components/vs-tree";
 import IXterm from "./components/IXterm.vue";
 import { useLayoutStore } from "./stores/layout";
 import { storeToRefs } from "pinia";
-import { Splitpanes, Pane } from 'splitpanes'
-import 'splitpanes/dist/splitpanes.css'
+import { Splitpanes, Pane } from "splitpanes";
+import "splitpanes/dist/splitpanes.css";
 const layoutStore = useLayoutStore();
-const {showTerminal}=storeToRefs(layoutStore)
+const { showTerminal } = storeToRefs(layoutStore);
 interface TreeNode {
   label: string;
   children?: TreeNode[];
   path?: string;
   isDir?: boolean;
   key?: string;
-  isNew?:boolean
+  isNew?: boolean;
 }
 
 const text = ref("");
 const selectedPath = ref("");
-const term = ref(null);
-
+const term1 = ref(null);
+const term2 = ref(null);
 const getTextFromServer = function (path: string | undefined) {
   if (path === undefined) return;
   selectedPath.value = path;
@@ -71,22 +71,27 @@ const saveTextToServer = function (text: string | undefined) {
     });
 };
 const RunJKS = function () {
-  term.value.Run(selectedPath.value);
+  if (selectedTerm.value == 0) term1.value.Run(selectedPath.value);
+  else {
+    term2.value.Run(selectedPath.value);
+  }
 };
 const Stop = function () {
-  term.value.Stop();
+  if (selectedTerm.value == 0) {
+    term1.value.Stop();
+  } else {
+    term2.value.Stop();
+  }
 };
-
-
-onMounted(() => {
-  //getDirStructure(currentFolder.value);
-  //StartTTYD()
-});
+const selectedTerm = ref(0);
+const toggleTerm = function (index: number) {
+  selectedTerm.value = index;
+};
 </script>
 
 <template>
   <div class="container">
-    <splitpanes  class="Panel" >
+    <splitpanes class="Panel">
       <pane size="15" min-size="10">
         <div class="folder">
           <!--      <FolderTree
@@ -102,7 +107,7 @@ onMounted(() => {
         </div>
       </pane>
       <pane>
-        <splitpanes  horizontal >
+        <splitpanes horizontal>
           <pane min-size="20">
             <MonacoEditor
               class="editor"
@@ -114,14 +119,30 @@ onMounted(() => {
             />
           </pane>
           <pane v-if="showTerminal" min-size="20" size="30">
-            <!--  <TerminalComponent class="terminal" ref="term" />  -->
-             <IXterm  class="terminal" ref="term"></IXterm>
-
-
+            <splitpanes>
+              <pane min-size="20">
+                <IXterm
+                  class="terminal"
+                  ref="term1"
+                  session-i-d="zjm123"
+                  :index="0"
+                  @select-index="toggleTerm"
+                ></IXterm>
+              </pane>
+              <pane min-size="20">
+                <IXterm
+                  class="terminal"
+                  ref="term2"
+                  session-i-d="zjm456"
+                  :index="1"
+                  @select-index="toggleTerm"
+                ></IXterm>
+              </pane>
+            </splitpanes>
           </pane>
-        </splitpanes >
+        </splitpanes>
       </pane>
-    </splitpanes >
+    </splitpanes>
   </div>
 </template>
 
@@ -189,69 +210,62 @@ body {
   border: 0;
 }
 
-:deep(.lay-split-panel-vertical){
- >.lay-split-panel-line {
-  width: 100%;
-  height: 3px;
-  &:hover{
-    border: 3px solid #626060;
-    cursor: s-resize;
-  }
-  &:active{
-    border: 3px solid #626060;
-    cursor: s-resize;
-
-  }
- }}
-
-
-:deep(.lay-split-panel-horizontal){
-  >.lay-split-panel-line {
-  &:hover{
-    border: 3px solid #626060;
-    cursor: w-resize;
-  }
-  &:active{
-    border: 3px solid #626060;
-    cursor: w-resize;
-
+:deep(.lay-split-panel-vertical) {
+  > .lay-split-panel-line {
+    width: 100%;
+    height: 3px;
+    &:hover {
+      border: 3px solid #626060;
+      cursor: s-resize;
+    }
+    &:active {
+      border: 3px solid #626060;
+      cursor: s-resize;
+    }
   }
 }
+
+:deep(.lay-split-panel-horizontal) {
+  > .lay-split-panel-line {
+    &:hover {
+      border: 3px solid #626060;
+      cursor: w-resize;
+    }
+    &:active {
+      border: 3px solid #626060;
+      cursor: w-resize;
+    }
+  }
 }
-:deep(.splitpanes--vertical)  {
-  > .splitpanes__splitter{
-      min-width: 3px;
-  background: #626060;
-  &:hover{
-    border: 3px solid #626060;
-    cursor: w-resize;
+:deep(.splitpanes--vertical) {
+  > .splitpanes__splitter {
+    min-width: 3px;
+    background: #626060;
+    &:hover {
+      border: 3px solid #626060;
+      cursor: w-resize;
+    }
+    &:active {
+      border: 3px solid #626060;
+      cursor: w-resize;
+    }
   }
-  &:active{
-    border: 3px solid #626060;
-    cursor: w-resize;
-
-  }
-  }
-
 }
-:deep(.splitpanes--horizontal)  {
-  > .splitpanes__splitter{
-      min-height: 3px;
-  background: #626060;
-  &:hover{
-    border: 3px solid #626060;
-    cursor: s-resize;
+:deep(.splitpanes--horizontal) {
+  > .splitpanes__splitter {
+    min-height: 3px;
+    background: #626060;
+    &:hover {
+      border: 3px solid #626060;
+      cursor: s-resize;
+    }
+    &:active {
+      border: 3px solid #626060;
+      cursor: s-resize;
+    }
   }
-  &:active{
-    border: 3px solid #626060;
-    cursor: s-resize;
-
-  }
-  }
-  > .splitpanes__pane{
+  > .splitpanes__pane {
     transition: none;
   }
-
 }
-
 </style>

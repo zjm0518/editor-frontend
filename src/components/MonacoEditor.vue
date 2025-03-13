@@ -152,7 +152,7 @@ const saved = ref("");
         <i class="icon iconfont2 icon2-yunhang" title="运行" @click="Run"></i>
         <i class="icon iconfont2 icon2-tingzhi" title="停止" @click="Stop"></i>
         <i
-          class="icon iconfont2"
+          class="icon iconfont2 "
           :class="
             layoutStore.showTerminal
               ? 'icon2-bottom_panel_close'
