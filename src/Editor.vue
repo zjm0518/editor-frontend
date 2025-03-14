@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import MonacoEditor from "./components/MonacoEditor.vue";
 
-import { ref } from "vue";
+import { provide, ref } from "vue";
 import axios from "axios";
 //import TerminalComponent from "./components/TerminalComponent.vue";
 //import RemoteTreeFile from "./components/RemoteTreeFile.vue";
@@ -13,6 +13,8 @@ import { useLayoutStore } from "./stores/layout";
 import { storeToRefs } from "pinia";
 import { Splitpanes, Pane } from "splitpanes";
 import "splitpanes/dist/splitpanes.css";
+import "./css/tab-nav.css"
+import { v4 as uuidv4 } from "uuid";
 const layoutStore = useLayoutStore();
 const { showTerminal } = storeToRefs(layoutStore);
 interface TreeNode {
@@ -87,6 +89,47 @@ const selectedTerm = ref(0);
 const toggleTerm = function (index: number) {
   selectedTerm.value = index;
 };
+interface TabPane {
+  name: string,
+  sessionId: string
+
+}
+interface GroupPane{
+  groupName:string,
+  panes:Array<TabPane>
+}
+const terminalNum = ref(1)
+const panes = ref<Array<TabPane>>([
+  {
+    name: "term1",
+    sessionId: "session1"
+  },
+  {
+    name: "term2",
+    sessionId: "session2"
+  }
+])
+const groupPanes=ref<Array<GroupPane>>([
+  {
+    groupName:"group1",
+    panes:[{
+    name: "term1",
+    sessionId: "session1"
+  },
+  {
+    name: "term2",
+    sessionId: "session2"
+  }]
+  }
+])
+const currentName = ref("term1")
+provide("currentName", currentName)
+const setCurrentName = function (name: string) {
+  currentName.value = name
+}
+const addSplitPane=function(currentIndex:number){
+
+}
 </script>
 
 <template>
@@ -94,49 +137,43 @@ const toggleTerm = function (index: number) {
     <splitpanes class="Panel">
       <pane size="15" min-size="10">
         <div class="folder">
-          <!--      <FolderTree
-            class="file"
-            :data="treeData"
-            @get-text-from-path="getTextFromServer"
-          /> -->
-          <VsCodeSlider
-            class="file"
-            theme="dark"
-            @get-text-from-path="getTextFromServer"
-          ></VsCodeSlider>
+
+          <VsCodeSlider class="file" theme="dark" @get-text-from-path="getTextFromServer"></VsCodeSlider>
         </div>
       </pane>
       <pane>
         <splitpanes horizontal>
           <pane min-size="20">
-            <MonacoEditor
-              class="editor"
-              :text-value="text"
-              :path="selectedPath"
-              @save="saveTextToServer"
-              @run="RunJKS"
-              @stop="Stop"
-            />
+            <MonacoEditor class="editor" :text-value="text" :path="selectedPath" @save="saveTextToServer" @run="RunJKS"
+              @stop="Stop" />
           </pane>
           <pane v-if="showTerminal" min-size="20" size="30">
             <splitpanes>
-              <pane min-size="20">
-                <IXterm
-                  class="terminal"
-                  ref="term1"
-                  session-i-d="zjm123"
-                  :index="0"
-                  @select-index="toggleTerm"
-                ></IXterm>
+              <pane min-size="70">
+                <IXterm v-for="(item, index) in panes" v-show="item.name == currentName" class="terminal"
+                  :session-i-d="item.sessionId" :key="item.sessionId" :index="index" :name="item.name" @select-index="toggleTerm">
+                </IXterm>
               </pane>
-              <pane min-size="20">
-                <IXterm
-                  class="terminal"
-                  ref="term2"
-                  session-i-d="zjm456"
-                  :index="1"
-                  @select-index="toggleTerm"
-                ></IXterm>
+
+              <pane size="15" min-size="10">
+                <div class="tab-nav">
+                  <div class="tab-nav-item" :class="{ 'selected': item.name == currentName }" v-for="(item, index) in panes"
+                    :key="item.sessionId" @click="setCurrentName(item.name)">
+                    <div class="tab-nav-item-left">
+                      <div class="codicon codicon-terminal-powershell"></div>
+
+                    {{ item.name }}
+                    </div>
+                    <div class="tab-nav-item-right">
+                          <i class="iconfont2 icon2-square_split_x"></i>
+                           <i class="iconfont2 icon2-delete"></i>
+
+                    </div>
+
+                  </div>
+
+
+                </div>
               </pane>
             </splitpanes>
           </pane>
@@ -165,6 +202,7 @@ body {
   overflow: hidden;
   height: 100vh;
 }
+
 .Panel {
   width: 100%;
   height: 100%;
@@ -175,49 +213,61 @@ body {
   height: 100%;
   overflow: hidden;
 }
+
 .Right {
   width: 100%;
   height: 100%;
   display: flex;
-  flex-direction: column; /* 设置为垂直排列 */
+  flex-direction: column;
+  /* 设置为垂直排列 */
 }
+
 .Left {
   width: 100%;
 }
+
 .editor,
 .terminal {
   height: 100%;
-  flex-grow: 0; /* 不允许组件扩展 */
+  flex-grow: 0;
+  /* 不允许组件扩展 */
   overflow: hidden;
 
-  margin: 0; /* 去除间隙 */
+  margin: 0;
+  /* 去除间隙 */
 }
+
 .editor {
   width: 100%;
   word-wrap: break-word;
   height: 100%;
 }
+
 .terminal {
   width: 100%;
   height: 100%;
 }
+
 :deep(.lay-split-panel-line) {
   background-color: #626060;
   margin: 0;
   border: 0;
 }
+
 :deep(.lay-split-panel-item) {
   border: 0;
 }
 
 :deep(.lay-split-panel-vertical) {
-  > .lay-split-panel-line {
+  >.lay-split-panel-line {
     width: 100%;
     height: 3px;
+
     &:hover {
       border: 3px solid #626060;
       cursor: s-resize;
     }
+
     &:active {
       border: 3px solid #626060;
       cursor: s-resize;
@@ -226,45 +276,53 @@ body {
 }
 
 :deep(.lay-split-panel-horizontal) {
-  > .lay-split-panel-line {
+  >.lay-split-panel-line {
     &:hover {
       border: 3px solid #626060;
       cursor: w-resize;
     }
+
     &:active {
       border: 3px solid #626060;
       cursor: w-resize;
     }
   }
 }
+
 :deep(.splitpanes--vertical) {
-  > .splitpanes__splitter {
+  >.splitpanes__splitter {
     min-width: 3px;
     background: #626060;
+
     &:hover {
       border: 3px solid #626060;
       cursor: w-resize;
     }
+
     &:active {
       border: 3px solid #626060;
       cursor: w-resize;
     }
   }
 }
+
 :deep(.splitpanes--horizontal) {
-  > .splitpanes__splitter {
+  >.splitpanes__splitter {
     min-height: 3px;
     background: #626060;
+
     &:hover {
       border: 3px solid #626060;
       cursor: s-resize;
     }
+
     &:active {
       border: 3px solid #626060;
       cursor: s-resize;
     }
   }
-  > .splitpanes__pane {
+
+  >.splitpanes__pane {
     transition: none;
   }
 }

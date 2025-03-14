@@ -8,11 +8,12 @@ import { WebLinksAddon } from "xterm-addon-web-links";
 import { FitAddon } from "xterm-addon-fit";
 import { getJKSScriptPath } from "@/api/path";
 import { termOptions, flowControl, Command } from "@/utils/xtermConfigs";
-import { onMounted, ref,onBeforeUnmount, onUnmounted,defineEmits,getCurrentInstance  } from "vue";
+import { onMounted, ref,onBeforeUnmount, onUnmounted,defineEmits,getCurrentInstance, inject  } from "vue";
 import "@xterm/xterm/css/xterm.css";
 const props = defineProps<{
   sessionID: string,
-  index:number
+  index:number,
+  name:string
 
 }>()
 const emits=defineEmits<{
@@ -126,10 +127,14 @@ const initListeners = function () {
   );
  register(
     terminal.onResize(({ cols, rows }) => {
-      const msg = JSON.stringify({ columns: cols, rows: rows });
+      console.log("resize:",props.name,currentName.value)
+      if(currentName.value ==props.name) {
+         const msg = JSON.stringify({ columns: cols, rows: rows });
       socket?.send(textEncoder.encode(Command.RESIZE_TERMINAL + msg));
       //terminal.focus()
       fitAddon.fit();
+      }
+
     })
   );
     addEventListener(instance?.refs.terminalRef,"click",select)
@@ -264,14 +269,16 @@ const connect = function () {
 const terminalRef=ref<HTMLElement|null>(null)
 const select=function(){
   emits("selectIndex",props.index)
- 
+
 }
 onMounted(()=>{
   //await refreshToken();
   open(terminalRef.value);
   connect();
+  console.log("props:",props)
 
 });
+
 onUnmounted(()=>{
   closeConnection();
   dispose();
@@ -279,6 +286,7 @@ onUnmounted(()=>{
 onBeforeUnmount(()=>{
   dispose();
 });
+const currentName=inject("currentName")
 const Run=async function(filepath:string) {
   const ext=getExtension(filepath)
   console.log("ext:",ext)
