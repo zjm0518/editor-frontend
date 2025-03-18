@@ -1,6 +1,6 @@
 <template>
   <div class="ip-input">
-    <el-form label-position="right" label-width="120px" :model="formData">
+    <el-form label-position="right" label-width="150px" :model="formData">
       <el-form-item label="请输入ip">
         <el-input v-model="formData.ip"></el-input>
       </el-form-item>
@@ -35,8 +35,8 @@ const options = [
     label: "JK5",
   },
   {
-    value: "JK7",
-    label: "JK7",
+    value: "JK10",
+    label: "JK10",
   },
 ];
 const { formData } = storeToRefs(configstorage);
@@ -62,5 +62,8 @@ onUnmounted(() => {
 }
 :deep(){
   --el-color-primary: #232222;
+}
+:deep(.el-form-item__label) {
+  font-size: 20px;
 }
 </style>

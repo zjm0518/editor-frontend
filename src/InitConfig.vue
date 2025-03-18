@@ -78,34 +78,37 @@ onMounted(() => {
   flex-direction: column;
 
   height: 100vh;
+  width: 100vw;
+  overflow: hidden;
 }
 .config-header {
   display: flex;
   font-size: 24px;
   align-items: center;
   height: 10vh;
-  border: solid 1px #c74141;
+
 }
 .config-page {
   display: flex;
   flex-direction: column;
   align-items: center;
-
+  height: 80vh;
   flex-grow: 1;
-  width: 100%;
+  width: 100vw;
   border: solid 1px #000;
   .config-steps {
     width: 80%;
     height: 20%;
     margin-top: 20px;
   }
+  
 }
 .config-footer {
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  border: solid 1px #4841c7;
+
   height: 10vh;
 }
 :deep(.el-step__head.is-success) {

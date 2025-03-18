@@ -3,6 +3,7 @@ interface ConfigRecord{
   ip:string,
   model:string,
   load:Array<string>,
+  agvip:string
 
 }
 export const useConfigStore = defineStore('config', {
@@ -10,7 +11,8 @@ export const useConfigStore = defineStore('config', {
     formData: {
       ip:'',
       model:'',
-      load:Array(5).fill("")
+      load:Array(13).fill(""),
+      agvip:'',
     } as ConfigRecord, // 存储表单数据
   }),
   actions: {
