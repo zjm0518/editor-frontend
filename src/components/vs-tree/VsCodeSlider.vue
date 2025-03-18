@@ -739,6 +739,7 @@ onMounted(() => {
   position: relative;
   background-color: #222222;
   font-family: Consolas, "Courier New", monospace;
+  height: 100%;
 }
 
 .error-info {
@@ -879,7 +880,7 @@ onMounted(() => {
 
 .el-tree-view {
   width: 100%;
-  height: calc(100% - 100px);
+  height: calc(100% - 30px);
   overflow-y: scroll;
   overflow-x: hidden;
 

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import MonacoEditor from "./components/MonacoEditor.vue";
 
-import { provide, ref } from "vue";
+import { provide, ref,computed,watch,nextTick, onMounted } from "vue";
 import axios from "axios";
 //import TerminalComponent from "./components/TerminalComponent.vue";
 //import RemoteTreeFile from "./components/RemoteTreeFile.vue";
@@ -13,23 +13,15 @@ import { useLayoutStore } from "./stores/layout";
 import { storeToRefs } from "pinia";
 import { Splitpanes, Pane } from "splitpanes";
 import "splitpanes/dist/splitpanes.css";
-import "./css/tab-nav.css"
+import "./css/terminal.css"
 import { v4 as uuidv4 } from "uuid";
 const layoutStore = useLayoutStore();
 const { showTerminal } = storeToRefs(layoutStore);
-interface TreeNode {
-  label: string;
-  children?: TreeNode[];
-  path?: string;
-  isDir?: boolean;
-  key?: string;
-  isNew?: boolean;
-}
+
 
 const text = ref("");
 const selectedPath = ref("");
-const term1 = ref(null);
-const term2 = ref(null);
+
 const getTextFromServer = function (path: string | undefined) {
   if (path === undefined) return;
   selectedPath.value = path;
@@ -73,17 +65,16 @@ const saveTextToServer = function (text: string | undefined) {
     });
 };
 const RunJKS = function () {
-  if (selectedTerm.value == 0) term1.value.Run(selectedPath.value);
-  else {
-    term2.value.Run(selectedPath.value);
-  }
+  const groupIndex = groupPanes.value.findIndex(group => group.groupId === currentGroupId.value);
+  const paneIndex = groupPanes.value[groupIndex].panes.findIndex(pane => pane.sessionId === currentSessionID.value);
+  console.log("RunJKS",groupIndex,paneIndex)
+  xtermRefs.value[groupIndex][paneIndex].Run(selectedPath.value);
 };
 const Stop = function () {
-  if (selectedTerm.value == 0) {
-    term1.value.Stop();
-  } else {
-    term2.value.Stop();
-  }
+  const groupIndex = groupPanes.value.findIndex(group => group.groupId === currentGroupId.value);
+  const paneIndex = groupPanes.value[groupIndex].panes.findIndex(pane => pane.sessionId === currentSessionID.value);
+
+  xtermRefs.value[groupIndex][paneIndex].Stop();
 };
 const selectedTerm = ref(0);
 const toggleTerm = function (index: number) {
@@ -94,42 +85,144 @@ interface TabPane {
   sessionId: string
 
 }
-interface GroupPane{
-  groupName:string,
-  panes:Array<TabPane>
+interface GroupPane {
+  groupId: string,
+  panes: Array<TabPane>
 }
-const terminalNum = ref(1)
-const panes = ref<Array<TabPane>>([
-  {
-    name: "term1",
-    sessionId: "session1"
-  },
-  {
-    name: "term2",
-    sessionId: "session2"
+const terminalNum = ref(6)
+
+const groupPanes = ref<Array<GroupPane>>([])
+onMounted(()=>{
+  const groupPanesStr = localStorage.getItem("GroupPanes");
+  if (groupPanesStr) {
+    groupPanes.value = JSON.parse(groupPanesStr);
+  }else{
+    groupPanes.value.push({
+      groupId: uuidv4(),
+      panes: [{
+        name: "term1",
+        sessionId: uuidv4()
+      }]
+    });
+    localStorage.setItem("GroupPanes", JSON.stringify(groupPanes.value));
+    terminalNum.value=1
   }
-])
-const groupPanes=ref<Array<GroupPane>>([
-  {
-    groupName:"group1",
-    panes:[{
-    name: "term1",
-    sessionId: "session1"
-  },
-  {
-    name: "term2",
-    sessionId: "session2"
-  }]
-  }
-])
-const currentName = ref("term1")
+
+  currentName.value = localStorage.getItem("currentName") || "";
+  currentGroupId.value = localStorage.getItem("currentGroupId") || "";
+  currentSessionID.value=localStorage.getItem("currentSessionID")||""
+})
+const currentName = ref("")
+const currentGroupId = ref("")
+const currentSessionID=ref("")
+// 计算当前 groupId 在 groupPanes 中的索引
+const groupIndex = computed(() => {
+  return groupPanes.value.findIndex(group => group.groupId === currentGroupId.value);
+});
 provide("currentName", currentName)
+provide("currentGroupId", currentGroupId)
 const setCurrentName = function (name: string) {
   currentName.value = name
 }
-const addSplitPane=function(currentIndex:number){
+const setCurrentGroupId = function (groupid: string,name:string,sessionId:string) {
+  currentGroupId.value = groupid
+  currentName.value=name
+
+ currentSessionID.value=sessionId
+ localStorage.setItem("currentGroupId", currentGroupId.value);
+  localStorage.setItem("currentName", currentName.value);
+  localStorage.setItem("currentSessionID", currentSessionID.value);
+}
+const addSplitPane = function (groupId:string,sessionId:string) {
+  terminalNum.value++;
+  const groupIndex = groupPanes.value.findIndex(group => group.groupId === groupId);
+  if (groupIndex === -1) {
+    console.error(`Group ${groupId} not found`);
+    return;
+  }
+  const sessionIndex = groupPanes.value[groupIndex].panes.findIndex(pane => pane.sessionId === sessionId);
+  if (sessionIndex === -1) {
+    console.error(`Session ${sessionId} not found in group ${groupId}`);
+    return;
+  }
+  groupPanes.value[groupIndex].panes.splice(sessionIndex + 1, 0, {
+    name: `term${terminalNum.value}`,
+    sessionId: uuidv4()
+  });
+  localStorage.setItem("GroupPanes", JSON.stringify(groupPanes.value));
+
 
 }
+const addGroupPane=function(){
+  terminalNum.value++
+  const groupId = uuidv4();
+  groupPanes.value.push({
+    groupId: groupId,
+    panes: [{
+      name: `term${terminalNum.value}`,
+      sessionId: uuidv4()
+    }]
+  });
+  localStorage.setItem("GroupPanes", JSON.stringify(groupPanes.value));
+}
+watch(currentGroupId, (newVal) => {
+  console.log("currentGroupId changed:", newVal);
+});
+const deletePane = async function(groupId: string, sessionId: string) {
+
+
+
+  const groupIndex = groupPanes.value.findIndex(group => group.groupId === groupId);
+  const paneIndex = groupPanes.value[groupIndex].panes.findIndex(pane => pane.sessionId === sessionId);
+  console.log(groupIndex,paneIndex)
+ // If only one pane left, don't delete
+ if (groupPanes.value.length === 1 && groupPanes.value[groupIndex].panes.length==1) return;
+  // Destroy the terminal instance
+  console.log(xtermRefs.value[groupIndex][paneIndex])
+  await xtermRefs.value[groupIndex][paneIndex].Destroy();
+
+  // Remove the pane
+  groupPanes.value[groupIndex].panes.splice(paneIndex, 1);
+
+  // If this group becomes empty after deletion, remove the group
+  if (groupPanes.value[groupIndex].panes.length === 0) {
+    groupPanes.value.splice(groupIndex, 1);
+
+    // Set currentGroupId to previous group
+    const newGroupIndex = Math.max(0, groupIndex - 1);
+    const newGroup = groupPanes.value[newGroupIndex];
+    currentGroupId.value = newGroup.groupId;
+    currentName.value = newGroup.panes[0].name;
+    currentSessionID.value=newGroup.panes[0].sessionId
+}else{
+  currentName.value = groupPanes.value[groupIndex].panes[0].name;
+  currentSessionID.value=groupPanes.value[groupIndex].panes[0].sessionId
+}
+
+localStorage.setItem("GroupPanes", JSON.stringify(groupPanes.value));
+localStorage.setItem("currentGroupId", currentGroupId.value);
+  localStorage.setItem("currentName", currentName.value);
+  localStorage.setItem("currentSessionID", currentSessionID.value);
+
+}
+
+const xtermRefs = ref([]); // 存储 IXterm 的引用
+const isUpdatingXtermRefs = ref(false);
+// 更新 xtermRefs 引用列表
+const setXtermRef =async (el, groupIndex, index) => {
+ //await nextTick()
+  if (el ) {
+    if (!xtermRefs.value[groupIndex]) {
+      xtermRefs.value[groupIndex] = [];
+    }
+    xtermRefs.value[groupIndex][index] = el;
+  }else{
+    console.log("el is null")
+    xtermRefs.value[groupIndex].splice(index, 1);
+  }
+};
+
+
 </script>
 
 <template>
@@ -137,47 +230,64 @@ const addSplitPane=function(currentIndex:number){
     <splitpanes class="Panel">
       <pane size="15" min-size="10">
         <div class="folder">
-
           <VsCodeSlider class="file" theme="dark" @get-text-from-path="getTextFromServer"></VsCodeSlider>
         </div>
       </pane>
       <pane>
         <splitpanes horizontal>
-          <pane min-size="20">
+          <pane min-size="20" size="70">
             <MonacoEditor class="editor" :text-value="text" :path="selectedPath" @save="saveTextToServer" @run="RunJKS"
               @stop="Stop" />
           </pane>
+
           <pane v-if="showTerminal" min-size="20" size="30">
+            <div class="header-bar">
+              <i class="iconfont2 icon2-plus" title="New terminal" @click="addGroupPane"></i>
+            </div>
             <splitpanes>
-              <pane min-size="70">
-                <IXterm v-for="(item, index) in panes" v-show="item.name == currentName" class="terminal"
-                  :session-i-d="item.sessionId" :key="item.sessionId" :index="index" :name="item.name" @select-index="toggleTerm">
-                </IXterm>
+              <pane min-size="70" size="80">
+
+                  <splitpanes v-for="(group,groupIndex) in groupPanes" :key="group.groupId" v-show="group.groupId == currentGroupId">
+                    <pane v-for="(item, index) in group.panes" :key="item.sessionId" min-size="20">
+                      <IXterm class="terminal" :session-i-d="item.sessionId" :index="index" :name="item.name"
+                        :group-i-d="group.groupId" @select-index="toggleTerm"
+                        :ref="(el) => setXtermRef(el, groupIndex, index)"
+                        @unmounted="removeXtermRef(groupIndex, index)"
+                        ></IXterm>
+                    </pane>
+                  </splitpanes>
+
               </pane>
 
-              <pane size="15" min-size="10">
+              <pane size="20" min-size="10">
                 <div class="tab-nav">
-                  <div class="tab-nav-item" :class="{ 'selected': item.name == currentName }" v-for="(item, index) in panes"
-                    :key="item.sessionId" @click="setCurrentName(item.name)">
-                    <div class="tab-nav-item-left">
-                      <div class="codicon codicon-terminal-powershell"></div>
+                  <div class="tab-nav-group" v-for="(group, groupIndex) in groupPanes" :key="group.groupId">
+                    <div class="tab-nav-item" :class="{ 'selected': item.sessionId == currentSessionID }"
+                      v-for="(item, index) in group.panes" :key="item.sessionId"
+                      @click="setCurrentGroupId(group.groupId,item.name,item.sessionId)">
+                      <div class="tab-nav-item-left">
+                        <i v-if="index==0 && group.panes.length>1" class="iconfont2 icon2-lianjiexian1"></i>
+                        <i v-if="index!=0 && index!=group.panes.length-1" class="iconfont2 icon2-lianjiexian"></i>
+                        <i v-if="index==group.panes.length-1&& group.panes.length>1" class="iconfont2 icon2-lianjiexian2"></i>
 
-                    {{ item.name }}
+                        <div class="codicon codicon-terminal-powershell"></div>
+                        <div class="termname">{{ item.name }}
+
+                        </div>
+
+                      </div>
+                      <div class="tab-nav-item-right">
+                        <i class="iconfont2 icon2-square_split_x" @click.stop="addSplitPane(group.groupId,item.sessionId)" title="Split"></i>
+                        <i class="iconfont2 icon2-delete" @click.stop="deletePane(group.groupId,item.sessionId)" title="Kill"></i>
+                      </div>
                     </div>
-                    <div class="tab-nav-item-right">
-                          <i class="iconfont2 icon2-square_split_x"></i>
-                           <i class="iconfont2 icon2-delete"></i>
-
-                    </div>
-
                   </div>
-
-
                 </div>
               </pane>
             </splitpanes>
           </pane>
         </splitpanes>
+
       </pane>
     </splitpanes>
   </div>
@@ -246,6 +356,7 @@ body {
 .terminal {
   width: 100%;
   height: 100%;
+  height: calc(100% - 15px);
 }
 
 :deep(.lay-split-panel-line) {
@@ -275,19 +386,7 @@ body {
   }
 }
 
-:deep(.lay-split-panel-horizontal) {
-  >.lay-split-panel-line {
-    &:hover {
-      border: 3px solid #626060;
-      cursor: w-resize;
-    }
 
-    &:active {
-      border: 3px solid #626060;
-      cursor: w-resize;
-    }
-  }
-}
 
 :deep(.splitpanes--vertical) {
   >.splitpanes__splitter {
@@ -308,7 +407,7 @@ body {
 
 :deep(.splitpanes--horizontal) {
   >.splitpanes__splitter {
-    min-height: 3px;
+    min-height: 2px;
     background: #626060;
 
     &:hover {
@@ -326,4 +425,5 @@ body {
     transition: none;
   }
 }
+
 </style>

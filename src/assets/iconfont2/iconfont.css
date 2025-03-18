@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont2"; /* Project id 4783281 */
-  src: url('iconfont.woff2?t=1741858070870') format('woff2'),
-       url('iconfont.woff?t=1741858070870') format('woff'),
-       url('iconfont.ttf?t=1741858070870') format('truetype');
+  src: url('iconfont.woff2?t=1741931294443') format('woff2'),
+       url('iconfont.woff?t=1741931294443') format('woff'),
+       url('iconfont.ttf?t=1741931294443') format('truetype');
 }
 
 .iconfont2 {
@@ -11,6 +11,42 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon2-lianjiexian:before {
+  content: "\e602";
+}
+
+.icon2-lianjiexian1:before {
+  content: "\e603";
+}
+
+.icon2-lianjiexian2:before {
+  content: "\e604";
+}
+
+.icon2-lianjiexian3:before {
+  content: "\e64a";
+}
+
+.icon2-lianjiexian4:before {
+  content: "\e815";
+}
+
+.icon2-fengexian:before {
+  content: "\e644";
+}
+
+.icon2-fengexian1:before {
+  content: "\e605";
+}
+
+.icon2-terminal:before {
+  content: "\e82f";
+}
+
+.icon2-split-horizontal:before {
+  content: "\e849";
 }
 
 .icon2-delete:before {

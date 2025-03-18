@@ -13,7 +13,8 @@ import "@xterm/xterm/css/xterm.css";
 const props = defineProps<{
   sessionID: string,
   index:number,
-  name:string
+  name:string,
+  groupID:string,
 
 }>()
 const emits=defineEmits<{
@@ -127,8 +128,8 @@ const initListeners = function () {
   );
  register(
     terminal.onResize(({ cols, rows }) => {
-      console.log("resize:",props.name,currentName.value)
-      if(currentName.value ==props.name) {
+      //console.log("resize:",props.groupID,currentName.value,currentGroupId.value)
+      if(currentGroupId.value ==props.groupID) {
          const msg = JSON.stringify({ columns: cols, rows: rows });
       socket?.send(textEncoder.encode(Command.RESIZE_TERMINAL + msg));
       //terminal.focus()
@@ -286,7 +287,8 @@ onUnmounted(()=>{
 onBeforeUnmount(()=>{
   dispose();
 });
-const currentName=inject("currentName")
+
+const currentGroupId=inject("currentGroupId")
 const Run=async function(filepath:string) {
   const ext=getExtension(filepath)
   console.log("ext:",ext)
@@ -339,9 +341,24 @@ const getExtension = (fileName: string): string => {
   }
   return fileName.substring(lastDotIndex);
 };
+const Destroy = async function() {
+  return new Promise<void>((resolve) => {
+
+    if (socket && socket.readyState === WebSocket.OPEN) {
+      console.log("kill:",props.sessionID)
+      socket.send(JSON.stringify({ type: "kill" }));
+
+      socket.close();
+      resolve();
+    } else {
+      resolve();
+    }
+  });
+};
 defineExpose({
   Run,
-  Stop
+  Stop,
+  Destroy
 })
 </script>
 <style>

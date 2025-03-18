@@ -1,5 +1,23 @@
+.header-bar{
+  height: 15px;
+  width: 100%;
+  background-color: #333232;
+  display: flex;
+  color: aliceblue;
+  justify-content: end;
+  i{
+    margin-right: 1%;
+    cursor: pointer;
+  }
+
+  i:hover{
+    background-color: rgb(114, 115, 115);
+
+  }
+}
 .tab-nav {
-    height: 100%;
+  height: 100%;
+  height:calc(100% - 15px);
     width: 100%;
     /*  border: 3px solid saddlebrown; */
     display: flex;
@@ -8,13 +26,25 @@
     background-color: #1e1e1e;
     color: rgb(222, 218, 218);
     font-family: "Lucida Console", Courier, monospace;
+    overflow-y: auto;
+    overflow-x: hidden;
+    
 
+}
+.tab-nav-group {
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+
+  
 }
 
 .tab-nav-item {
     display: flex;
     width: 100%;
-    height: 12%;
+    padding-top: 2%;
+    padding-bottom: 2%;
     padding-left: 3%;
     align-items: center;
     background-color: #1e1e1e;
@@ -26,6 +56,7 @@
     justify-content: flex-start;
     flex-grow: 1;
     gap:2px;
+    
 }
 .tab-nav-item .tab-nav-item-right {
     display: flex;
@@ -34,7 +65,14 @@
     gap:2px;
     opacity: 0;  /* 初始时透明 */
     visibility: hidden; /* 初始时隐藏 */
+
 }
+.iconfont2 {
+ 
+  line-height: 1;
+  vertical-align: middle; /* 让图标和文本对齐 */
+}
+
 .tab-nav-item:hover .tab-nav-item-right {
   opacity: 1; /* 鼠标悬停时显示 */
   visibility: visible;
