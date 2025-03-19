@@ -95,13 +95,13 @@ onMounted(() => {
   height: 80vh;
   flex-grow: 1;
   width: 100vw;
-  border: solid 1px #000;
+
   .config-steps {
     width: 80%;
     height: 20%;
     margin-top: 20px;
   }
-  
+
 }
 .config-footer {
   display: flex;
