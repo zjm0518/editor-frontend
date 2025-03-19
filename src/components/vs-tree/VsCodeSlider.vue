@@ -1,6 +1,6 @@
 heme
 <script setup lang="ts">
-import { computed, watch, reactive, ref, nextTick, onMounted } from "vue";
+import { computed, watch, reactive, ref, nextTick, onMounted, inject } from "vue";
 import { getFileIcon, convertToTreeData, sortDirTree } from "./utils/utils";
 import { ElTree, ElInput } from "element-plus";
 import { ArrowRightBold } from "@element-plus/icons-vue";
@@ -100,7 +100,8 @@ function handleNodeClick(obj, node, TreeNode, Event) {
 }
 
 function handleContentMenuClick(event, data, node, TreeNode) {
-  elTreeRef.value.setCurrentKey(data.key);
+
+  //elTreeRef.value.setCurrentKey(data.path);
   currentNodeData.data = data;
   currentNodeData.node = node;
   //console.log("handleContentMenuClick",data)
@@ -573,6 +574,15 @@ onMounted(() => {
     getDirStructure(res.userHomePath, true);
   });
 });
+
+const setCurrentNode=function(path:string){
+  const node = elTreeRef.value.getNode(path);
+  elTreeRef.value.setCurrentKey(node.key);
+}
+const selectedPath=inject("selectedPath")
+watch(()=>selectedPath.value,(val)=>{
+  setCurrentNode(val)
+})
 </script>
 
 <template>
@@ -676,6 +686,7 @@ onMounted(() => {
         <template #default="{ node, data }">
           <span
             class="custom-tree-node"
+
             @dragover="handleDragOver"
             @dragleave="handleDragLeave"
             @drop="handleNodeDrop($event, node, data)"
@@ -760,7 +771,13 @@ onMounted(() => {
   height: 100%;
   width: 100%;
 }
-
+.is-current__{
+  >.el-tree-node__content {
+    background-color: rgba(50, 88, 213, 0.3) !important;
+    border: 1px solid #9bc0f4;
+    color: white;
+  }
+}
 :deep(.el-tree-node) {
   &:focus > .el-tree-node__content {
     background-color: rgba(200, 200, 200, 0.2);
@@ -798,10 +815,12 @@ onMounted(() => {
 }
 ::-webkit-scrollbar {
   width: 15px;
+
 }
 
 ::-webkit-scrollbar-thumb {
   background-color: rgba(111, 113, 117, 0.4);
+
 }
 .vscode-theme {
   background-color: #f2f2f2;

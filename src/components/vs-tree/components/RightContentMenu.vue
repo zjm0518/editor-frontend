@@ -98,6 +98,7 @@ defineExpose({
   padding: 4px 10px;
   display: flex;
   flex-direction: column;
+  z-index:1;
   .menu_input {
     width: 0;
     height: 0;

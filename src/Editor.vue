@@ -15,6 +15,8 @@ import { Splitpanes, Pane } from "splitpanes";
 import "splitpanes/dist/splitpanes.css";
 import "./css/terminal.css"
 import "./css/editor-tab.css"
+import "./css/splitpanes.css"
+
 import { setJKSScriptPath, getJKSScriptPath } from "@/api/path";
 import { v4 as uuidv4 } from "uuid";
 import JKSLibButton from "./components/JKSLibButton2.vue";
@@ -285,10 +287,23 @@ interface TabLabel {
 const headerTabs=ref<Array<TabLabel>>([])
 const currentTab=ref(0)
 const deleteTab=function(index:number){
+  console.log("deleteTab",index,currentTab.value)
+  if(index==0 && headerTabs.value.length==1){
+    currentTab.value=0
+  }else if(index<=currentTab.value){
 
-  headerTabs.value.splice(index,1)
+    headerTabs.value.splice(index,1)
+    currentTab.value=currentTab.value-1
+    selectedPath.value=headerTabs.value[currentTab.value].path
+    getTextFromServer(selectedPath.value)
+  }else{
+    headerTabs.value.splice(index,1)
+    selectedPath.value=headerTabs.value[currentTab.value].path
+    //getTextFromServer(selectedPath.value)
+  }
+
 }
-
+provide("selectedPath", selectedPath)
   import simplebar from 'simplebar-vue';
   import 'simplebar-vue/dist/simplebar.min.css';
 </script>
@@ -320,7 +335,7 @@ const deleteTab=function(index:number){
 
 
                 <div class="header-tabs-item" v-for="(item,index) in headerTabs" :key="index"
-                  :class="{ 'Tabselected': item.path == selectedPath }" @click="getTextFromServer(item.path)">
+                  :class="{ 'Tabselected': item.path == selectedPath }" @click="getTextFromServer(item.path)" >
 
                     <span class="header-tabs-item-name">{{ item.name }}</span>
 
@@ -397,7 +412,7 @@ const deleteTab=function(index:number){
   </div>
 </template>
 
-<style scoped lang="scss">
+<style scoped >
 /* 确保视口高度从根元素继承 */
 html,
 body {
@@ -463,72 +478,9 @@ body {
   height: calc(100% - 15px);
 }
 
-:deep(.lay-split-panel-line) {
-  background-color: #626060;
-  margin: 0;
-  border: 0;
-}
-
-:deep(.lay-split-panel-item) {
-  border: 0;
-}
-
-:deep(.lay-split-panel-vertical) {
-  >.lay-split-panel-line {
-    width: 100%;
-    height: 3px;
-
-    &:hover {
-      border: 3px solid #626060;
-      cursor: s-resize;
-    }
-
-    &:active {
-      border: 3px solid #626060;
-      cursor: s-resize;
-    }
-  }
-}
 
 
 
-:deep(.splitpanes--vertical) {
-  >.splitpanes__splitter {
-    min-width: 3px;
-    background: #626060;
-
-    &:hover {
-      border: 3px solid #626060;
-      cursor: w-resize;
-    }
-
-    &:active {
-      border: 3px solid #626060;
-      cursor: w-resize;
-    }
-  }
-}
-
-:deep(.splitpanes--horizontal) {
-  >.splitpanes__splitter {
-    min-height: 2px;
-    background: #626060;
-
-    &:hover {
-      border: 3px solid #626060;
-      cursor: s-resize;
-    }
-
-    &:active {
-      border: 3px solid #626060;
-      cursor: s-resize;
-    }
-  }
-
-  >.splitpanes__pane {
-    transition: none;
-  }
-}
 
 
 
