@@ -1,0 +1,106 @@
+.header {
+    height: 25px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 0 10px;
+    background-color: #333232;
+
+    color: #fff;
+}
+
+.header .header-left {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-grow: 0;
+
+}
+
+.header .header-left i {
+    font-size: 16px;
+    margin-right: 15px;
+    /* 可以根据需要调整间距 */
+    cursor: pointer;
+}
+
+.header .header-right {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    width: 20%;
+    flex-grow: 0;
+}
+
+.header .header-right JKSLibButton {
+    width: 20%;
+}
+
+.jks-lib {
+    font-size: 13px;
+    width: 80%;
+    margin-right: 10px;
+    /* 可以根据需要调整间距 */
+    font-family: Consolas, "Courier New", monospace;
+    /* 关键部分 */
+    white-space: nowrap;
+    /* 防止换行 */
+    overflow: hidden;
+    /* 隐藏超出部分 */
+    text-overflow: ellipsis;
+    /* 省略号显示超出内容 */
+    display: inline-block;
+    /* 确保 width 限制生效 */
+}
+
+
+.header-tabs {
+    display: flex;
+    flex-direction: row;
+    width: 60%;
+   
+    justify-content: flex-start;
+    align-items: center;
+    flex-grow: 1;
+
+    white-space: nowrap;
+   
+}
+.simplebar-content{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+}
+.simplebar-scrollable-x{
+    width: 70%;
+    height: 100%;
+    flex-grow: 1;
+}
+.header-tabs-item {
+    margin-left: 2%;
+    margin-right: 2%;
+    font-size: small;
+    cursor: pointer;
+    white-space: nowrap;
+    /* 确保文本不换行 */
+    flex-shrink: 0;
+    /* 不允许子元素缩小，确保它们保持横向排列 */
+}
+
+.header-tabs-item-name {
+    display: inline-block;
+    /* 让span遵循宽度限制 */
+
+    overflow: hidden;
+    /* 隐藏超出的文本 */
+    white-space: nowrap;
+    /* 防止换行 */
+    text-overflow: ellipsis;
+    /* 省略号显示超出部分 */
+    vertical-align: middle;
+    /* 保持垂直对齐 */
+}

@@ -134,7 +134,7 @@ import { Base64 } from "js-base64";
 import { storeToRefs } from "pinia";
 import Item from "@/components/ListingItem2.vue";
 
-import BreadCrumbs2 from "./Breadcrumbs2.vue";
+
 import "@/css/_variables.css"
 import "@/css/fonts.css"
 import "@/css/listing-icons.css"

@@ -17,11 +17,9 @@ import {
   useDarkGlobal,
   getFileLanguage,
 } from "../utils";
-import JKSLibButton from "./JKSLibButton2.vue";
-import { useLayoutStore } from "@/stores/layout";
-import { setJKSScriptPath, getJKSScriptPath } from "@/api/path";
+
 import "@/css/fonts.css";
-const layoutStore = useLayoutStore();
+
 const props = defineProps<{
   path: string;
   textValue: string;
@@ -29,9 +27,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: "change", payload: typeof editorValue.value): void;
-  (e: "save", text: string): void;
-  (e: "run"): void;
-  (e: "stop"): void;
+  (e: "save"): void;
 }>();
 
 self.MonacoEnvironment = {
@@ -70,9 +66,6 @@ onMounted(() => {
     theme: "vs-dark",
   });
 
-  getJKSScriptPath().then((res) => {
-    jksLibPath.value = res["jks_script_path"];
-  });
 
   container.value?.addEventListener("keydown", saveHandler);
 });
@@ -114,60 +107,16 @@ onUnmounted(() => {
 
 const Save = function () {
   console.log("save");
-  emit("save", editor.getValue());
-  saved.value = "已保存";
-  setTimeout(() => {
-    saved.value = "";
-  }, 2000);
+  emit("save");
+
 };
-const Run = function () {
-  emit("run");
-};
-const Stop = function () {
-  console.log("stop");
-  emit("stop");
-};
-const jksLibPath = ref<string>("");
-const getLibPath = function (libPath: string) {
-  libPath = libPath.replace(/\\$/, ""); // 去掉末尾的 \\
-  const postdata = {
-    jks_script_path: libPath,
-  };
-  setJKSScriptPath(postdata).then((res) => {
-    jksLibPath.value = libPath;
-  });
-};
-const saved = ref("");
+defineExpose({
+  getEditorValue: () => editor?.getValue() || "",
+});
 </script>
 
 <template>
   <div class="MonacoEditor">
-    <div class="header">
-      <div class="header-left">
-        <i
-          class="icon iconfont2 icon2-baocun"
-          title="保存文件"
-          @click="Save"
-        ></i>
-        <i class="icon iconfont2 icon2-yunhang" title="运行" @click="Run"></i>
-        <i class="icon iconfont2 icon2-tingzhi" title="停止" @click="Stop"></i>
-        <i
-          class="icon iconfont2 "
-          :class="
-            layoutStore.showTerminal
-              ? 'icon2-bottom_panel_close'
-              : 'icon2-bottom_panel_open'
-          "
-          title="终端"
-          @click="layoutStore.toggleShell()"
-        ></i>
-        <i>{{ saved }}</i>
-      </div>
-      <div class="header-right">
-        <span class="jks-lib" title="脚本库路径">{{ jksLibPath }}</span>
-        <JKSLibButton @select-lib="getLibPath"></JKSLibButton>
-      </div>
-    </div>
 
     <div ref="container" class="editor-container"></div>
   </div>
@@ -183,39 +132,7 @@ const saved = ref("");
   height: 50%;
   width: 100%;
 }
-.header {
-  height: 25px;
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  padding: 0 10px;
-  background-color: #333232;
 
-  color: #fff;
-}
-.header .header-left {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  flex-grow: 1;
-}
-.header .header-left i {
-  font-size: 16px;
-  margin-right: 15px; /* 可以根据需要调整间距 */
-  cursor: pointer;
-}
-
-.header .header-right {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-}
-.jks-lib {
-  font-size: 13px;
-  margin-right: 15px; /* 可以根据需要调整间距 */
-  font-family: Consolas, "Courier New", monospace;
-}
 .editor-container {
   height: calc(102% - 25px);
   width: 100%;
