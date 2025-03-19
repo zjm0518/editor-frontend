@@ -116,6 +116,14 @@ onMounted(() => {
   const groupPanesStr = localStorage.getItem("GroupPanes");
   if (groupPanesStr) {
     groupPanes.value = JSON.parse(groupPanesStr);
+    currentName.value = localStorage.getItem("currentName") || "";
+  currentGroupId.value = localStorage.getItem("currentGroupId") || "";
+  currentSessionID.value = localStorage.getItem("currentSessionID") || "";
+  if(currentName.value==""||currentGroupId.value==""||currentSessionID.value==""){
+    currentName.value=groupPanes.value[0].panes[0].name
+    currentGroupId.value=groupPanes.value[0].groupId
+    currentSessionID.value=groupPanes.value[0].panes[0].sessionId
+  }
   } else {
     groupPanes.value.push({
       groupId: uuidv4(),
@@ -126,11 +134,15 @@ onMounted(() => {
     });
     localStorage.setItem("GroupPanes", JSON.stringify(groupPanes.value));
     terminalNum.value = 1
+    currentName.value = "term1"
+    currentGroupId.value = groupPanes.value[0].groupId
+    currentSessionID.value = groupPanes.value[0].panes[0].sessionId
+    localStorage.setItem("currentGroupId", currentGroupId.value);
+    localStorage.setItem("currentName", currentName.value);
+    localStorage.setItem("currentSessionID", currentSessionID.value);
   }
 
-  currentName.value = localStorage.getItem("currentName") || "";
-  currentGroupId.value = localStorage.getItem("currentGroupId") || "";
-  currentSessionID.value = localStorage.getItem("currentSessionID") || "";
+
 
 
   getJKSScriptPath().then((res) => {

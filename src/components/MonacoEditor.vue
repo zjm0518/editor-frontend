@@ -134,7 +134,7 @@ defineExpose({
 }
 
 .editor-container {
-  height: calc(102% - 25px);
+  height: calc(102% - 30px);
   width: 100%;
 }
 :deep(.monaco-editor) {

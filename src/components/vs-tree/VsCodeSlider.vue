@@ -817,6 +817,7 @@ onMounted(() => {
   flex-direction: row;
   height: 30px;
   justify-content: space-between;
+  align-items: center;
   padding: 0 10px;
 
   .search {

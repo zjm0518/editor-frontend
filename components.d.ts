@@ -17,7 +17,6 @@ declare module 'vue' {
     ConfigPage3: typeof import('./src/components/config/ConfigPage3.vue')['default']
     ConfigPage4: typeof import('./src/components/config/ConfigPage4.vue')['default']
     ConfigPage5: typeof import('./src/components/config/ConfigPage5.vue')['default']
-    copy: typeof import('./src/components/ListingItem2 copy.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElForm: typeof import('element-plus/es')['ElForm']
     ElFormItem: typeof import('element-plus/es')['ElFormItem']
