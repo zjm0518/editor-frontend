@@ -20,7 +20,7 @@
 
 .header .header-left i {
     font-size: 16px;
-    margin-right: 15px;
+    margin-right: 8px;
     /* 可以根据需要调整间距 */
     cursor: pointer;
 }
@@ -31,6 +31,7 @@
     align-items: center;
     width: 20%;
     flex-grow: 0;
+    margin-left:8px;
 }
 
 .header .header-right JKSLibButton {
@@ -40,7 +41,7 @@
 .jks-lib {
     font-size: 13px;
     width: 80%;
-    margin-right: 10px;
+    margin-right: 8px;
     /* 可以根据需要调整间距 */
     font-family: Consolas, "Courier New", monospace;
     /* 关键部分 */
@@ -65,8 +66,17 @@
     flex-grow: 1;
 
     white-space: nowrap;
+    height: 100%;
+
+    
+   
    
 }
+.close:hover {
+
+    background-color: #858383;
+}
+
 .simplebar-content{
     width: 100%;
     height: 100%;
@@ -74,23 +84,30 @@
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
-}
-.simplebar-scrollable-x{
-    width: 70%;
-    height: 100%;
     flex-grow: 1;
+    white-space: nowrap;
+}
+
+.simplebar-content-wrapper{
+    height: 100% !important;
 }
 .header-tabs-item {
-    margin-left: 2%;
-    margin-right: 2%;
+    height: 100%;
+    padding-left: 2%;
+    padding-right: 2%;
     font-size: small;
     cursor: pointer;
     white-space: nowrap;
     /* 确保文本不换行 */
     flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     /* 不允许子元素缩小，确保它们保持横向排列 */
 }
-
+.Tabselected{
+    background-color:#222222;
+}
 .header-tabs-item-name {
     display: inline-block;
     /* 让span遵循宽度限制 */

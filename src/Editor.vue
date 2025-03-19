@@ -47,6 +47,9 @@ const getTextFromServer = function (path: string | undefined) {
           name: path.split("\\").pop() || "",
           path: path
         });
+        currentTab.value = headerTabs.value.length - 1;
+      }else{
+        currentTab.value=tabIndex
       }
       console.log("headerTabs", headerTabs.value)
     })
@@ -280,7 +283,11 @@ interface TabLabel {
 
 }
 const headerTabs=ref<Array<TabLabel>>([])
+const currentTab=ref(0)
+const deleteTab=function(index:number){
 
+  headerTabs.value.splice(index,1)
+}
 
   import simplebar from 'simplebar-vue';
   import 'simplebar-vue/dist/simplebar.min.css';
@@ -309,11 +316,11 @@ const headerTabs=ref<Array<TabLabel>>([])
                   " title="终端" @click="layoutStore.toggleShell()"></i>
                 <i>{{ saved }}</i>
               </div>
-              <simplebar data-simplebar-auto-hide="true" >
+              <simplebar data-simplebar-auto-hide="true" class="header-tabs">
 
 
                 <div class="header-tabs-item" v-for="(item,index) in headerTabs" :key="index"
-                  :class="{ 'selected': item.path == selectedPath }" @click="getTextFromServer(item.path)">
+                  :class="{ 'Tabselected': item.path == selectedPath }" @click="getTextFromServer(item.path)">
 
                     <span class="header-tabs-item-name">{{ item.name }}</span>
 
