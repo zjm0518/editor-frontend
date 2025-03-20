@@ -290,22 +290,29 @@ const deleteTab=function(index:number){
   console.log("deleteTab",index,currentTab.value)
   if(index==0 && headerTabs.value.length==1){
     currentTab.value=0
-  }else if(index<=currentTab.value){
+  }else if(index<currentTab.value){
 
     headerTabs.value.splice(index,1)
     currentTab.value=currentTab.value-1
     selectedPath.value=headerTabs.value[currentTab.value].path
     getTextFromServer(selectedPath.value)
-  }else{
+  }else if(index>currentTab.value){
     headerTabs.value.splice(index,1)
     selectedPath.value=headerTabs.value[currentTab.value].path
     //getTextFromServer(selectedPath.value)
+  }else{
+    headerTabs.value.splice(index,1)
+    if(currentTab.value>headerTabs.value.length-1){
+      currentTab.value=currentTab.value-1
+    }
+    selectedPath.value=headerTabs.value[currentTab.value].path
+    getTextFromServer(selectedPath.value)
   }
-
 }
 provide("selectedPath", selectedPath)
-  import simplebar from 'simplebar-vue';
-  import 'simplebar-vue/dist/simplebar.min.css';
+import simplebar from 'simplebar-vue';
+import 'simplebar-vue/dist/simplebar.min.css';
+
 </script>
 
 <template>
@@ -332,7 +339,6 @@ provide("selectedPath", selectedPath)
                 <i>{{ saved }}</i>
               </div>
               <simplebar data-simplebar-auto-hide="true" class="header-tabs">
-
 
                 <div class="header-tabs-item" v-for="(item,index) in headerTabs" :key="index"
                   :class="{ 'Tabselected': item.path == selectedPath }" @click="getTextFromServer(item.path)" >

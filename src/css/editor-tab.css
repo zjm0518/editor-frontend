@@ -72,11 +72,17 @@
    
    
 }
-.close:hover {
-
+.header-tabs-item .close{
+    opacity: 0;
+}
+.header-tabs-item:hover .close {
+    opacity: 1; /* 鼠标悬停时显示 */
+  visibility: visible;
+    
+}
+.close:hover{
     background-color: #858383;
 }
-
 .simplebar-content{
     width: 100%;
     height: 100%;

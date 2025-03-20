@@ -1,3 +1,4 @@
+
 import { defineStore } from 'pinia';
 interface ConfigRecord{
   ip:string,
@@ -22,7 +23,7 @@ export const useConfigStore = defineStore('config', {
       this.formData = { ...this.formData, ...data };
     },
     updateToServer(){
-      fetch("/api/HandleInitConfig", {
+      fetch("/api/InitConfig", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(this.formData)
@@ -31,6 +32,18 @@ export const useConfigStore = defineStore('config', {
         .then((data) => console.log("Response:", data))
         .catch((error) => console.error("Error:", error));
     },
+    getFromServer(){
+      fetch("/api/GetConfig", {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+         
+          this.formData = data;
+        })
+        .catch((error) => console.error("Error:", error));
+    }
 
   },
 });

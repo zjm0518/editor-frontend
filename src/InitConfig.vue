@@ -6,11 +6,11 @@
     <div class="config-page">
       <div class="config-steps">
         <el-steps :active="active" finish-status="success" align-center>
-          <el-step title="步骤 1"></el-step>
-          <el-step title="步骤 2"></el-step>
-          <el-step title="步骤 3"></el-step>
-          <el-step title="步骤 4"></el-step>
-          <el-step title="步骤 5"></el-step>
+          <el-step title="步骤 1" @click="jump(1)"></el-step>
+          <el-step title="步骤 2" @click="jump(2)"></el-step>
+          <el-step title="步骤 3" @click="jump(3)"></el-step>
+          <el-step title="步骤 4" @click="jump(4)"></el-step>
+          <el-step title="步骤 5" @click="jump(5)"></el-step>
         </el-steps>
       </div>
 
@@ -59,6 +59,11 @@ const previous = () => {
   currentIndex.value = previousPageNumber;
   router.push(`/init/${previousPageNumber}`);
 };
+const jump = (index: number) => {
+  active.value = index - 1;
+  currentIndex.value = index;
+  router.push(`/init/${index}`);
+};
 const save = () => {
   configstorage.updateToServer();
 };
@@ -70,6 +75,7 @@ onMounted(() => {
   const currentPathNumber = parseInt(currentPathName);
   active.value = currentPathNumber - 1;
   currentIndex.value = currentPathNumber;
+  configstorage.getFromServer();
 });
 </script>
 <style scoped>
@@ -117,5 +123,8 @@ onMounted(() => {
 }
 :deep(.el-step__title.is-success) {
   color: #4085fc;
+}
+:deep(.el-step){
+  cursor: pointer;
 }
 </style>

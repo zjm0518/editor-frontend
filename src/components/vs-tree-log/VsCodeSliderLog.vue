@@ -374,10 +374,6 @@ onMounted(() => {
   }
 }
 
-.dark {
-  background-color: #222222;
-  color: #fff;
-}
 
 .light {
   background-color: #f2f2f2;
@@ -409,7 +405,8 @@ onMounted(() => {
   height: 30px;
   justify-content: space-between;
   padding: 0 10px;
-
+  background-color: #f2f2f2;
+  color: #303133;
   .search {
     position: absolute;
     left: 0;
