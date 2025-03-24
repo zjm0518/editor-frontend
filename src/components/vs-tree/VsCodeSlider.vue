@@ -151,7 +151,6 @@ const  getDirStructure = function (path: string, refresh = false) {
 
       if (refresh) {
         defaultExpandKeys.value = [treeData.value[0].path];
-
       }
 
     })
@@ -176,12 +175,20 @@ function openNode() {
  * 添加目录
  */
 function addFolder() {
-  const currentNode = elTreeRef.value.getCurrentNode();
+  const currentNode =elTreeRef.value.currentNode;
   if (currentNode) {
-    const child = currentNode.children[0];
+    isAddingDir.value=true;
+    if (currentNode.data.isDir){
+      const existingNewFile = currentNode.data.children.find(child => child.isNew);
+      if (existingNewFile) {
+        // 如果有正在创建的文件，直接聚焦输入框
+        addInputRef.value && addInputRef.value.focus();
+        return;
+      }
+    const child = currentNode.data.children[0];
     if (child) {
       // 非空目录
-      const node = elTreeRef.value.getNode(child.key);
+      const node = elTreeRef.value.getNode(child.path);
       elTreeRef.value.insertBefore(
         {
           children: [],
@@ -190,7 +197,7 @@ function addFolder() {
           isRename: false,
           isDir: true,
           label: "",
-          path: `${currentNode.path}\\__default__`,
+          path: `${currentNode.data.path}\\__default__`,
         },
         node
       );
@@ -204,20 +211,41 @@ function addFolder() {
           key: uuidv4(),
           isDir: true,
           label: "",
-          path: `${currentNode.path}\\__default__`,
+          path: `${currentNode.data.path}\\__default__`,
         },
         currentNode
       );
     }
-    openNode().then((res) => {
+
+  } else {
+    //is file
+    const existingNewFile = currentNode.parent.data.children.find(child => child.isNew);
+      if (existingNewFile) {
+        // 如果有正在创建的文件，直接聚焦输入框
+        addInputRef.value && addInputRef.value.focus();
+        return;
+      }
+      elTreeRef.value.insertAfter(
+        {
+          children: [],
+          isNew: true,
+          isRename: false,
+          key: uuidv4(),
+          isDir: true,
+          label: "",
+          path: `${currentNode.parent.data.path}\\__default__`,
+        },
+        currentNode
+      );
+  }
+  openNode().then((res) => {
       addInputRef.value && addInputRef.value.focus();
       const rect = addInputRef.value.input.getBoundingClientRect();
       errorInfoPosition.left = rect.left - 12;
       errorInfoPosition.top = rect.top + 26;
       errorInfoPosition.width = rect.width + 22;
     });
-  } else {
-  }
+}
 }
 
 /**
@@ -227,11 +255,13 @@ function addFile() {
   const currentNode = elTreeRef.value.currentNode;
   console.log("addFile",currentNode)
   if (currentNode) {
+    isAddingFile.value=true;
     if (currentNode.data.isDir) {
       // 查找是否已经有正在创建的文件
       const existingNewFile = currentNode.data.children.find(child => child.isNew);
       if (existingNewFile) {
         // 如果有正在创建的文件，直接聚焦输入框
+        console.log("already exist",existingNewFile)
         addInputRef.value && addInputRef.value.focus();
         return;
       }
@@ -300,6 +330,9 @@ function cancelCurrentClick() {
   elTreeRef.value.setCurrentKey(null);
 }
 const addFileRef=ref(null)
+const addDirRef=ref(null)
+const isAddingFile=ref(false)
+const isAddingDir=ref(false)
 const lastMouseDownTarget = ref(null); // 记录 `mousedown` 目标
 // 记录 `mousedown` 目标
 function handleMouseDown(event) {
@@ -310,10 +343,12 @@ const handleBlur=function(data, node){
   //blur
         // 如果 `blur` 发生时，最近的 `mousedown` 目标是 `addFileRef`，则阻止删除
         console.log("lastMouseDownTarget.value",lastMouseDownTarget.value,addFileRef.value)
-        if (lastMouseDownTarget.value === addFileRef.value) {
+        if (isAddingFile.value&&lastMouseDownTarget.value === addFileRef.value) {
           return;
         }
-
+        if (isAddingDir.value&&lastMouseDownTarget.value === addDirRef.value) {
+          return;
+        }
         createFile(data,node,"blur")
 
 }
@@ -348,14 +383,18 @@ function createFile(data, node, type) {
       postFile(postdata)
         .then((res) => {
           console.log(res);
-       data.isNew = false;
+        /*   data.isNew = false;
           data.isRename=false;
           data.label = newName;
-          data.path = data.path.replace("__default__", newName);
+          data.path = data.path.replace("__default__", newName); */
+          elTreeRef.value.remove(node);
           newFileName.value = "";
           createError.value = "";
           getDirStructure(currentFolder.value);
-          lastMouseDownTarget.value=null
+          lastMouseDownTarget.value=elTreeRef.value
+          //console.log(elTreeRef.value.currentNode.data.path)
+         // setCurrentNode(elTreeRef.value.currentNode.data.path.replace(/\//g, "\\"))
+
         })
         .catch((err) => {
           elTreeRef.value.remove(node);
@@ -368,7 +407,8 @@ function createFile(data, node, type) {
     newFileName.value = "";
     createError.value = "";
   }
-
+  isAddingDir.value=false;
+  isAddingFile.value=false;
 
 }
 
@@ -634,11 +674,11 @@ const handleNodeCollapse = function (data, node, instance) {
   if (index !== -1) {
     defaultExpandKeys.value.splice(index, 1); // 删除该元素
   }
-  console.log(" defaultExpandKeys.value", defaultExpandKeys.value);
+  console.log(" Collapse defaultExpandKeys.value", defaultExpandKeys.value);
 };
 const handleNodeExpand = function (data, node, instance) {
   defaultExpandKeys.value.push(data.path);
-  console.log(" defaultExpandKeys.value", defaultExpandKeys.value);
+  console.log(" Expand defaultExpandKeys.value", defaultExpandKeys.value);
 };
 onMounted(() => {
   getUserHomePath().then((res) => {
@@ -669,6 +709,7 @@ watch(()=>selectedPath.value,(val)=>{
 })
 
 const handleCurrentChange=function(data, node){
+  console.log("handleCurrentChange",data,node)
   if(data == null || node == null){
        setCurrentNode(currentFolder.value.replace(/\//g, "\\"));
        elTreeRef.value.currentNode=elTreeRef.value.root.childNodes[0]
@@ -731,6 +772,7 @@ const handleCurrentChange=function(data, node){
           class="icon iconfont vs-add-folder cursor-pointer"
           title="添加目录文件"
           @click="addFolder"
+          ref="addDirRef"
         ></i>
         <i
           v-if="!openAllState"
@@ -793,10 +835,11 @@ const handleCurrentChange=function(data, node){
               :class="createError ? 'error' : ''"
             >
               <ElInput
-                ref="addInputRef"
+
                 v-model="newFileName"
                 @keyup.enter="createFile(data, node, 'entry')"
                 @blur="handleBlur(data, node)"
+                 ref="addInputRef"
               />
             </div>
             <div
