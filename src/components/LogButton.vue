@@ -154,7 +154,7 @@ const itemWeight = ref<number>(0);
   const emit = defineEmits<{
   (e: "selectLogPath", libPath: string): void;
 }>();
-const showLimit = ref<number>(100);
+const showLimit = ref<number>(10000);
 const base64 = (name: string) => Base64.encodeURI(name);
 const handleTree = function () {
   visible.value = true;

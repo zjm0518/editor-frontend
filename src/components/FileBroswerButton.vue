@@ -158,7 +158,7 @@ const listing = ref<HTMLElement | null>(null);
 const emit = defineEmits<{
   (e: "selectDir", dirPath: string): void;
 }>();
-const showLimit = ref<number>(100);
+const showLimit = ref<number>(10000);
 const base64 = (name: string) => Base64.encodeURI(name);
 const handleTree = function () {
   visible.value = true;
