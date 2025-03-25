@@ -59,6 +59,15 @@ const getTextFromServer = function (path: string | undefined) {
       console.log(err);
     });
 };
+
+const deleteFile=function(path:string){
+    path = path.replace(/\//g, "\\");
+    const headerTabIndex = headerTabs.value.findIndex(item => item.path == path);
+    console.log("headerTabIndex",headerTabIndex,path)
+    if(headerTabIndex!=-1) {
+      deleteTab(headerTabIndex);
+    }
+}
 const saveTextToServer = function () {
 
   const text: string | undefined=monacoeditor.value.getEditorValue()
@@ -289,7 +298,9 @@ const currentTab=ref(0)
 const deleteTab=function(index:number){
   console.log("deleteTab",index,currentTab.value)
   if(index==0 && headerTabs.value.length==1){
-    currentTab.value=0
+    currentTab.value=0;
+    headerTabs.value.splice(index,1)
+    text.value="";
   }else if(index<currentTab.value){
 
     headerTabs.value.splice(index,1)
@@ -320,7 +331,7 @@ import 'simplebar-vue/dist/simplebar.min.css';
     <splitpanes class="Panel">
       <pane size="15" min-size="10">
         <div class="folder">
-          <VsCodeSlider class="file" theme="dark" @get-text-from-path="getTextFromServer"></VsCodeSlider>
+          <VsCodeSlider class="file" theme="dark" @get-text-from-path="getTextFromServer" @delete-file="deleteFile"> </VsCodeSlider>
         </div>
       </pane>
       <pane>
@@ -336,7 +347,7 @@ import 'simplebar-vue/dist/simplebar.min.css';
                     ? 'icon2-bottom_panel_close'
                     : 'icon2-bottom_panel_open'
                   " title="终端" @click="layoutStore.toggleShell()"></i>
-                <i>{{ saved }}</i>
+                <i >{{ saved }}</i>
               </div>
               <simplebar data-simplebar-auto-hide="true" class="header-tabs">
 

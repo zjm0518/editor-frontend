@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, reactive, computed, nextTick } from "vue";
+import { ref, reactive, computed, nextTick,inject } from "vue";
 
 const menuList = [
   {
@@ -20,6 +20,7 @@ const position = reactive({
 });
 const isDir = ref(false);
 const emits = defineEmits(["handleMenu"]);
+const rightTarget=inject("rightTarget");
 function showMenu(event, data, node, TreeNode) {
   showMenuStatus.value = true;
   isDir.value = data.isDir || false;
@@ -30,14 +31,39 @@ function showMenu(event, data, node, TreeNode) {
       inputRef.value.focus();
     }
   });
+  console.log("showMenuStatus", showMenuStatus.value);
 }
 
-function hiddenMenuStatus() {
+/* function hiddenMenuStatus() {
   setTimeout(() => {
+    console.log("hiddenMenuStatus");
     showMenuStatus.value = false;
+    const el_node = rightTarget.value.closest(".el-tree-node");
+    el_node.classList.remove("is-right-click");
   }, 200);
-}
+} */
+function hiddenMenuStatus(event) {
+  if (!showMenuStatus.value) return;
 
+  // 确保点击的是菜单外部
+  const menuElement = document.querySelector(".right-menu");
+  if (menuElement && menuElement.contains(event.target)) {
+    return;
+  }
+  if (rightTarget.value && rightTarget.value.contains(event.target) && event.button!=0) {
+    return;
+
+  }
+
+  console.log("hiddenMenuStatus 执行");
+  showMenuStatus.value = false;
+
+  if (rightTarget.value) {
+    const el_node = rightTarget.value.closest(".el-tree-node");
+    el_node?.classList.remove("is-right-click");console.log("bbb");
+    rightTarget.value = null;
+  }
+}
 const positionX = computed(() => {
   return position.left;
 });
@@ -59,10 +85,19 @@ const currentMenuList = computed(() => {
 function clickMenu(item) {
 
   emits("handleMenu", item.key);
+  showMenuStatus.value = false;
+
+if (rightTarget.value) {
+  const el_node = rightTarget.value.closest(".el-tree-node");
+  el_node?.classList.remove("is-right-click");console.log("ccc");
+}
+
+
 }
 
 defineExpose({
   showMenu,
+  hiddenMenuStatus
 });
 </script>
 <template>
@@ -82,11 +117,11 @@ defineExpose({
     >
       {{ item.label }}
     </div>
-    <input ref="inputRef" class="menu_input" @blur="hiddenMenuStatus" />
+    <input ref="inputRef" class="menu_input" />
   </div>
 </template>
 
-<script></script>
+
 
 <style lang="scss" scoped>
 .right-menu {
@@ -98,6 +133,8 @@ defineExpose({
   padding: 4px 10px;
   display: flex;
   flex-direction: column;
+  background-color: #8f8d8d;
+  font-family: Consolas, "Courier New";
   z-index:1;
   .menu_input {
     width: 0;
@@ -114,7 +151,7 @@ defineExpose({
     border-radius: 4px;
     cursor: pointer;
     &:hover {
-      background-color: #1296db;
+      background-color: #c5c7c8;
       color: white;
     }
   }

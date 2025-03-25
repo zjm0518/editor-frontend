@@ -41,7 +41,6 @@ const tokenUrl = [
 
 const options = {
   wsUrl: "ws://localhost:3669/ws?session_id="+props.sessionID,
-  //wsUrl: "ws://localhost:7681",
   tokenUrl : tokenUrl,
   flowControl: flowControl,
   termOptions: termOptions,

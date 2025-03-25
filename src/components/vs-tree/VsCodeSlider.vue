@@ -1,6 +1,6 @@
 heme
 <script setup lang="ts">
-import { computed, watch, reactive, ref, nextTick, onMounted, inject,onUnmounted } from "vue";
+import { computed, watch, reactive, ref, nextTick, onMounted, inject,onUnmounted, provide } from "vue";
 import { getFileIcon, convertToTreeData, sortDirTree } from "./utils/utils";
 import { ElTree, ElInput } from "element-plus";
 import { ArrowRightBold } from "@element-plus/icons-vue";
@@ -20,10 +20,7 @@ import {
 } from "@/api/path";
 //import RemoteTreeFile from "../RemoteTreeFile.vue";
 import FileBroswerButton from "../FileBroswerButton.vue";
-import { el } from "element-plus/es/locale/index.mjs";
-import { get } from "node_modules/axios/index.cjs";
-import type { RefSymbol } from "@vue/reactivity";
-import { set } from "@vueuse/core";
+
 interface Tree {
   [key: string]: any;
 }
@@ -44,6 +41,7 @@ const emits = defineEmits<{
   (e: "addFile", data: object): void;
   (e: "addFolder", data: FileData): void;
   (e: "getTextFromPath", path: string | undefined): void;
+  (e:"deleteFile",path:string):void;
 }>();
 
 const elTreeRef = ref(null);
@@ -103,15 +101,49 @@ function handleNodeClick(obj, node, TreeNode, Event) {
   }
   //emits('fileClick', obj, node, TreeNode, Event);
 }
+const rightTarget= ref(null);
+const rightData=ref(null);
+provide("rightTarget", rightTarget);
+watch(
+  () => rightTarget.value,
+  (newVal, oldVal) => {
+    console.log("watch triggered:", newVal, oldVal);
+    let oldNode,newNode;
+    // 移除上一个被右键点击的节点的类
+    if (oldVal) {
+      oldNode = oldVal.closest(".el-tree-node");
 
+    }
+
+    // 给新的添加 is-right-click
+    if (newVal) {
+      newNode = newVal.closest(".el-tree-node");
+
+    }
+    console.log("watch triggered:", newNode, oldNode,oldNode == newNode);
+    if(oldNode && newNode && oldNode == newNode){
+      newNode && newNode.classList.add("is-right-click");
+      return;
+    }
+    oldNode && oldNode.classList.remove("is-right-click");console.log("aaa");
+    newNode && newNode.classList.add("is-right-click");
+  },
+  { flush: "post" } // 确保 DOM 更新后执行
+);
 function handleContentMenuClick(event, data, node, TreeNode) {
 
   //elTreeRef.value.setCurrentKey(data.path);
   currentNodeData.data = data;
   currentNodeData.node = node;
-  //console.log("handleContentMenuClick",data)
+  console.log("handleContentMenuClick",data,treeData.value)
+
+  rightTarget.value=event.target;
+  rightData.value=data;
+
   if (rightContentMenuRef.value && rightContentMenuRef.value) {
     rightContentMenuRef.value.showMenu(event, data, node, TreeNode);
+  }else{
+    //el_node.classList.remove("is-right-click");
   }
 }
 
@@ -133,6 +165,7 @@ function expandRecursive(node, value) {
     });
   }
 }
+
 const  getDirStructure = function (path: string, refresh = false) {
   currentFolder.value = path;
   selectedFolder.value = path;
@@ -147,8 +180,11 @@ const  getDirStructure = function (path: string, refresh = false) {
     .then((res) => {
       const dir = res.data.data;
       sortDirTree(dir);
+      //treeData.value = [];
+
       treeData.value = convertToTreeData(dir);
 
+    //  elTreeRef.value?.reload();
       if (refresh) {
         defaultExpandKeys.value = [treeData.value[0].path];
       }
@@ -248,17 +284,22 @@ function addFolder() {
 }
 }
 
+
+
 /**
  * 添加文件
  */
 function addFile() {
-  const currentNode = elTreeRef.value.currentNode;
-  console.log("addFile",currentNode)
+//  setCurrentNode(currentFolder.value.replace(/\//g, "\\"));
+ // elTreeRef.value.currentNode=elTreeRef.value.root.childNodes[0]
+
+  const currentNode = elTreeRef.value.getCurrentNode();
+
   if (currentNode) {
     isAddingFile.value=true;
-    if (currentNode.data.isDir) {
+    if (currentNode.isDir) {
       // 查找是否已经有正在创建的文件
-      const existingNewFile = currentNode.data.children.find(child => child.isNew);
+      const existingNewFile = currentNode.children.find(child => child.isNew);
       if (existingNewFile) {
         // 如果有正在创建的文件，直接聚焦输入框
         console.log("already exist",existingNewFile)
@@ -274,12 +315,13 @@ function addFile() {
           key: uuidv4(),
           isDir: false,
           label: "",
-          path: `${currentNode.data.path}\\__default__`,
+          path: `${currentNode.path}\\__default__`,
         },
         currentNode
       );
-      console.log("addInputRef",currentNode, addInputRef.value)
-      console.log("exist",currentNode.data.children.find(child => child.isNew));
+
+      //console.log("addInputRef",currentNode, addInputRef.value)
+      //console.log("exist",currentNode.data.children.find(child => child.isNew));
 
       openNode().then((res) => {
 
@@ -291,7 +333,10 @@ function addFile() {
       });
     } else {
       //isfile
-      const existingNewFile = currentNode.parent.data.children.find(child => child.isNew);
+      const currnode=elTreeRef.value.getNode(currentNode.path);
+      const parentnode=elTreeRef.value.getNode(currnode.parent.data.path);
+
+      const existingNewFile = parentnode.data.children.find(child => child.isNew);
       if (existingNewFile) {
         // 如果有正在创建的文件，直接聚焦输入框
         addInputRef.value && addInputRef.value.focus();
@@ -305,7 +350,7 @@ function addFile() {
           key: uuidv4(),
           isDir: false,
           label: "",
-          path: `${currentNode.parent.data.path}\\__default__`,
+          path: `${parentnode.data.path}\\__default__`,
         },
         currentNode
       );
@@ -344,6 +389,7 @@ const handleBlur=function(data, node){
         // 如果 `blur` 发生时，最近的 `mousedown` 目标是 `addFileRef`，则阻止删除
         console.log("lastMouseDownTarget.value",lastMouseDownTarget.value,addFileRef.value)
         if (isAddingFile.value&&lastMouseDownTarget.value === addFileRef.value) {
+          console.log("isAddingFile",isAddingFile.value,lastMouseDownTarget.value === addFileRef.value)
           return;
         }
         if (isAddingDir.value&&lastMouseDownTarget.value === addDirRef.value) {
@@ -352,18 +398,23 @@ const handleBlur=function(data, node){
         createFile(data,node,"blur")
 
 }
+const handleBlur2=function(data,node){
+  console.log("handleBlur2",data,node)
+}
 /**
  * 创建文件
  * @param data
  * @param node
  */
 function createFile(data, node, type) {
-  const currentNode = elTreeRef.value.currentNode;
+  const currentNodeData = elTreeRef.value.getCurrentNode();
   if (newFileName.value && newFileName.value.trim()) {
     const newName = newFileName.value.trim();
     //查看同名
-    const samename=currentNode.data.isDir?currentNode.data.children.find((item) => item.label === newName):
-    currentNode.parent.data.children.find((item) => item.label === newName);
+    const currnode=elTreeRef.value.getNode(currentNodeData.path);
+    const parentnode=elTreeRef.value.getNode(currnode.parent.data.path);
+    const samename=currentNodeData.isDir?currentNodeData.children.find((item) => item.label === newName):
+    parentnode.data.children.find((item) => item.label === newName);
     //parentisdir
     if (samename) {
       if (type === "entry") {
@@ -390,10 +441,12 @@ function createFile(data, node, type) {
           elTreeRef.value.remove(node);
           newFileName.value = "";
           createError.value = "";
-          getDirStructure(currentFolder.value);
+         // getDirStructure(currentFolder.value);
+           getDirStructure(currentFolder.value);
+
           lastMouseDownTarget.value=elTreeRef.value
           //console.log(elTreeRef.value.currentNode.data.path)
-         // setCurrentNode(elTreeRef.value.currentNode.data.path.replace(/\//g, "\\"))
+         //setCurrentNode(selectedPath.value.replace(/\//g, "\\"))
 
         })
         .catch((err) => {
@@ -439,11 +492,19 @@ function renameFileFunc(data, node, type) {
         .then((res) => {
           //success
           console.log(res);
-          data.isRename = false;
+         /*  data.isRename = false;
           data.label = reName;
-          data.path = data.path.replace(/(\\|\/)([^\\\/]+)$/, `$1${reName}`);
-          renameFileName.value = "";
-          createError.value = "";
+          data.path = data.path.replace(/(\\|\/)([^\\\/]+)$/, `$1${reName}`); */
+
+              if(elTreeRef.value.getCurrentNode().path==currentNodeData.data.path){
+
+             setCurrentNode(currentFolder.value.replace(/\//g, "\\"));
+            }
+             emits("deleteFile",data.path);
+             elTreeRef.value.remove(node);
+               getDirStructure(currentFolder.value);
+             renameFileName.value = "";
+              createError.value = "";
         })
         .catch((err) => {
           console.log(err);
@@ -472,24 +533,35 @@ function clickMenu(key) {
   }
 }
 const deleteFile222 = function () {
-  //console.log("deleteFile",currentNodeData.data)
+  //console.log("deleteFile",currentNodeData.data,rightData.value)
   const postdata = {
     path: currentNodeData.data.path,
     isDir: currentNodeData.data.isDir,
   };
   deleteFile(postdata).then((res) => {
+
+
+   // console.log("issss",elTreeRef.value.getCurrentNode().path,currentNodeData.data.path)
+    if(elTreeRef.value.getCurrentNode().path==currentNodeData.data.path){
+
+      setCurrentNode(currentFolder.value.replace(/\//g, "\\"));
+    }
+    emits("deleteFile",currentNodeData.data.path);
     elTreeRef.value.remove(currentNodeData.node);
     currentNodeData.data = "";
     currentNodeData.node = "";
+    rightData.value=null;
   });
 };
 const showRenameInput = function () {
-  const currentNode = elTreeRef.value.getCurrentNode();
-  const node = elTreeRef.value.getNode(currentNode.key);
+
+
+  const node = elTreeRef.value.getNode(rightData.value.path);
+  console.log("showRenameInput",node,rightData.value)
   node.data.isRename = true;
 
   renameFileName.value = node.data.label;
-  console.log(renameInputRef.value);
+
   nextTick(() => {
     if (renameInputRef.value) {
       renameInputRef.value.select();
@@ -686,12 +758,14 @@ onMounted(() => {
 
   });
   document.addEventListener("mousedown", handleMouseDown,true);
+  document.addEventListener("mousedown",rightContentMenuRef.value.hiddenMenuStatus ,true);
   setTimeout(()=>{
     setCurrentNode(currentFolder.value.replace(/\//g, "\\"));
     elTreeRef.value.currentNode=elTreeRef.value.root.childNodes[0]
   },1000)
 
 });
+
 // 在 `unmounted` 时移除全局 `mousedown` 事件，防止内存泄漏
 onUnmounted(() => {
   document.removeEventListener("mousedown", handleMouseDown,true);
@@ -699,7 +773,6 @@ onUnmounted(() => {
 const setCurrentNode=function(path:string){
 
   const node = elTreeRef.value.getNode(path);
-
   elTreeRef.value.setCurrentKey(node.key);
 
 }
@@ -709,7 +782,7 @@ watch(()=>selectedPath.value,(val)=>{
 })
 
 const handleCurrentChange=function(data, node){
-  console.log("handleCurrentChange",data,node)
+  //console.log("handleCurrentChange",data,node)
   if(data == null || node == null){
        setCurrentNode(currentFolder.value.replace(/\//g, "\\"));
        elTreeRef.value.currentNode=elTreeRef.value.root.childNodes[0]
@@ -797,6 +870,7 @@ const handleCurrentChange=function(data, node){
     <div class="el-tree-view" @contextmenu.prevent @click="cancelCurrentClick">
       <ElTree
         ref="elTreeRef"
+
         :data="treeData"
         :default-expanded-keys="defaultExpandKeys"
         :filter-node-method="filterNode"
@@ -811,6 +885,7 @@ const handleCurrentChange=function(data, node){
         draggable
         :allow-drag="() => {return false;}"
         @current-change="handleCurrentChange"
+
       >
         <template #default="{ node, data }">
           <span
@@ -879,7 +954,7 @@ const handleCurrentChange=function(data, node){
 .vs-slider {
   position: relative;
   background-color: #222222;
-  font-family: Consolas, "Courier New", monospace;
+  font-family: Consolas, "Courier New";
   height: 100%;
 }
 
@@ -928,6 +1003,12 @@ const handleCurrentChange=function(data, node){
 
     color: white;
   }
+  &.is-right-click > .el-tree-node__content {
+    background-color: rgba(47, 89, 225, 0.3) !important;
+
+    color: white;
+  }
+
 }
 
 .dark {

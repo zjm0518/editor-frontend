@@ -64,6 +64,7 @@ onMounted(() => {
   editor = monaco.editor.create(container.value!, {
     language: "python",
     theme: "vs-dark",
+    unusualLineTerminators:"off"
   });
 
 
