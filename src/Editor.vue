@@ -351,10 +351,7 @@ import 'simplebar-vue/dist/simplebar.min.css';
                 <i class="icon iconfont2 icon2-baocun" title="保存文件" @click="saveTextToServer"></i>
                 <i class="icon iconfont2 icon2-yunhang" title="运行" @click="RunJKS"></i>
                 <i class="icon iconfont2 icon2-tingzhi" title="停止" @click="Stop"></i>
-                <i class="icon iconfont2 " :class="layoutStore.showTerminal
-                    ? 'icon2-bottom_panel_close'
-                    : 'icon2-bottom_panel_open'
-                  " title="终端" @click="layoutStore.toggleShell()"></i>
+
                 <i >{{ saved }}</i>
               </div>
               <simplebar data-simplebar-auto-hide="true" class="header-tabs">
@@ -381,11 +378,15 @@ import 'simplebar-vue/dist/simplebar.min.css';
             ref="monacoeditor" />
           </pane>
 
-          <pane v-if="showTerminal" min-size="2" :size="TerminalSize">
+          <pane min-size="2" :size="TerminalSize">
             <div class="header-bar">
               <i class="iconfont2 icon2-plus" title="New terminal" @click="addGroupPane"></i>
+              <i class="icon iconfont2 " :class="layoutStore.showTerminal
+                    ? 'icon2-bottom_panel_close'
+                    : 'icon2-bottom_panel_open'
+                  " title="终端" @click="layoutStore.toggleShell()"></i>
             </div>
-            <splitpanes>
+            <splitpanes v-if="showTerminal">
               <pane min-size="70" size="80">
 
                 <splitpanes v-for="(group, groupIndex) in groupPanes" :key="group.groupId"
