@@ -88,7 +88,10 @@ const showAddFolder = computed(() => {
 });
 
 function handleNodeClick(obj, node, TreeNode, Event) {
-
+  Event.stopPropagation();
+  if(obj.isNew || obj.isRename){
+    return;
+  }
   currentNodeData.data = obj;
   currentNodeData.node = node;
 
@@ -131,7 +134,9 @@ watch(
   { flush: "post" } // 确保 DOM 更新后执行
 );
 function handleContentMenuClick(event, data, node, TreeNode) {
-
+  if(data.isNew || data.isRename){
+    return;
+  }
   //elTreeRef.value.setCurrentKey(data.path);
   currentNodeData.data = data;
   currentNodeData.node = node;
@@ -373,6 +378,8 @@ function cancelCurrentClick() {
   //currentNodeData.data = null;
   //currentNodeData.node = null;
   //elTreeRef.value.setCurrentKey(null);
+  console.log("cancelCurrentClick")
+  setCurrentNode(currentFolder.value.replace(/\//g, "\\"));
 }
 const addFileRef=ref(null)
 const addDirRef=ref(null)
@@ -769,7 +776,7 @@ onMounted(() => {
 // 在 `unmounted` 时移除全局 `mousedown` 事件，防止内存泄漏
 onUnmounted(() => {
   document.removeEventListener("mousedown", handleMouseDown,true);
-  document.removeEventListener("mousedown",rightContentMenuRef.value.hiddenMenuStatus ,true);
+  document.removeEventListener("mousedown",rightContentMenuRef?.value?.hiddenMenuStatus ,true);
 });
 const setCurrentNode=function(path:string){
 
@@ -914,7 +921,8 @@ const handleCurrentChange=function(data, node){
                 @keyup.enter="createFile(data, node, 'entry')"
                 @blur="handleBlur(data, node)"
                  ref="addInputRef"
-
+                @click.stop
+                @mousedown.stop
               />
           </span>
             <span
@@ -1164,5 +1172,14 @@ const handleCurrentChange=function(data, node){
   background-color: #f2f2f2;
 }
 
+.el-input{
+  background-color: #222222;
+}
+:deep(.el-input__wrapper){
+  background-color: #222222 !important;
 
+}
+:deep(.el-input__inner ){
+  color: #fff !important;
+}
 </style>

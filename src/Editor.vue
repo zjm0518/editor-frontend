@@ -21,10 +21,11 @@ import { setJKSScriptPath, getJKSScriptPath } from "@/api/path";
 import { v4 as uuidv4 } from "uuid";
 import JKSLibButton from "./components/JKSLibButton2.vue";
 const layoutStore = useLayoutStore();
-const { showTerminal } = storeToRefs(layoutStore);
+const { showTerminal,TerminalSize } = storeToRefs(layoutStore);
 
 
 const text = ref("");
+const isBinary = ref(false);  // 是否是二进制文件
 const selectedPath = ref("");
 
 const getTextFromServer = function (path: string | undefined) {
@@ -35,14 +36,21 @@ const getTextFromServer = function (path: string | undefined) {
     url: "/getTextFromPath",
     baseURL: "api/",
     headers: {
-      Accept: "text/plain; charset=utf-8", // 确保前端的请求头是正确的
+      Accept: "text/plain;", // 确保前端的请求头是正确的
     },
     params: {
       path: path,
     },
   })
     .then((res) => {
+      console.log(res);
+      isBinary.value = res.data["is-binary"];
+      if (isBinary.value) {
+        text.value = "";
+        return;
+      }
       text.value = res.data["file-text"];
+
       const tabIndex = headerTabs.value.findIndex(tab => tab.path === path);
       if (tabIndex === -1) {
         headerTabs.value.push({
@@ -337,7 +345,7 @@ import 'simplebar-vue/dist/simplebar.min.css';
       <pane>
         <splitpanes horizontal>
 
-          <pane min-size="20" size="70">
+          <pane min-size="20" :size="100-TerminalSize">
             <div class="header">
               <div class="header-left">
                 <i class="icon iconfont2 icon2-baocun" title="保存文件" @click="saveTextToServer"></i>
@@ -369,11 +377,11 @@ import 'simplebar-vue/dist/simplebar.min.css';
               </div>
             </div>
 
-            <MonacoEditor class="editor" :text-value="text" :path="selectedPath" @save="saveTextToServer"
+            <MonacoEditor class="editor" :text-value="text" :is-binary="isBinary" :path="selectedPath" @save="saveTextToServer"
             ref="monacoeditor" />
           </pane>
 
-          <pane v-if="showTerminal" min-size="20" size="30">
+          <pane v-if="showTerminal" min-size="2" :size="TerminalSize">
             <div class="header-bar">
               <i class="iconfont2 icon2-plus" title="New terminal" @click="addGroupPane"></i>
             </div>

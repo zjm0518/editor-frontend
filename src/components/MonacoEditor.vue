@@ -23,6 +23,7 @@ import "@/css/fonts.css";
 const props = defineProps<{
   path: string;
   textValue: string;
+  isBinary: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -87,6 +88,7 @@ watch(
       label = label.split("/").pop() || "";
       console.log("language", getFileLanguage(label));
       monaco.editor.setModelLanguage(editor.getModel(), getFileLanguage(label));
+      
     }
   }
 );
@@ -119,7 +121,11 @@ defineExpose({
 <template>
   <div class="MonacoEditor">
 
-    <div ref="container" class="editor-container"></div>
+    <div v-show="!isBinary" ref="container" class="editor-container"></div>
+    <div v-show="isBinary" class="editor-binary">
+      <i class="icon iconfont2  icon2-warn "></i>
+      <span>Binary file, can't be displayed</span>
+    </div>
   </div>
 </template>
 
@@ -137,6 +143,20 @@ defineExpose({
 .editor-container {
   height: calc(102% - 30px);
   width: 100%;
+}
+.editor-binary{
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  color: aliceblue;
+  font-family: 'Courier New', Courier, monospace;
+  height: 100%;
+  width: 100%;
+}
+.icon{
+  font-size: 50px;
+  color:rgb(238, 98, 47);
 }
 :deep(.monaco-editor) {
   --vscode-focusBorder: #333232;
