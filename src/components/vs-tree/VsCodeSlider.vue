@@ -18,7 +18,7 @@ import {
   uploadFiles,
   uploadDir,
 } from "@/api/path";
-//import RemoteTreeFile from "../RemoteTreeFile.vue";
+
 import FileBroswerButton from "../FileBroswerButton.vue";
 
 interface Tree {
@@ -154,7 +154,7 @@ function openAll() {
 
 function closeAll() {
   openAllState.value = false;
-  expandRecursive(elTreeRef.value.store.root, openAllState.value);
+  expandRecursive(elTreeRef.value.store.root.childNodes[0], openAllState.value);
 }
 
 function expandRecursive(node, value) {
@@ -370,9 +370,9 @@ function addFile() {
  * @param event
  */
 function cancelCurrentClick() {
-  currentNodeData.data = null;
-  currentNodeData.node = null;
-  elTreeRef.value.setCurrentKey(null);
+  //currentNodeData.data = null;
+  //currentNodeData.node = null;
+  //elTreeRef.value.setCurrentKey(null);
 }
 const addFileRef=ref(null)
 const addDirRef=ref(null)
@@ -557,7 +557,7 @@ const showRenameInput = function () {
 
 
   const node = elTreeRef.value.getNode(rightData.value.path);
-  console.log("showRenameInput",node,rightData.value)
+  //console.log("showRenameInput",node,rightData.value)
   node.data.isRename = true;
 
   renameFileName.value = node.data.label;
@@ -769,6 +769,7 @@ onMounted(() => {
 // 在 `unmounted` 时移除全局 `mousedown` 事件，防止内存泄漏
 onUnmounted(() => {
   document.removeEventListener("mousedown", handleMouseDown,true);
+  document.removeEventListener("mousedown",rightContentMenuRef.value.hiddenMenuStatus ,true);
 });
 const setCurrentNode=function(path:string){
 
@@ -847,14 +848,13 @@ const handleCurrentChange=function(data, node){
           @click="addFolder"
           ref="addDirRef"
         ></i>
-        <i
+       <!--  <i
           v-if="!openAllState"
           class="icon iconfont vs-open-all cursor-pointer"
           title="展开所有文件"
           @click="openAll"
-        ></i>
+        ></i> -->
         <i
-          v-else
           class="icon iconfont vs-close-all cursor-pointer"
           title="关闭所有文件"
           @click="closeAll"
@@ -863,8 +863,7 @@ const handleCurrentChange=function(data, node){
       <div v-if="showSearchStatus" class="search">
         <ElInput v-model="searchText" size="mini" placeholder="输入文件名称" />
         <el-button size="mini" type="text" @click="hiddenSearch"
-          >取消</el-button
-        >
+          >取消</el-button>
       </div>
     </div>
     <div class="el-tree-view" @contextmenu.prevent @click="cancelCurrentClick">
@@ -904,20 +903,21 @@ const handleCurrentChange=function(data, node){
             <span v-if="!data.isNew && !data.isRename" class="label">{{
               data.label
             }}</span>
-            <div
+            <span
               v-else-if="data.isNew && !data.isRename"
               class="create_file"
               :class="createError ? 'error' : ''"
+
             >
               <ElInput
-
                 v-model="newFileName"
                 @keyup.enter="createFile(data, node, 'entry')"
                 @blur="handleBlur(data, node)"
                  ref="addInputRef"
+
               />
-            </div>
-            <div
+          </span>
+            <span
               v-else-if="!data.isNew && data.isRename"
               class="rename_file"
               :class="createError ? 'error' : ''"
@@ -928,8 +928,8 @@ const handleCurrentChange=function(data, node){
                 @keyup.enter="renameFileFunc(data, node, 'entry')"
                 @blur="renameFileFunc(data, node, 'blur')"
               />
-            </div>
-            <span></span>
+        </span>
+
           </span>
         </template>
       </ElTree>
@@ -1082,6 +1082,7 @@ const handleCurrentChange=function(data, node){
   flex-direction: row;
   align-items: center;
   width: 100%;
+  overflow: hidden;
 
   .iconfont {
     margin-right: 4px;
@@ -1093,16 +1094,14 @@ const handleCurrentChange=function(data, node){
 
   :deep(.el-input) {
     height: 26px;
+
   }
 
   :deep(.el-input__wrapper) {
-    border-radius: 0;
+    border-radius: 1;
   }
 
-  .create_file {
-    width: 100%;
-    position: relative;
-  }
+
 }
 
 .cursor-pointer {
@@ -1116,8 +1115,10 @@ const handleCurrentChange=function(data, node){
   overflow-x: hidden;
 
   :deep(.el-tree) {
-    min-width: max-content;
-    width: 100%;
+    width: 100%; /* 让 tree 宽度始终与外层匹配 */
+    min-width: 100%; /* 避免随 node 内容变长而撑开 */
+    white-space: nowrap; /* 防止换行 */
+
   }
 }
 .hidden {
@@ -1162,4 +1163,6 @@ const handleCurrentChange=function(data, node){
 .highlight {
   background-color: #f2f2f2;
 }
+
+
 </style>

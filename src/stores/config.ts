@@ -39,8 +39,14 @@ export const useConfigStore = defineStore('config', {
       })
         .then((response) => response.json())
         .then((data) => {
-         
+
           this.formData = data;
+          console.log("Response:", data);
+          //将load扩展为13个元素
+          if(this.formData.load.length<13){
+            this.formData.load = this.formData.load.concat(Array(13-this.formData.load.length).fill(""));
+          }
+
         })
         .catch((error) => console.error("Error:", error));
     }

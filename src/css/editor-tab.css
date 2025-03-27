@@ -74,6 +74,7 @@
 }
 .header-tabs-item .close{
     opacity: 0;
+    
 }
 .header-tabs-item:hover .close {
     opacity: 1; /* 鼠标悬停时显示 */
@@ -81,7 +82,9 @@
     
 }
 .close:hover{
-    background-color: #858383;
+    background-color: #545454;
+    border-radius: 20%; /* 添加圆角 */
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); /* 添加阴影 */
 }
 .simplebar-content{
     width: 100%;
@@ -100,7 +103,7 @@
 .header-tabs-item {
     height: 100%;
     padding-left: 2%;
-    padding-right: 2%;
+    padding-right: 1%;
     font-size: small;
     cursor: pointer;
     white-space: nowrap;
@@ -126,4 +129,5 @@
     /* 省略号显示超出部分 */
     vertical-align: middle;
     /* 保持垂直对齐 */
+   margin-right: 2px;
 }

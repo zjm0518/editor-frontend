@@ -4,7 +4,7 @@
     :class="{ 'selected-card': isSelected, 'zoom-in':  isZoomed }"
     @click="selectThisCamera"
   >
-    <div class="header">
+    <div class="camera-header">
       <div class="cameraText">预览窗口</div>
       <i
         class="iconfont2 icon2-guanbi1 close"
@@ -228,9 +228,15 @@ defineExpose({
   z-index: 1000; /* 提高层级，确保在最上面 */
 }
 
-.header {
+.camera-header {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+}
+.close:hover {
+  background-color: #f0f0f0;
+  border: none;
+  outline: none;
+  box-shadow: none;
 }
 </style>
