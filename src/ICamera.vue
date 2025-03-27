@@ -3,9 +3,9 @@
     <div class="camera-video">
       <camera-card
        v-for="(camera, index) in cameraParamsList"
-        :key="camera.cameraSN"
+        :key="camera.uuid"
         :camera-index="index"
-        :ref="(el) => getCameraCardRef(el, index)"
+        :ref="(el) => getCameraCardRef(el, camera.uuid)"
         :camera-type="camera.cameraType"
         :camera-s-n="camera.cameraSN"
         @close-by-index="removeCameraByIndex"
@@ -99,12 +99,13 @@ import {
   openCameraBySN,
   closeCamera_,
 } from "@/api/path";
-
+import { v4 as uuidv4 } from "uuid";
 const zoomedCardIndex = ref<number|null>(null);
 const cameraNum=computed(()=>{
   return cameraParamsList.value.length;
 })
-const cameraCardRefs = ref<HTMLElement[]>([]); // 存储所有 camera-card 的引用
+//const cameraCardRefs = ref<HTMLElement[]>([]); // 存储所有 camera-card 的引用
+const cameraCardRefs = ref<{ [key: string]: any }>({});
 const cameraTypePick = computed(() => {
   return cameraParamsList.value[selectedIndex.value].cameraType;
 });
@@ -129,9 +130,9 @@ const selectedIndex = ref(0);
 provide("selectedIndex", selectedIndex);
 provide("cameraNum",cameraNum)
 provide("zoomedCardIndex",zoomedCardIndex)
-const getCameraCardRef = (el: any, index: number) => {
-  if (el) cameraCardRefs.value[index] = el;
-  return `cameraCard${index}`; // 通过不同的索引来生成唯一的 ref 名
+const getCameraCardRef = (el: any, uuid: string) => {
+  if (el) cameraCardRefs.value[uuid] = el;
+ // return `cameraCard${uuid}`; // 通过不同的索引来生成唯一的 ref 名
 };
 
 interface CameraParams {
@@ -144,6 +145,7 @@ interface CameraParams {
   isOpened: boolean;
   isGrabbing:boolean;
   cameraSNOptions: Array<object>;
+  uuid?: string;
 }
 const cameraParamsList = ref<Array<CameraParams>>([
   {
@@ -155,6 +157,7 @@ const cameraParamsList = ref<Array<CameraParams>>([
     precameraSN: "",
     isOpened: false,isGrabbing:false,
     cameraSNOptions: [],
+    uuid: uuidv4(),
   },
 ]);
 const addCamera = () => {
@@ -168,6 +171,7 @@ const addCamera = () => {
     precameraSN: "",
     isOpened: false,isGrabbing:false,
     cameraSNOptions: [],
+    uuid: uuidv4(),
   });
 };
 const editCameraText = computed(() => {
@@ -194,7 +198,7 @@ const removeCameraByIndex = function (cameraIndex: number) {
   }
 
 
-
+  const removedCameraUUID:string|undefined = cameraParamsList.value[cameraIndex].uuid;
     // 更新 selectedIndex
   if (selectedIndex.value === cameraIndex) {
     // 删除的正是选中的项，向前移动一个
@@ -205,7 +209,9 @@ const removeCameraByIndex = function (cameraIndex: number) {
   }
 
     cameraParamsList.value.splice(cameraIndex,1);
-
+// 删除对应的 ref
+if(removedCameraUUID)
+delete cameraCardRefs.value[removedCameraUUID];
 
 };
 const handleConnectionSuccess = (isGrabbing) => {
@@ -259,13 +265,13 @@ const getCameraSNList = function (value) {
   cameraParamsList.value[selectedIndex.value].precameraType = value;
   cameraParamsList.value[selectedIndex.value].precameraSN=cameraParamsList.value[selectedIndex.value].cameraSN
 
-  
+  const uuid=cameraParamsList.value[selectedIndex.value].uuid;
   cameraParamsList.value[selectedIndex.value].cameraSNOptions = [];
   cameraParamsList.value[selectedIndex.value].cameraSN = "";
 
   if (cameraParamsList.value[selectedIndex.value].precameraType != "") {
 
-    cameraCardRefs.value[selectedIndex.value].closeConnection();
+    cameraCardRefs.value[uuid].closeConnection();
     closeCamera_({
       cameraType: cameraParamsList.value[selectedIndex.value].precameraType,
       cameraSN: cameraParamsList.value[selectedIndex.value].precameraSN,
@@ -321,13 +327,16 @@ const changeGain = function (newvalue) {
   });
 };
 const getSingleImage = function () {
-  cameraCardRefs.value[selectedIndex.value].getSingleImage();
+  const uuid=cameraParamsList.value[selectedIndex.value].uuid;
+  cameraCardRefs.value[uuid].getSingleImage();
 };
 const showVideo = function () {
-  cameraCardRefs.value[selectedIndex.value].showVideo();
+  const uuid=cameraParamsList.value[selectedIndex.value].uuid;
+  cameraCardRefs.value[uuid].showVideo();
 };
 const closeConnection = function () {
-  cameraCardRefs.value[selectedIndex.value].closeConnection();
+  const uuid=cameraParamsList.value[selectedIndex.value].uuid;
+  cameraCardRefs.value[uuid].closeConnection();
 };
 </script>
 <style scoped>
