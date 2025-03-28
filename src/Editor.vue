@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
 import MonacoEditor from "./components/MonacoEditor.vue";
 
@@ -21,7 +22,7 @@ import { setJKSScriptPath, getJKSScriptPath } from "@/api/path";
 import { v4 as uuidv4 } from "uuid";
 import JKSLibButton from "./components/JKSLibButton2.vue";
 const layoutStore = useLayoutStore();
-const { showTerminal,TerminalSize } = storeToRefs(layoutStore);
+const { TerminalSize } = storeToRefs(layoutStore);
 
 
 const text = ref("");
@@ -380,13 +381,13 @@ import 'simplebar-vue/dist/simplebar.min.css';
 
           <pane min-size="2" :size="TerminalSize">
             <div class="header-bar">
-              <i class="iconfont2 icon2-plus" title="New terminal" @click="addGroupPane"></i>
+              <i v-if="layoutStore.showTerminal" class="iconfont2 icon2-plus" title="New terminal" @click="addGroupPane"></i>
               <i class="icon iconfont2 " :class="layoutStore.showTerminal
                     ? 'icon2-bottom_panel_close'
                     : 'icon2-bottom_panel_open'
                   " title="终端" @click="layoutStore.toggleShell()"></i>
             </div>
-            <splitpanes v-if="showTerminal">
+            <splitpanes>
               <pane min-size="70" size="80">
 
                 <splitpanes v-for="(group, groupIndex) in groupPanes" :key="group.groupId"

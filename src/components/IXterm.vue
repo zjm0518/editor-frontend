@@ -118,6 +118,10 @@ const dispose=function() {
         }
         disposables.length = 0;
     }
+    import { useLayoutStore } from "../stores/layout";
+    const layoutStore = useLayoutStore();
+    import { storeToRefs } from "pinia";
+    const { showTerminal } = storeToRefs(layoutStore);
 const initListeners = function () {
   register(terminal.onData((data) => sendData(data)));
   register(
@@ -128,8 +132,9 @@ const initListeners = function () {
  register(
     terminal.onResize(({ cols, rows }) => {
       //console.log("resize:",props.groupID,currentName.value,currentGroupId.value)
-      if(currentGroupId.value ==props.groupID) {
-         const msg = JSON.stringify({ columns: cols, rows: rows });
+      if(showTerminal.value && currentGroupId.value ==props.groupID) {
+        //console.log("resize:",props.groupID)
+        const msg = JSON.stringify({ columns: cols, rows: rows });
       socket?.send(textEncoder.encode(Command.RESIZE_TERMINAL + msg));
       //terminal.focus()
       fitAddon.fit();

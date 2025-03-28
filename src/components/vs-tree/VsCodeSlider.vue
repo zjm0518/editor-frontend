@@ -203,7 +203,9 @@ function openNode() {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
 
-      elTreeRef.value.currentNode.expanded = true;
+      const currentNode = elTreeRef.value.getCurrentNode();
+      const node=elTreeRef.value.getNode(currentNode.path);
+      node.expanded = true;
 
       setTimeout(() => {
         resolve();
@@ -841,6 +843,11 @@ const handleCurrentChange=function(data, node){
           title="查找文件"
           @click="showSearch"
         ></i>
+
+        <i
+          class="icon iconfont2 icon2-search-all cursor-pointer"
+          title="全局搜索"
+        ></i>
         <i
 
           class="icon iconfont vs-add-file cursor-pointer"
@@ -1064,7 +1071,7 @@ const handleCurrentChange=function(data, node){
     top: 0;
     display: flex;
     width: 100%;
-    background-color: #f2f2f2;
+    background-color: #222222;
 
     :deep(.el-input__wrapper) {
       border-radius: 0;
@@ -1174,6 +1181,7 @@ const handleCurrentChange=function(data, node){
 
 .el-input{
   background-color: #222222;
+  --el-input-border-color: #0a85f8 !important;
 }
 :deep(.el-input__wrapper){
   background-color: #222222 !important;
@@ -1181,5 +1189,9 @@ const handleCurrentChange=function(data, node){
 }
 :deep(.el-input__inner ){
   color: #fff !important;
+}
+:deep(.el-button){
+  background-color: #222222 !important;
+  --el-button-bg-color: #222222 !important;
 }
 </style>
