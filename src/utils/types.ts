@@ -13,6 +13,10 @@ export interface FileData {
   isDir: boolean;
   children?: Array<FileData>;
 };
+export interface SearchFileData {
+  label: string;
+  path: string;
+};
 export interface TreeNode {
   label: string;
   children?: TreeNode[];

@@ -109,3 +109,6 @@ export function getMachineCode(params = {}, headers = {}, config = {}) {
 export function postInitConfig(data = {}, headers = {}, config = {}) {
   return http.post("/api/HandleInitConfig", data, headers, config);
 }
+export function getSearchText(params = {}, headers = {}, config = {}) {
+  return http.get("/SearchText", params, headers, config);
+}

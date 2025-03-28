@@ -3,11 +3,11 @@ heme
 import { computed, watch, reactive, ref, nextTick, onMounted, inject,onUnmounted, provide } from "vue";
 import { getFileIcon, convertToTreeData, sortDirTree } from "./utils/utils";
 import { ElTree, ElInput } from "element-plus";
-import { ArrowRightBold } from "@element-plus/icons-vue";
+import { ArrowRightBold, Search } from "@element-plus/icons-vue";
 import RightContentMenu from "./components/RightContentMenu.vue";
 import { errorInfo } from "./config/config";
 import { v4 as uuidv4 } from "uuid";
-import { type FileData } from "@/utils";
+import { type FileData,type SearchFileData } from "@/utils";
 
 import axios from "axios";
 import {
@@ -17,6 +17,7 @@ import {
   getUserHomePath,
   uploadFiles,
   uploadDir,
+  getSearchText
 } from "@/api/path";
 
 import FileBroswerButton from "../FileBroswerButton.vue";
@@ -54,9 +55,11 @@ const errorInfoPosition = reactive({
   top: 0,
   width: 0,
 });
-const searchText = ref("");
-const showSearchStatus = ref(false);
-
+const searchFilterText = ref("");
+const searchFileText = ref("");
+const isSearchFilter = ref(false);//过滤
+const isSearchText = ref(false);//全局搜索
+const showSearchResult=ref(false);
 const width = ref(props.width || 280);
 const openAllState = ref(false);
 const defaultExpandKeys = ref([]);
@@ -72,6 +75,7 @@ const defaultProps = {
   label: "label",
 };
 const treeData = ref<Array<FileData>>([]);
+const searchResult=ref<Array<SearchFileData>>([]);
 const currentFolder = ref("");
 const selectedFolder = ref("");
 
@@ -86,7 +90,11 @@ const showAddFolder = computed(() => {
   return currentNodeData.data;
   //return currentNodeData.data;
 });
-
+function handleNodeClick2(obj, node, TreeNode, Event){
+  Event.stopPropagation();
+  emits("getTextFromPath", obj.path);
+  selectedFolder.value = obj.path.substring(0, obj.path.lastIndexOf("\\"));
+}
 function handleNodeClick(obj, node, TreeNode, Event) {
   Event.stopPropagation();
   if(obj.isNew || obj.isRename){
@@ -218,17 +226,17 @@ function openNode() {
  * 添加目录
  */
 function addFolder() {
-  const currentNode =elTreeRef.value.currentNode;
+  const currentNode =elTreeRef.value.getCurrentNode();
   if (currentNode) {
     isAddingDir.value=true;
-    if (currentNode.data.isDir){
-      const existingNewFile = currentNode.data.children.find(child => child.isNew);
+    if (currentNode.isDir){
+      const existingNewFile = currentNode.children.find(child => child.isNew);
       if (existingNewFile) {
         // 如果有正在创建的文件，直接聚焦输入框
         addInputRef.value && addInputRef.value.focus();
         return;
       }
-    const child = currentNode.data.children[0];
+    const child = currentNode.children[0];
     if (child) {
       // 非空目录
       const node = elTreeRef.value.getNode(child.path);
@@ -240,7 +248,7 @@ function addFolder() {
           isRename: false,
           isDir: true,
           label: "",
-          path: `${currentNode.data.path}\\__default__`,
+          path: `${currentNode.path}\\__default__`,
         },
         node
       );
@@ -254,15 +262,18 @@ function addFolder() {
           key: uuidv4(),
           isDir: true,
           label: "",
-          path: `${currentNode.data.path}\\__default__`,
+          path: `${currentNode.path}\\__default__`,
         },
         currentNode
       );
     }
 
   } else {
+
+    const currnode=elTreeRef.value.getNode(currentNode.path);
+    const parentnode=elTreeRef.value.getNode(currnode.parent.data.path);
     //is file
-    const existingNewFile = currentNode.parent.data.children.find(child => child.isNew);
+    const existingNewFile = parentnode.data.children.find(child => child.isNew);
       if (existingNewFile) {
         // 如果有正在创建的文件，直接聚焦输入框
         addInputRef.value && addInputRef.value.focus();
@@ -276,7 +287,7 @@ function addFolder() {
           key: uuidv4(),
           isDir: true,
           label: "",
-          path: `${currentNode.parent.data.path}\\__default__`,
+          path: `${parentnode.data.path}\\__default__`,
         },
         currentNode
       );
@@ -578,22 +589,57 @@ const showRenameInput = function () {
   });
 };
 
-watch(searchText, (val) => {
-  elTreeRef.value!.filter(val);
-});
+watch(searchFilterText, (val) => {
+    console.log("filter")
+    elTreeRef.value!.filter(val);
 
+});
+import { debounce } from "lodash";
+const latestRequestId = ref("")
+// 使用 lodash 的 debounce，设置 500ms 延迟
+const fetchSearchResults = debounce((val) => {
+  const requestId = uuidv4(); // 生成当前请求的 ID（时间戳）
+  latestRequestId.value = requestId; // 更新最新的请求 ID
+  if(val==""){
+    searchResult.value=[];
+    return;
+  }
+
+  console.log("search");
+  getSearchText({ path: currentFolder.value, searchText: val }).then((res) => {
+    if(requestId===latestRequestId.value){
+      console.log(res);
+      searchResult.value = res.result;
+    }else {
+      console.log(`请求过期: ${requestId}, 丢弃数据`);
+    }
+  });
+}, 500); // 500ms 延迟
+watch(searchFileText,(val)=>{
+ fetchSearchResults(val);
+})
 function filterNode(value: string, data: Tree, node) {
   if (!value) return true;
   return data.label.includes(value);
 }
 
 function showSearch() {
-  showSearchStatus.value = true;
-}
+  isSearchFilter.value = true;
 
+
+}
+function showSearchText() {
+  isSearchText.value = true;
+}
 function hiddenSearch() {
-  searchText.value = "";
-  showSearchStatus.value = false;
+  isSearchFilter.value = false;
+  searchFilterText.value="";
+  closeAll();
+
+}
+function hiddenSearch2(){
+  isSearchText.value = false;
+
 }
 const fileInput = ref(null);
 const dirInput = ref(null);
@@ -782,8 +828,8 @@ onUnmounted(() => {
 });
 const setCurrentNode=function(path:string){
 
-  const node = elTreeRef.value.getNode(path);
-  elTreeRef.value.setCurrentKey(node.key);
+  const node = elTreeRef.value?.getNode(path);
+  elTreeRef.value?.setCurrentKey(node.key);
 
 }
 const selectedPath=inject("selectedPath")
@@ -847,6 +893,7 @@ const handleCurrentChange=function(data, node){
         <i
           class="icon iconfont2 icon2-search-all cursor-pointer"
           title="全局搜索"
+          @click="showSearchText"
         ></i>
         <i
 
@@ -874,16 +921,21 @@ const handleCurrentChange=function(data, node){
           @click="closeAll"
         ></i>
       </div>
-      <div v-if="showSearchStatus" class="search">
-        <ElInput v-model="searchText" size="mini" placeholder="输入文件名称" />
-        <el-button size="mini" type="text" @click="hiddenSearch"
+      <div v-if="isSearchFilter" class="search">
+        <ElInput v-model="searchFilterText" placeholder="输入文件名称" />
+        <el-button  @click="hiddenSearch"
+          >取消</el-button>
+      </div>
+      <div v-if="isSearchText" class="search">
+        <ElInput v-model="searchFileText" placeholder="输入文件名称" />
+        <el-button  @click="hiddenSearch2"
           >取消</el-button>
       </div>
     </div>
     <div class="el-tree-view" @contextmenu.prevent @click="cancelCurrentClick">
       <ElTree
         ref="elTreeRef"
-
+        v-show="!isSearchText"
         :data="treeData"
         :default-expanded-keys="defaultExpandKeys"
         :filter-node-method="filterNode"
@@ -944,6 +996,26 @@ const handleCurrentChange=function(data, node){
                 @blur="renameFileFunc(data, node, 'blur')"
               />
         </span>
+
+          </span>
+        </template>
+      </ElTree>
+      <ElTree
+      v-show="isSearchText"
+        :data="searchResult"
+        node-key="path"
+        @node-click="handleNodeClick2"
+      >
+      <template #default="{ node, data }">
+          <span
+            class="custom-tree-node"
+          >
+            <i :class="getFileIcon(data.label)"></i>
+
+            <span class="label">{{
+              data.label
+            }}</span>
+
 
           </span>
         </template>
