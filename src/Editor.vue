@@ -2,7 +2,7 @@
 <script setup lang="ts">
 import MonacoEditor from "./components/MonacoEditor.vue";
 
-import { provide, ref, computed, watch, nextTick, onMounted, watchEffect } from "vue";
+import { provide, ref, computed, watch, onMounted, watchEffect } from "vue";
 import axios from "axios";
 //import TerminalComponent from "./components/TerminalComponent.vue";
 //import RemoteTreeFile from "./components/RemoteTreeFile.vue";
@@ -342,6 +342,8 @@ import 'simplebar-vue/dist/simplebar.min.css';
 watchEffect(() => {
   document.documentElement.style.setProperty("--header-height", layoutStore.headerHeight);
   document.documentElement.style.setProperty("--tab-fontsize", layoutStore.tabFontSize);
+  document.documentElement.style.setProperty("--split-zone", layoutStore.touchZone);
+  console.log(layoutStore.touchZone)
 });
 
 </script>
@@ -387,7 +389,7 @@ watchEffect(() => {
             ref="monacoeditor" />
           </pane>
 
-          <pane min-size="2" :size="TerminalSize">
+          <pane  :size="TerminalSize">
             <div class="header-bar" :style="{ height: layoutStore.headerHeight,fontSize:layoutStore.headerFontSize }">
               <i v-if="layoutStore.showTerminal" class="iconfont2 icon2-plus" title="New terminal" @click="addGroupPane"></i>
               <i class="icon iconfont2 " :class="layoutStore.showTerminal

@@ -5,6 +5,7 @@
 .splitpanes__splitter {
     background-color: #575757;
     position: relative;
+    
 }
 
 .splitpanes__splitter:before {
@@ -16,6 +17,7 @@
     background-color: #626060;
     opacity: 0;
     z-index: 1;
+  
 }
 
 .splitpanes__splitter:hover:before {
@@ -24,15 +26,17 @@
 }
 
 .splitpanes--vertical>.splitpanes__splitter:before {
-    left: -1.5px;
-    right: -1.5px;
+  
+    left: var(--split-zone);
+    right: var(--split-zone);
     height: 100%;
     cursor: w-resize;
+    
 }
 
 .splitpanes--horizontal>.splitpanes__splitter:before {
-    top: -1.5px;
-    bottom: -1.5px;
+    top: var(--split-zone);
+    bottom: var(--split-zone);
     width: 100%;
     cursor: s-resize;
 }

@@ -10,6 +10,7 @@ export const useLayoutStore = defineStore("layout", {
     headerHeight:string;
     headerFontSize:string;
     tabFontSize:string;
+    touchZone:string;
   } => ({
     showTerminal: true,
     TerminalSize:30,
@@ -17,7 +18,8 @@ export const useLayoutStore = defineStore("layout", {
     screenHeight:window.innerHeight,
     headerHeight:"30px",
     headerFontSize:"16px",
-    tabFontSize:"10px"
+    tabFontSize:"10px",
+    touchZone:"-2px"
   }),
   actions: {
     // no context as first argument, use `this` instead
@@ -35,10 +37,10 @@ export const useLayoutStore = defineStore("layout", {
       this.screenWidth = window.innerWidth
       this.screenHeight = window.innerHeight
 
-      console.log(this.screenWidth, this.screenHeight);
       this.headerHeight=this.screenHeight>650?"30px":"50px";
       this.headerFontSize=this.screenHeight>650?"16px":"26px";
       this.tabFontSize=this.screenHeight>650?"16px":"26px";
+      this.touchZone=this.screenHeight>650?"-2px":"-15px";
     }
   },
 });

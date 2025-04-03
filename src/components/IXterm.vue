@@ -122,6 +122,7 @@ const dispose=function() {
     const layoutStore = useLayoutStore();
     import { storeToRefs } from "pinia";
     const { showTerminal } = storeToRefs(layoutStore);
+
 const initListeners = function () {
   register(terminal.onData((data) => sendData(data)));
   register(
