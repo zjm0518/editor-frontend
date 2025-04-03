@@ -36,9 +36,9 @@ export const useLayoutStore = defineStore("layout", {
       this.screenHeight = window.innerHeight
 
       console.log(this.screenWidth, this.screenHeight);
-      this.headerHeight=this.screenHeight>600?"30px":"50px";
-      this.headerFontSize=this.screenHeight>600?"16px":"26px";
-      this.tabFontSize=this.screenHeight>600?"16px":"26px";
+      this.headerHeight=this.screenHeight>650?"30px":"50px";
+      this.headerFontSize=this.screenHeight>650?"16px":"26px";
+      this.tabFontSize=this.screenHeight>650?"16px":"26px";
     }
   },
 });

@@ -5,6 +5,7 @@
   color: aliceblue;
   justify-content: end;
   align-items: center;
+  font-size: var(--tab-fontsize);
   i{
     margin-right: 1%;
     cursor: pointer;

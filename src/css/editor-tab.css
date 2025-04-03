@@ -131,4 +131,5 @@
     /* 保持垂直对齐 */
    margin-right: 2px;
    user-select: none;
+   font-size: var(--tab-fontsize);
 }
