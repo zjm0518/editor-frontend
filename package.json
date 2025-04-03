@@ -24,7 +24,6 @@
     "js-base64": "^3.7.7",
     "material-icons": "^1.13.12",
     "monaco-editor": "^0.52.0",
-    "overlayscrollbars": "^2.11.1",
     "pinia": "^2.3.0",
     "simplebar-vue": "^2.4.0",
     "splitpanes": "^3.1.8",

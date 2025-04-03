@@ -8,7 +8,8 @@ import RightContentMenu from "./components/RightContentMenu.vue";
 import { errorInfo } from "./config/config";
 import { v4 as uuidv4 } from "uuid";
 import { type FileData,type SearchFileData } from "@/utils";
-
+import { useLayoutStore } from "../../stores/layout";
+const layoutStore = useLayoutStore();
 import axios from "axios";
 import {
   deleteFile,
@@ -855,9 +856,9 @@ const handleCurrentChange=function(data, node){
     @drop="handleDrop"
     @dragover.prevent
   >
-    <div class="header">
+    <div class="header" :style="{height:layoutStore.headerHeight,fontSize:layoutStore.headerFontSize}">
       <span class="base-dir"><!-- {{ baseDirName }} --></span>
-      <div>
+      <div >
 
         <i
           class="icon iconfont2 icon2-upload_file cursor-pointer"
@@ -883,7 +884,7 @@ const handleCurrentChange=function(data, node){
           class="hidden"
           @change="handleDirUpload"
         />
-        <FileBroswerButton @select-dir="getDirStructure"></FileBroswerButton>
+        <FileBroswerButton @select-dir="getDirStructure" :fontsize="layoutStore.headerFontSize"></FileBroswerButton>
         <i
           class="icon iconfont vs-find cursor-pointer"
           title="查找文件"
@@ -1132,7 +1133,7 @@ const handleCurrentChange=function(data, node){
 .header {
   display: flex;
   flex-direction: row;
-  height: 30px;
+
   justify-content: space-between;
   align-items: center;
   padding: 0 10px;
@@ -1157,6 +1158,7 @@ const handleCurrentChange=function(data, node){
 
 .header .icon {
   margin: 0 4px;
+  font-size: inherit ;
 }
 
 :deep(.el-tree) {
@@ -1197,7 +1199,7 @@ const handleCurrentChange=function(data, node){
 
 .el-tree-view {
   width: 100%;
-  height: calc(100% - 30px);
+  height: calc(100% - var(--header-height));
   overflow-y: scroll;
   overflow-x: hidden;
 

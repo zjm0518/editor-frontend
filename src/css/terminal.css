@@ -1,6 +1,4 @@
 .header-bar{
- 
-  height: 20px;
   width: 100%;
   background-color: #333232;
   display: flex;
@@ -10,6 +8,7 @@
   i{
     margin-right: 1%;
     cursor: pointer;
+    font-size: inherit;
   }
 
   i:hover{
@@ -18,13 +17,12 @@
   }
 }
 .tab-nav {
-  height: 100%;
-  height:calc(100% - 15px);
+    height:calc(100% - var(--header-height));
     width: 100%;
     /*  border: 3px solid saddlebrown; */
     display: flex;
     flex-direction: column;
-
+   
     background-color: #1e1e1e;
     color: rgb(222, 218, 218);
     font-family: "Lucida Console", Courier, monospace;
@@ -52,6 +50,8 @@
     background-color: #1e1e1e;
     transition: background-color 0.1s ease;
     cursor: pointer;
+    font-size: var(--tab-fontsize);
+    
 }
 .tab-nav-item .tab-nav-item-left {
     display: flex;
@@ -60,6 +60,9 @@
     gap:2px;
     
 }
+.tab-nav-item .tab-nav-item-left i.iconfont2 {
+    font-size: var(--tab-fontsize) !important;
+}
 .tab-nav-item .tab-nav-item-right {
     display: flex;
     justify-content: flex-end;
@@ -67,14 +70,18 @@
     gap:2px;
     opacity: 0;  /* 初始时透明 */
     visibility: hidden; /* 初始时隐藏 */
+    
 
 }
 .iconfont2 {
- 
+  font-size: var(--tab-fontsize) !important;
   line-height: 1;
   vertical-align: middle; /* 让图标和文本对齐 */
 }
+.codicon-terminal-powershell{
+  font-size: var(--tab-fontsize) !important;
 
+}
 .tab-nav-item:hover .tab-nav-item-right {
   opacity: 1; /* 鼠标悬停时显示 */
   visibility: visible;

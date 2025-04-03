@@ -1,17 +1,28 @@
+
 import { defineStore } from "pinia";
 export const useLayoutStore = defineStore("layout", {
   // convert to a function
   state: (): {
     showTerminal: boolean | null;
     TerminalSize:number;
+    screenWidth:number;
+    screenHeight:number;
+    headerHeight:string;
+    headerFontSize:string;
+    tabFontSize:string;
   } => ({
     showTerminal: true,
     TerminalSize:30,
+    screenWidth:window.innerWidth,
+    screenHeight:window.innerHeight,
+    headerHeight:"30px",
+    headerFontSize:"16px",
+    tabFontSize:"10px"
   }),
   actions: {
     // no context as first argument, use `this` instead
     toggleShell() {
-      const headerHeight = 20; // 你的 header-bar 高度
+      const headerHeight = this.headerHeight=="30px"?30:50; // 你的 header-bar 高度
     const viewportHeight = window.innerHeight; // 获取视口高度（100vh）
 
     const percentage = (headerHeight / viewportHeight) * 100; // 计算百分比
@@ -20,5 +31,14 @@ export const useLayoutStore = defineStore("layout", {
       this.showTerminal = !this.showTerminal;
       this.TerminalSize = this.showTerminal?30:percentage;
     },
+    updateSize() {
+      this.screenWidth = window.innerWidth
+      this.screenHeight = window.innerHeight
+
+      console.log(this.screenWidth, this.screenHeight);
+      this.headerHeight=this.screenHeight>600?"30px":"50px";
+      this.headerFontSize=this.screenHeight>600?"16px":"26px";
+      this.tabFontSize=this.screenHeight>600?"16px":"26px";
+    }
   },
 });

@@ -88,7 +88,7 @@ watch(
       label = label.split("/").pop() || "";
       console.log("language", getFileLanguage(label));
       monaco.editor.setModelLanguage(editor.getModel(), getFileLanguage(label));
-      
+
     }
   }
 );
@@ -116,6 +116,7 @@ const Save = function () {
 defineExpose({
   getEditorValue: () => editor?.getValue() || "",
 });
+
 </script>
 
 <template>
@@ -141,8 +142,10 @@ defineExpose({
 }
 
 .editor-container {
-  height: calc(102% - 30px);
   width: 100%;
+
+
+  height: calc(102% - var(--header-height));
 }
 .editor-binary{
   display: flex;

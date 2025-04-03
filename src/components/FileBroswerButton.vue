@@ -3,6 +3,7 @@
     <i
       class="icon iconfont2 icon2-a-Openfolder"
       style="cursor: pointer;margin: 0 4px;"
+      :style="{ fontSize: fontsize }"
       title="打开文件夹"
       @click="handleTree"
     ></i>
@@ -149,7 +150,10 @@ const layoutStore = useLayoutStore();
 const fileStore = useFileStore();
 const visible = ref(false);
 const selectPath = ref("");
+defineProps<{
+  fontsize: string;
 
+}>();
 const columnWidth = ref<number>(280);
 const { req } = storeToRefs(fileStore);
 const itemWeight = ref<number>(0);

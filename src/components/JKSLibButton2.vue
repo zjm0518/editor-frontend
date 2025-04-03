@@ -2,7 +2,8 @@
   <div style="display: inline;">
     <i
       class="icon iconfont2 icon2-jiaobenshezhi"
-      style="cursor: pointer; font-size: 16px; align-items: center"
+      style="cursor: pointer; align-items: center"
+      :style="{ fontSize: fontsize }"
       title="选择脚本库"
       @click="handleTree"
     ></i>
@@ -148,6 +149,10 @@ const selectPath = ref("");
 
   const columnWidth = ref<number>(280);
   const { req } = storeToRefs(fileStore);
+
+defineProps<{
+  fontsize: string;
+}>();
 const itemWeight = ref<number>(0);
   const listing = ref<HTMLElement | null>(null);
 

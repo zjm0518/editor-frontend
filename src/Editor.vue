@@ -2,7 +2,7 @@
 <script setup lang="ts">
 import MonacoEditor from "./components/MonacoEditor.vue";
 
-import { provide, ref, computed, watch, nextTick, onMounted } from "vue";
+import { provide, ref, computed, watch, nextTick, onMounted, watchEffect } from "vue";
 import axios from "axios";
 //import TerminalComponent from "./components/TerminalComponent.vue";
 //import RemoteTreeFile from "./components/RemoteTreeFile.vue";
@@ -165,14 +165,21 @@ onMounted(() => {
     localStorage.setItem("currentSessionID", currentSessionID.value);
   }
 
-
-
+  window.addEventListener("resize", updateWindowSize);
+  updateWindowSize(); // 初始化时更新一次
 
   getJKSScriptPath().then((res) => {
     jksLibPath.value = res["jks_script_path"];
   });
 
+
+
 })
+
+// 监听窗口变化并更新 Pinia 状态
+const updateWindowSize = () => {
+  layoutStore.updateSize();
+};
 const currentName = ref("")
 const currentGroupId = ref("")
 const currentSessionID = ref("")
@@ -332,6 +339,10 @@ const deleteTab=function(index:number){
 provide("selectedPath", selectedPath)
 import simplebar from 'simplebar-vue';
 import 'simplebar-vue/dist/simplebar.min.css';
+watchEffect(() => {
+  document.documentElement.style.setProperty("--header-height", layoutStore.headerHeight);
+  document.documentElement.style.setProperty("--tab-fontsize", layoutStore.tabFontSize);
+});
 
 </script>
 
@@ -347,8 +358,8 @@ import 'simplebar-vue/dist/simplebar.min.css';
         <splitpanes horizontal>
 
           <pane min-size="20" :size="100-TerminalSize">
-            <div class="header">
-              <div class="header-left">
+            <div class="header" :style="{ height: layoutStore.headerHeight }">
+              <div class="header-left" :style="{ fontSize: layoutStore.headerFontSize }">
                 <i class="icon iconfont2 icon2-baocun" title="保存文件" @click="saveTextToServer"></i>
                 <i class="icon iconfont2 icon2-yunhang" title="运行" @click="RunJKS"></i>
                 <i class="icon iconfont2 icon2-tingzhi" title="停止" @click="Stop"></i>
@@ -362,16 +373,13 @@ import 'simplebar-vue/dist/simplebar.min.css';
 
                     <span class="header-tabs-item-name">{{ item.name }}</span>
 
-
                     <i class="iconfont2 icon2-guanbi1 close" @click.stop="deleteTab(index)" title="Close"></i>
-
-
                 </div>
 
                 </simplebar>
               <div class="header-right">
-                <span class="jks-lib" :title="jksLibPath">{{ jksLibPath }}</span>
-                <JKSLibButton @select-lib="getLibPath"></JKSLibButton>
+                <span class="jks-lib" :title="jksLibPath"  :style="{ fontSize: layoutStore.headerFontSize }">{{ jksLibPath }}</span>
+                <JKSLibButton @select-lib="getLibPath" :fontsize="layoutStore.headerFontSize"></JKSLibButton>
               </div>
             </div>
 
@@ -380,7 +388,7 @@ import 'simplebar-vue/dist/simplebar.min.css';
           </pane>
 
           <pane min-size="2" :size="TerminalSize">
-            <div class="header-bar">
+            <div class="header-bar" :style="{ height: layoutStore.headerHeight,fontSize:layoutStore.headerFontSize }">
               <i v-if="layoutStore.showTerminal" class="iconfont2 icon2-plus" title="New terminal" @click="addGroupPane"></i>
               <i class="icon iconfont2 " :class="layoutStore.showTerminal
                     ? 'icon2-bottom_panel_close'
@@ -395,7 +403,8 @@ import 'simplebar-vue/dist/simplebar.min.css';
                   <pane v-for="(item, index) in group.panes" :key="item.sessionId" min-size="20">
                     <IXterm class="terminal" :session-i-d="item.sessionId" :index="index" :name="item.name"
                       :group-i-d="group.groupId" @select-index="toggleTerm"
-                      :ref="(el) => setXtermRef(el, groupIndex, index)">
+                      :ref="(el) => setXtermRef(el, groupIndex, index)"
+                     >
                     </IXterm>
                   </pane>
                 </splitpanes>
@@ -484,7 +493,7 @@ body {
 
 .editor,
 .terminal {
-  height: 100%;
+
   flex-grow: 0;
   /* 不允许组件扩展 */
   overflow: hidden;
@@ -501,8 +510,7 @@ body {
 
 .terminal {
   width: 100%;
-  height: 100%;
-  height: calc(100% - 15px);
+  height: calc(100% - var(--header-height));
 }
 
 
