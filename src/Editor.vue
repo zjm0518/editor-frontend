@@ -173,7 +173,7 @@ onMounted(() => {
   });
 
 
-
+  addTouchListeners()
 })
 
 // 监听窗口变化并更新 Pinia 状态
@@ -346,6 +346,39 @@ watchEffect(() => {
   console.log(layoutStore.touchZone)
 });
 
+
+
+const addTouchListeners=function() {
+      const splitters = document.querySelectorAll('.splitpanes__splitter')
+      splitters.forEach(splitter => {
+        splitter.addEventListener('touchstart', handleTouchStart, { passive: false })
+        splitter.addEventListener('touchmove', handleTouchMove, { passive: false })
+        splitter.addEventListener('touchend', handleTouchEnd)
+      })
+    }
+const handleTouchStart=function(e) {
+      e.preventDefault()
+      const touch = e.touches[0]
+      simulateMouseEvent('mousedown', touch)
+    }
+const handleTouchMove=function(e) {
+      e.preventDefault()
+      const touch = e.touches[0]
+      simulateMouseEvent('mousemove', touch)
+    }
+const handleTouchEnd=function(e) {
+      simulateMouseEvent('mouseup', e.changedTouches[0])
+    }
+const simulateMouseEvent=function(type, touch) {
+      const evt = new MouseEvent(type, {
+        bubbles: true,
+        cancelable: true,
+        clientX: touch.clientX,
+        clientY: touch.clientY
+      })
+      const target = document.elementFromPoint(touch.clientX, touch.clientY)
+      if (target) target.dispatchEvent(evt)
+    }
 </script>
 
 <template>
@@ -390,10 +423,10 @@ watchEffect(() => {
           </pane>
 
           <pane  :size="TerminalSize">
-            <div class="header-bar" :style="{ height: layoutStore.headerHeight,fontSize:layoutStore.headerFontSize }">
+            <div class="header-bar" :style="{ height: layoutStore.terminalHeaderHeight,fontSize:layoutStore.headerFontSize }">
               <i v-if="layoutStore.showTerminal" class="iconfont2 icon2-plus" title="New terminal" @click="addGroupPane"></i>
               <i class="icon iconfont2 " :class="layoutStore.showTerminal
-                    ? 'icon2-bottom_panel_close'
+                    ? 'icon2-ego-close'
                     : 'icon2-bottom_panel_open'
                   " title="终端" @click="layoutStore.toggleShell()"></i>
             </div>
@@ -461,6 +494,7 @@ body {
   background-color: #1e1e1e;
   font-family: Consolas, "Courier New", monospace;
   color: #d4d4d4;
+
 }
 
 .container {
