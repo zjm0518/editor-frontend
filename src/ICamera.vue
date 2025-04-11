@@ -123,7 +123,7 @@ const cameraTypeOptions = ref([
   },
   {
     value: "Endoscope",
-    label: "内窥镜",
+    label: "微型相机",
   },
 ]);
 const selectedIndex = ref(0);

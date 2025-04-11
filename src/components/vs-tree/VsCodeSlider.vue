@@ -1264,7 +1264,7 @@ const handleCurrentChange=function(data, node){
 :deep(.el-input__inner ){
   color: #fff !important;
 }
-:deep(.el-button){
+:deep(.search .el-button){
   background-color: #222222 !important;
   --el-button-bg-color: #222222 !important;
 }

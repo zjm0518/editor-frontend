@@ -550,7 +550,10 @@ body {
 }
 
 
-
+:deep(.el-button){
+  background-color: #dcdcdc;
+  --el-button-border-color : #dcdcdc;
+}
 
 
 

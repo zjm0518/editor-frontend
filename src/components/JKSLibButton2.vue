@@ -7,7 +7,7 @@
       title="选择脚本库"
       @click="handleTree"
     ></i>
-    <el-dialog title="请选择文件夹" v-model="visible" width="70%" height="70%" align-center>
+    <el-dialog title="请选择脚本库路径" v-model="visible" width="70%" height="70%" align-center>
 
       <div v-if="false">
         <h2 class="message delayed">
