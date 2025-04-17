@@ -343,7 +343,7 @@ watchEffect(() => {
   document.documentElement.style.setProperty("--header-height", layoutStore.headerHeight);
   document.documentElement.style.setProperty("--tab-fontsize", layoutStore.tabFontSize);
   document.documentElement.style.setProperty("--split-zone", layoutStore.touchZone);
-  console.log(layoutStore.touchZone)
+
 });
 
 
@@ -554,8 +554,6 @@ body {
   background-color: #dcdcdc;
   --el-button-border-color : #dcdcdc;
 }
-
-
 
 
 </style>

@@ -39,11 +39,11 @@ export const useLayoutStore = defineStore("layout", {
       this.screenWidth = window.innerWidth
       this.screenHeight = window.innerHeight
 
-      this.headerHeight=this.screenHeight>700?"30px":"50px";
-      this.terminalHeaderHeight=this.screenHeight>700?"30px":"40px";
-      this.headerFontSize=this.screenHeight>700?"16px":"26px";
-      this.tabFontSize=this.screenHeight>700?"16px":"26px";
-      this.touchZone=this.screenHeight>700?"-2px":"-15px";
+      this.headerHeight=this.screenHeight<0?"30px":"50px";
+      this.terminalHeaderHeight=this.screenHeight<0?"30px":"40px";
+      this.headerFontSize=this.screenHeight<0?"16px":"26px";
+      this.tabFontSize=this.screenHeight<0?"16px":"26px";
+      this.touchZone=this.screenHeight<0?"-5px":"-15px";
     }
   },
 });
