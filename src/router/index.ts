@@ -3,6 +3,7 @@ import Editor from '@/Editor.vue';
 import AGVInfo from '@/AGVInfo.vue';
 import ICamera from '@/ICamera.vue';
 import ILog from '@/ILog.vue';
+import IOConfig from '@/IOConfig.vue';
 const routes = [
   { path: '/', component: Editor },
   { path: '/agv', component: AGVInfo },
@@ -20,6 +21,7 @@ const routes = [
     ]
   },
   {path:'/machinecode',component:()=>import('@/MachineCode.vue')},
+  {path:'/ioconfig',component:IOConfig},
 ]
 
 const router = createRouter({

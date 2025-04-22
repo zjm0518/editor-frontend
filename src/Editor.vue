@@ -59,6 +59,7 @@ const getTextFromServer = function (path: string | undefined) {
           path: path
         });
         currentTab.value = headerTabs.value.length - 1;
+
       }else{
         currentTab.value=tabIndex
       }
@@ -379,12 +380,13 @@ const simulateMouseEvent=function(type, touch) {
       const target = document.elementFromPoint(touch.clientX, touch.clientY)
       if (target) target.dispatchEvent(evt)
     }
+const simplebarRef=ref(null);
 </script>
 
 <template>
   <div class="container">
     <splitpanes class="Panel">
-      <pane size="15" min-size="10">
+      <pane size="20" min-size="10">
         <div class="folder">
           <VsCodeSlider class="file" theme="dark" @get-text-from-path="getTextFromServer" @delete-file="deleteFile"> </VsCodeSlider>
         </div>
@@ -401,7 +403,7 @@ const simulateMouseEvent=function(type, touch) {
 
                 <i >{{ saved }}</i>
               </div>
-              <simplebar data-simplebar-auto-hide="true" class="header-tabs">
+              <simplebar data-simplebar-auto-hide="true" class="header-tabs" ref="simplebarRef">
 
                 <div class="header-tabs-item" v-for="(item,index) in headerTabs" :key="index"
                   :class="{ 'Tabselected': item.path == selectedPath }" @click="getTextFromServer(item.path)" >
