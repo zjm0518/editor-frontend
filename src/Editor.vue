@@ -70,16 +70,39 @@ const getTextFromServer = function (path: string | undefined) {
     });
 };
 
-const deleteFile=function(path:string){
+const deleteFile=function(path:string,isDir:boolean){
     path = path.replace(/\//g, "\\");
-    const headerTabIndex = headerTabs.value.findIndex(item => item.path == path);
-    console.log("headerTabIndex",headerTabIndex,path)
-    if(headerTabIndex!=-1) {
-      deleteTab(headerTabIndex);
+
+    if(isDir){
+       // 统一目录路径格式，确保以 \ 结尾，避免误删同名文件或目录
+       if (!path.endsWith("\\")) {
+            path += "\\";
+        }
+
+        // 找出所有在该目录下的 tab
+        const indicesToDelete: number[] = [];
+        headerTabs.value.forEach((item, index) => {
+            if (item.path.startsWith(path)) {
+                indicesToDelete.push(index);
+            }
+        });
+
+        // 倒序删除，避免 index 混乱
+        for (let i = indicesToDelete.length - 1; i >= 0; i--) {
+            console.log(indicesToDelete[i])
+            deleteTab(indicesToDelete[i]);
+        }
+    }else{
+      const headerTabIndex = headerTabs.value.findIndex(item => item.path == path);
+
+      if(headerTabIndex!=-1) {
+        deleteTab(headerTabIndex);
+      }
     }
+
 }
 const saveTextToServer = function () {
-
+  console.log("selectedPath.value",selectedPath.value)
   const text: string | undefined=monacoeditor.value.getEditorValue()
   if (text === undefined || selectedPath.value=="") return;
   axios({
@@ -313,11 +336,13 @@ interface TabLabel {
 const headerTabs=ref<Array<TabLabel>>([])
 const currentTab=ref(0)
 const deleteTab=function(index:number){
-  console.log("deleteTab",index,currentTab.value)
+  //console.log("deleteTab",index,currentTab.value)
   if(index==0 && headerTabs.value.length==1){
     currentTab.value=0;
     headerTabs.value.splice(index,1)
     text.value="";
+    //是否需要修改selectedPath.value
+
   }else if(index<currentTab.value){
 
     headerTabs.value.splice(index,1)
@@ -401,7 +426,7 @@ const simplebarRef=ref(null);
                 <i class="icon iconfont2 icon2-yunhang" title="运行" @click="RunJKS"></i>
                 <i class="icon iconfont2 icon2-tingzhi" title="停止" @click="Stop"></i>
 
-                <i >{{ saved }}</i>
+                <span class="mark-saved">{{ saved }}</span>
               </div>
               <simplebar data-simplebar-auto-hide="true" class="header-tabs" ref="simplebarRef">
 
@@ -421,7 +446,7 @@ const simplebarRef=ref(null);
             </div>
 
             <MonacoEditor class="editor" :text-value="text" :is-binary="isBinary" :path="selectedPath" @save="saveTextToServer"
-            ref="monacoeditor" />
+            ref="monacoeditor" :no-data="headerTabs.length==0" />
           </pane>
 
           <pane  :size="TerminalSize">

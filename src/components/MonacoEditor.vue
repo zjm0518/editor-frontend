@@ -24,6 +24,7 @@ const props = defineProps<{
   path: string;
   textValue: string;
   isBinary: boolean;
+  noData:boolean;
 }>();
 
 const emit = defineEmits<{
@@ -122,10 +123,13 @@ defineExpose({
 <template>
   <div class="MonacoEditor">
 
-    <div v-show="!isBinary" ref="container" class="editor-container"></div>
+    <div v-show="!isBinary && !noData" ref="container" class="editor-container"></div>
     <div v-show="isBinary" class="editor-binary">
       <i class="icon iconfont2  icon2-warn "></i>
       <span>Binary file, can't be displayed</span>
+    </div>
+    <div v-show="noData" class="editor-noData">
+      <span>No Data</span>
     </div>
   </div>
 </template>
@@ -148,6 +152,16 @@ defineExpose({
   height: calc(102% - var(--header-height));
 }
 .editor-binary{
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  color: aliceblue;
+  font-family: 'Courier New', Courier, monospace;
+  height: 100%;
+  width: 100%;
+}
+.editor-noData{
   display: flex;
   justify-content: center;
   flex-direction: column;

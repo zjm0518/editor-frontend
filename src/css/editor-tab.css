@@ -25,6 +25,14 @@
     cursor: pointer;
 }
 
+.header .header-left span {
+    font-size: 15px;
+    margin-right: 8px;
+    /* 可以根据需要调整间距 */
+    user-select: none;
+    display: inline-block; /* 可选，或继续用默认 inline */
+    white-space: nowrap; /* 防止换行 */
+}
 .header .header-right {
     display: flex;
     justify-content: flex-end;

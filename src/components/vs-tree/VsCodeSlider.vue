@@ -137,7 +137,7 @@ watch(
       newNode && newNode.classList.add("is-right-click");
       return;
     }
-    oldNode && oldNode.classList.remove("is-right-click");console.log("aaa");
+    oldNode && oldNode.classList.remove("is-right-click");
     newNode && newNode.classList.add("is-right-click");
   },
   { flush: "post" } // 确保 DOM 更新后执行
@@ -551,7 +551,13 @@ function clickMenu(key) {
     case "RENAME":
       showRenameInput();
       break;
+    case "CLOSE":
+      closeNode();
+      break;
   }
+}
+const closeNode=function(){
+  elTreeRef.value.remove(currentNodeData.node);
 }
 const deleteFile222 = function () {
   //console.log("deleteFile",currentNodeData.data,rightData.value)
@@ -567,7 +573,7 @@ const deleteFile222 = function () {
 
       setCurrentNode(currentFolder.value.replace(/\//g, "\\"));
     }
-    emits("deleteFile",currentNodeData.data.path);
+    emits("deleteFile",currentNodeData.data.path,currentNodeData.data.isDir);
     elTreeRef.value.remove(currentNodeData.node);
     currentNodeData.data = "";
     currentNodeData.node = "";
@@ -978,7 +984,7 @@ const handleCurrentChange=function(data, node){
             >
               <ElInput
                 v-model="newFileName"
-                @keyup.enter="createFile(data, node, 'entry')"
+                @keyup.enter.stop.prevent="createFile(data, node, 'entry')"
                 @blur="handleBlur(data, node)"
                  ref="addInputRef"
                 @click.stop
@@ -1189,8 +1195,6 @@ const handleCurrentChange=function(data, node){
   :deep(.el-input__wrapper) {
     border-radius: 1;
   }
-
-
 }
 
 .cursor-pointer {
@@ -1259,6 +1263,11 @@ const handleCurrentChange=function(data, node){
 }
 :deep(.el-input__wrapper){
   background-color: #222222 !important;
+}
+:deep(.el-input__wrapper.is-focus) {
+  transition: none !important;
+  border: 1px solid #0a85f8 !important;
+  box-shadow: none !important;
 
 }
 :deep(.el-input__inner ){

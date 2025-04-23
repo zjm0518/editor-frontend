@@ -10,6 +10,10 @@ const menuList = [
     label: "删除",
     key: "DELETE",
   },
+  {
+    label: "关闭",
+    key: "CLOSE",
+  },
   ];
 
 const inputRef = ref(null);
@@ -60,7 +64,7 @@ function hiddenMenuStatus(event) {
 
   if (rightTarget.value) {
     const el_node = rightTarget.value.closest(".el-tree-node");
-    el_node?.classList.remove("is-right-click");console.log("bbb");
+    el_node?.classList.remove("is-right-click");
     rightTarget.value = null;
   }
 }
