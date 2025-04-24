@@ -554,10 +554,14 @@ function clickMenu(key) {
     case "CLOSE":
       closeNode();
       break;
+    case "DOWNLOAD":
+      handleDownload();
+      break;
   }
 }
 const closeNode=function(){
   elTreeRef.value.remove(currentNodeData.node);
+
 }
 const deleteFile222 = function () {
   //console.log("deleteFile",currentNodeData.data,rightData.value)
@@ -580,8 +584,41 @@ const deleteFile222 = function () {
     rightData.value=null;
   });
 };
-const showRenameInput = function () {
 
+const handleDownload=function() {
+  if(currentNodeData.data==null) return;
+  const selectedPath=currentNodeData.data.path;
+  const label= selectedPath.split("\\").pop() || ""
+  const isDir=currentNodeData.data.isDir;
+  axios({
+    method: "get",
+    url: "/DownloadFile",
+    baseURL: "api/",
+    params:{path:selectedPath,name:label},
+    responseType: 'blob',
+  })
+    .then((response) => {
+      const blob = new Blob([response.data]); // 创建Blob对象
+      const a = document.createElement('a');
+      if(isDir){
+        a.download = label+".zip";
+      }else{
+        a.download = label;
+      }
+
+      a.style.display = 'none';
+      const url = URL.createObjectURL(blob);
+      a.href = url;
+      document.body.appendChild(a);
+      a.click();
+      URL.revokeObjectURL(url); // 释放URL
+      document.body.removeChild(a);
+    })
+    .catch(error => {
+      console.error('下载失败:', error);
+    });
+}
+const showRenameInput = function() {
 
   const node = elTreeRef.value.getNode(rightData.value.path);
   //console.log("showRenameInput",node,rightData.value)

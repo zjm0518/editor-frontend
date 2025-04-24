@@ -14,6 +14,10 @@ const menuList = [
     label: "关闭",
     key: "CLOSE",
   },
+  {
+    label: "下载",
+    key: "DOWNLOAD",
+  },
   ];
 
 const inputRef = ref(null);
