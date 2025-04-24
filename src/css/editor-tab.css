@@ -1,5 +1,4 @@
-.header {
-    
+.header { 
     width: 100%;
     display: flex;
     flex-direction: row;
@@ -24,14 +23,11 @@
     /* 可以根据需要调整间距 */
     cursor: pointer;
 }
-
 .header .header-left span {
-    font-size: 15px;
+    font-size: 10px;
     margin-right: 8px;
     /* 可以根据需要调整间距 */
-    user-select: none;
-    display: inline-block; /* 可选，或继续用默认 inline */
-    white-space: nowrap; /* 防止换行 */
+   user-select: none;
 }
 .header .header-right {
     display: flex;

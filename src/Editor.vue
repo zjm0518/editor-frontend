@@ -426,7 +426,7 @@ const simplebarRef=ref(null);
                 <i class="icon iconfont2 icon2-yunhang" title="运行" @click="RunJKS"></i>
                 <i class="icon iconfont2 icon2-tingzhi" title="停止" @click="Stop"></i>
 
-                <span class="mark-saved">{{ saved }}</span>
+                <span class="mark-saved" >{{ saved }}</span>
               </div>
               <simplebar data-simplebar-auto-hide="true" class="header-tabs" ref="simplebarRef">
 
