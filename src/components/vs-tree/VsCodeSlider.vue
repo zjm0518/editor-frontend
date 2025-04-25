@@ -5,6 +5,7 @@ import { getFileIcon, convertToTreeData, sortDirTree } from "./utils/utils";
 import { ElTree, ElInput } from "element-plus";
 import { ArrowRightBold, Search } from "@element-plus/icons-vue";
 import RightContentMenu from "./components/RightContentMenu.vue";
+import DeleteConfirm from "../DeleteConfirm.vue";
 import { errorInfo } from "./config/config";
 import { v4 as uuidv4 } from "uuid";
 import { type FileData,type SearchFileData } from "@/utils";
@@ -50,6 +51,7 @@ const elTreeRef = ref(null);
 const addInputRef = ref(null);
 const renameInputRef = ref(null);
 const rightContentMenuRef = ref(null);
+const deleteConfirmRef = ref(null);
 const errorInfoRef = ref(null);
 const errorInfoPosition = reactive({
   left: 0,
@@ -546,7 +548,10 @@ function renameFileFunc(data, node, type) {
 function clickMenu(key) {
   switch (key) {
     case "DELETE":
-      deleteFile222();
+      deleteConfirmRef.value.showDeleteConfirm(
+        currentNodeData.data.path,
+        currentNodeData.data.isDir
+      );
       break;
     case "RENAME":
       showRenameInput();
@@ -1078,6 +1083,7 @@ const handleCurrentChange=function(data, node){
       </div>
     </div>
     <RightContentMenu ref="rightContentMenuRef" @handleMenu="clickMenu" />
+    <DeleteConfirm ref="deleteConfirmRef" @delete-confirm="deleteFile222"></DeleteConfirm>
   </div>
 </template>
 

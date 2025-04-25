@@ -123,7 +123,7 @@
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="visible = false">取 消</el-button>
-          <el-button type="primary" @click="handelConfirm">确 定</el-button>
+          <el-button @click="handelConfirm">确 定</el-button>
         </span>
       </template>
     </el-dialog>
