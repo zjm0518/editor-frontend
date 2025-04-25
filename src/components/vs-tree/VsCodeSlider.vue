@@ -976,7 +976,7 @@ const handleCurrentChange=function(data, node){
           >取消</el-button>
       </div>
       <div v-if="isSearchText" class="search">
-        <ElInput v-model="searchFileText" placeholder="输入文件名称" />
+        <ElInput v-model="searchFileText" placeholder="输入搜索字符串" />
         <el-button  @click="hiddenSearch2"
           >取消</el-button>
       </div>
@@ -1303,7 +1303,16 @@ const handleCurrentChange=function(data, node){
 .el-input{
   background-color: #222222;
   --el-input-border-color: #0a85f8 !important;
+
 }
+
+.search .el-input{
+  background-color: #222222;
+  --el-input-border-color: #0a85f8 !important;
+  height: 50px !important;
+  font-size: 26px !important;
+}
+
 :deep(.el-input__wrapper){
   background-color: #222222 !important;
 }
@@ -1319,5 +1328,7 @@ const handleCurrentChange=function(data, node){
 :deep(.search .el-button){
   background-color: #222222 !important;
   --el-button-bg-color: #222222 !important;
+  height: 50px !important;
+  font-size: 26px !important;
 }
 </style>
