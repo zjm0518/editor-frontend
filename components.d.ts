@@ -35,6 +35,7 @@ declare module 'vue' {
     ListingItem: typeof import('./src/components/ListingItem.vue')['default']
     ListingItem2: typeof import('./src/components/ListingItem2.vue')['default']
     ListingItem3: typeof import('./src/components/ListingItem3.vue')['default']
+    LoadingMask: typeof import('./src/components/LoadingMask.vue')['default']
     LogButton: typeof import('./src/components/LogButton.vue')['default']
     MonacoEditor: typeof import('./src/components/MonacoEditor.vue')['default']
     MonacoEditorLog: typeof import('./src/components/MonacoEditorLog.vue')['default']
@@ -46,5 +47,8 @@ declare module 'vue' {
     TerminalComponent: typeof import('./src/components/TerminalComponent.vue')['default']
     VsCodeSlider: typeof import('./src/components/vs-tree/VsCodeSlider.vue')['default']
     VsCodeSliderLog: typeof import('./src/components/vs-tree-log/VsCodeSliderLog.vue')['default']
+  }
+  export interface ComponentCustomProperties {
+    vLoading: typeof import('element-plus/es')['ElLoadingDirective']
   }
 }

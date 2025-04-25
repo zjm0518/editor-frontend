@@ -3,8 +3,9 @@ heme
 import { computed, watch, reactive, ref, nextTick, onMounted, inject,onUnmounted, provide } from "vue";
 import { getFileIcon, convertToTreeData, sortDirTree } from "./utils/utils";
 import { ElTree, ElInput } from "element-plus";
-import { ArrowRightBold, Search } from "@element-plus/icons-vue";
+import { ArrowRightBold, Loading, Search } from "@element-plus/icons-vue";
 import RightContentMenu from "./components/RightContentMenu.vue";
+import LoadingMask from "../LoadingMask.vue";
 import DeleteConfirm from "../DeleteConfirm.vue";
 import { errorInfo } from "./config/config";
 import { v4 as uuidv4 } from "uuid";
@@ -62,6 +63,7 @@ const searchFilterText = ref("");
 const searchFileText = ref("");
 const isSearchFilter = ref(false);//过滤
 const isSearchText = ref(false);//全局搜索
+const searchTextLoading=ref(false);//全局搜索加载中
 const showSearchResult=ref(false);
 const width = ref(props.width || 280);
 const openAllState = ref(false);
@@ -654,11 +656,12 @@ const fetchSearchResults = debounce((val) => {
     return;
   }
 
-  console.log("search");
+  searchTextLoading.value=true;
   getSearchText({ path: currentFolder.value, searchText: val }).then((res) => {
     if(requestId===latestRequestId.value){
       console.log(res);
       searchResult.value = res.result;
+      searchTextLoading.value=false;
     }else {
       console.log(`请求过期: ${requestId}, 丢弃数据`);
     }
@@ -893,6 +896,7 @@ const handleCurrentChange=function(data, node){
        elTreeRef.value.currentNode=elTreeRef.value.root.childNodes[0]
   }
 }
+
 </script>
 
 <template>
@@ -1049,8 +1053,9 @@ const handleCurrentChange=function(data, node){
           </span>
         </template>
       </ElTree>
+      <LoadingMask :show="isSearchText && searchTextLoading">
       <ElTree
-      v-show="isSearchText"
+      v-show="isSearchText && !searchTextLoading"
         :data="searchResult"
         node-key="path"
         @node-click="handleNodeClick2"
@@ -1069,6 +1074,7 @@ const handleCurrentChange=function(data, node){
           </span>
         </template>
       </ElTree>
+      </LoadingMask>
       <div
         v-if="createError"
         ref="errorInfoRef"
