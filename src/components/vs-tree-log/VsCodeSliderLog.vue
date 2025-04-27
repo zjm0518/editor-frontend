@@ -238,11 +238,12 @@ onMounted(() => {
 });
 import dayjs from 'dayjs'
 import {type SearchFileData } from "@/utils";
-const timeRange = ref('');
+const timeRange = ref();
 const searchResult=ref<Array<SearchFileData>>([]);
 const searchLoading=ref(false);
 const isFilterTime=computed(()=>{
-  if(timeRange.value|| timeRange.value!=""){
+  
+  if(timeRange.value){
     return true;
   }
   return false;
@@ -253,9 +254,10 @@ const clearTime = function () {
 }
 
 async function searchFilesByTime(value) {
-  console.log(isFilterTime.value)
-  if (value.length !== 2) {
+
+  if (!value || value.length !== 2) {
     console.warn('请选择起始时间和结束时间')
+
     return
   }
   const startTime = dayjs(value[0]).format('YYYY-MM-DD HH:mm:ss')
@@ -280,6 +282,36 @@ function handleNodeClick2(obj, node, TreeNode, Event){
   emits("getTextFromPath", obj.path);
   selectedFolder.value = obj.path.substring(0, obj.path.lastIndexOf("\\"));
 }
+
+const shortcuts = [
+  {
+    text: 'Last week',
+    value: () => {
+      const end = new Date()
+      const start = new Date()
+      start.setDate(start.getDate() - 7)
+      return [start, end]
+    },
+  },
+  {
+    text: 'Last month',
+    value: () => {
+      const end = new Date()
+      const start = new Date()
+      start.setMonth(start.getMonth() - 1)
+      return [start, end]
+    },
+  },
+  {
+    text: 'Last 3 months',
+    value: () => {
+      const end = new Date()
+      const start = new Date()
+      start.setMonth(start.getMonth() - 3)
+      return [start, end]
+    },
+  },
+]
 </script>
 
 <template>
@@ -319,6 +351,7 @@ function handleNodeClick2(obj, node, TreeNode, Event){
           start-placeholder="Start Date"
           end-placeholder="End Date"
           @change="searchFilesByTime"
+          :shortcuts="shortcuts"
         />
     <el-button @click="clearTime"
           >取消</el-button>
