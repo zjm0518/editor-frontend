@@ -11,7 +11,7 @@
         </div>
       </pane>
 
-        <pane min-size="40">
+        <pane size="75" min-size="40">
           <MonacoEditorLog
             class="logeditor"
             :text-value="text"
@@ -27,9 +27,19 @@ import { Splitpanes, Pane } from "splitpanes";
 import VsCodeSliderLog from "./components/vs-tree-log/VsCodeSliderLog.vue";
 import MonacoEditorLog from "./components/MonacoEditorLog.vue";
 import {getTextFromPath} from "./api/path";
-import { ref } from "vue";
+import { ref ,watchEffect} from "vue";
+import { useLayoutStore } from "./stores/layout";
 const text = ref("");
 const selectedPath = ref("");
+const layoutStore = useLayoutStore();
+watchEffect(() => {
+  document.documentElement.style.setProperty("--header-height", layoutStore.headerHeight);
+  document.documentElement.style.setProperty("--tab-fontsize", layoutStore.tabFontSize);
+  document.documentElement.style.setProperty("--split-zone", layoutStore.touchZone);
+  document.documentElement.style.setProperty("--header-font-size", layoutStore.headerFontSize);
+});
+
+import "@/css/splitpanes.css"
 const getTextFromServer = function (path: string | undefined) {
   if (path === undefined) return;
   selectedPath.value = path;
@@ -45,6 +55,8 @@ const getTextFromServer = function (path: string | undefined) {
       console.log(err);
     });
 };
+
+
 </script>
 <style scoped>
 html,
@@ -68,7 +80,6 @@ body {
   width: 100%;
   height: 100%;
 }
-
 .folder {
   width: 100%;
   height: 100%;
@@ -100,78 +111,6 @@ body {
   width: 100%;
   height: 100%;
 }
-:deep(.lay-split-panel-line) {
-  background-color: #d0cece;
-  margin: 0;
-  border: 0;
-}
-:deep(.lay-split-panel-item) {
-  border: 0;
-}
 
-:deep(.lay-split-panel-vertical){
- >.lay-split-panel-line {
-  width: 100%;
-  height: 3px;
-  &:hover{
-    border: 3px solid #d6d6d6;
-    cursor: s-resize;
-  }
-  &:active{
-    border: 3px solid #b8b5b5;
-    cursor: s-resize;
-
-  }
- }}
-
-
-:deep(.lay-split-panel-horizontal){
-  >.lay-split-panel-line {
-  &:hover{
-    border: 3px solid #626060;
-    cursor: w-resize;
-  }
-  &:active{
-    border: 3px solid #626060;
-    cursor: w-resize;
-
-  }
-}
-}
-:deep(.splitpanes--vertical)  {
-  > .splitpanes__splitter{
-      min-width: 3px;
-  background: #cac8c8;
-  &:hover{
-    border: 3px solid #c0bebe;
-    cursor: w-resize;
-  }
-  &:active{
-    border: 3px solid #c0bebe;
-    cursor: w-resize;
-
-  }
-  }
-
-}
-:deep(.splitpanes--horizontal)  {
-  > .splitpanes__splitter{
-      min-height: 3px;
-  background: #626060;
-  &:hover{
-    border: 3px solid #626060;
-    cursor: s-resize;
-  }
-  &:active{
-    border: 3px solid #626060;
-    cursor: s-resize;
-
-  }
-  }
-  > .splitpanes__pane{
-    transition: none;
-  }
-
-}
 
 </style>

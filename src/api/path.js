@@ -112,3 +112,6 @@ export function postInitConfig(data = {}, headers = {}, config = {}) {
 export function getSearchText(params = {}, headers = {}, config = {}) {
   return http.get("/SearchText", params, headers, config);
 }
+export function getSearchByTime(params = {}, headers = {}, config = {}) {
+  return http.get("/SearchByTime", params, headers, config);
+}

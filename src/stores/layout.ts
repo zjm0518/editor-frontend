@@ -12,16 +12,18 @@ export const useLayoutStore = defineStore("layout", {
     headerFontSize:string;
     tabFontSize:string;
     touchZone:string;
+    logHeaderHeight:string;
   } => ({
     showTerminal: true,
     TerminalSize:30,
     screenWidth:window.innerWidth,
     screenHeight:window.innerHeight,
-    headerHeight:"30px",
+    headerHeight:"50px",
     terminalHeaderHeight:"30px",
-    headerFontSize:"16px",
-    tabFontSize:"10px",
-    touchZone:"-2px"
+    headerFontSize:"26px",
+    tabFontSize:"26px",
+    touchZone:"-15px",
+    logHeaderHeight:"80px",
   }),
   actions: {
     // no context as first argument, use `this` instead

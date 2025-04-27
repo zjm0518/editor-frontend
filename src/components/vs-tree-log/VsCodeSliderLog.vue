@@ -7,8 +7,11 @@ import { ArrowRightBold } from "@element-plus/icons-vue";
 
 import { type FileData } from "@/utils";
 import axios from "axios";
-import { getDir,getLogtPath_,setLogPath_ } from "@/api/path";
+import { getDir,getLogtPath_,setLogPath_,getSearchByTime } from "@/api/path";
 import LogButton from "../LogButton.vue";
+import { useLayoutStore } from "@/stores/layout";
+import LoadingMask from "@/components/LoadingMask.vue";
+const layoutStore = useLayoutStore();
 interface Tree {
   [key: string]: any;
 }
@@ -106,9 +109,11 @@ const getDirStructure = function (path: string, refresh = false) {
       console.log(err);
     });
 };
+const logPath=ref("");
 const setLogPath=function(path: string){
   getDirStructure(path)
   setLogPath_({log_path:path})
+  logPath.value=path;
 }
 /**
  * 取消选中状态
@@ -174,7 +179,7 @@ const readFiles = async function (item, currentPath = "") {
       fullPath: fileRelativePath,
       file: file,
     };
-    //console.log('[ file ] >', fileItems);
+
     return [fileItems];
   }
 };
@@ -227,18 +232,63 @@ const handleDownload=function() {
 onMounted(() => {
   getLogtPath_().then((res) => {
     console.log(res)
+    logPath.value=res.log_path;
     getDirStructure(res.log_path, true);
   });
 });
+import dayjs from 'dayjs'
+import {type SearchFileData } from "@/utils";
+const timeRange = ref('');
+const searchResult=ref<Array<SearchFileData>>([]);
+const searchLoading=ref(false);
+const isFilterTime=computed(()=>{
+  if(timeRange.value|| timeRange.value!=""){
+    return true;
+  }
+  return false;
+
+})
+const clearTime = function () {
+  timeRange.value = '';
+}
+
+async function searchFilesByTime(value) {
+  console.log(isFilterTime.value)
+  if (value.length !== 2) {
+    console.warn('请选择起始时间和结束时间')
+    return
+  }
+  const startTime = dayjs(value[0]).format('YYYY-MM-DD HH:mm:ss')
+  const endTime = dayjs(value[1]).format('YYYY-MM-DD HH:mm:ss')
+  console.log('开始时间:', startTime,endTime)
+  getSearchByTime({
+    path:logPath.value,
+    startTime: startTime,
+    endTime: endTime,
+  })
+    .then((res) => {
+     console.log(res)
+     searchResult.value = res.result;
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+}
+
+function handleNodeClick2(obj, node, TreeNode, Event){
+  Event.stopPropagation();
+  emits("getTextFromPath", obj.path);
+  selectedFolder.value = obj.path.substring(0, obj.path.lastIndexOf("\\"));
+}
 </script>
 
 <template>
   <div class="vs-slider light">
-    <div class="header">
-      <span class="base-dir"><!-- {{ baseDirName }} --></span>
-      <div>
+    <div class="header" :style="{height:layoutStore.logHeaderHeight,fontSize:layoutStore.headerFontSize}">
+
+      <div class="base-button">
         <i class="icon iconfont2 icon2-xiazai cursor-pointer" title="下载文件" @click="handleDownload"></i>
-        <LogButton @select-log-path="setLogPath"></LogButton>
+        <LogButton @select-log-path="setLogPath" :fontsize="layoutStore.headerFontSize"></LogButton>
         <i
           class="icon iconfont vs-find cursor-pointer"
           title="查找文件"
@@ -262,8 +312,19 @@ onMounted(() => {
           @click="closeAll"
         ></i>
       </div>
+      <div class="time-select">
+        <el-date-picker
+          v-model="timeRange"
+          type="datetimerange"
+          start-placeholder="Start Date"
+          end-placeholder="End Date"
+          @change="searchFilesByTime"
+        />
+    <el-button @click="clearTime"
+          >取消</el-button>
+      </div>
       <div v-if="showSearchStatus" class="search">
-        <ElInput v-model="searchText" size="mini" placeholder="输入文件名称" />
+        <ElInput v-model="searchText" placeholder="输入文件名称" />
         <el-button size="mini" type="text" @click="hiddenSearch"
           >取消</el-button
         >
@@ -272,6 +333,7 @@ onMounted(() => {
     <div class="el-tree-view" @contextmenu.prevent @click="cancelCurrentClick">
       <ElTree
         ref="elTreeRef"
+        v-show="!isFilterTime"
         :data="treeData"
         :default-expanded-keys="defaultExpandKeys"
         :filter-node-method="filterNode"
@@ -310,6 +372,28 @@ onMounted(() => {
           </span>
         </template>
       </ElTree>
+      <LoadingMask :show="isFilterTime && searchLoading">
+      <ElTree
+      v-show="isFilterTime && !searchLoading"
+        :data="searchResult"
+        node-key="path"
+        @node-click="handleNodeClick2"
+      >
+      <template #default="{ node, data }">
+          <span
+            class="custom-tree-node"
+          >
+            <i :class="getFileIcon(data.label)"></i>
+
+            <span class="label">{{
+              data.label
+            }}</span>
+
+
+          </span>
+        </template>
+      </ElTree>
+      </LoadingMask>
       <div
         v-if="createError"
         ref="errorInfoRef"
@@ -401,8 +485,8 @@ onMounted(() => {
 
 .header {
   display: flex;
-  flex-direction: row;
-  height: 30px;
+  flex-direction: column;
+
   justify-content: space-between;
   padding: 0 10px;
   background-color: #f2f2f2;
@@ -427,6 +511,7 @@ onMounted(() => {
 
 .header .icon {
   margin: 0 4px;
+  font-size: inherit;
 }
 
 :deep(.el-tree) {
@@ -442,6 +527,7 @@ onMounted(() => {
 
   .iconfont {
     margin-right: 4px;
+
   }
 
   .name {
@@ -518,5 +604,16 @@ onMounted(() => {
 
 .highlight {
   background-color: #f2f2f2;
+}
+.time-select{
+  display: flex;
+  flex-direction: row;
+}
+.base-button{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  margin-right: 10px;
 }
 </style>

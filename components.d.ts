@@ -19,6 +19,7 @@ declare module 'vue' {
     ConfigPage5: typeof import('./src/components/config/ConfigPage5.vue')['default']
     DeleteConfirm: typeof import('./src/components/DeleteConfirm.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
+    ElDatePicker: typeof import('element-plus/es')['ElDatePicker']
     ElForm: typeof import('element-plus/es')['ElForm']
     ElFormItem: typeof import('element-plus/es')['ElFormItem']
     ElInput: typeof import('element-plus/es')['ElInput']
@@ -45,6 +46,7 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     SimpleKeyBoard: typeof import('./src/components/SimpleKeyBoard.vue')['default']
     TerminalComponent: typeof import('./src/components/TerminalComponent.vue')['default']
+    TimeSelectDialog: typeof import('./src/components/TimeSelectDialog.vue')['default']
     VsCodeSlider: typeof import('./src/components/vs-tree/VsCodeSlider.vue')['default']
     VsCodeSliderLog: typeof import('./src/components/vs-tree-log/VsCodeSliderLog.vue')['default']
   }

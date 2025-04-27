@@ -4,6 +4,7 @@
       class="icon iconfont2 icon2-a-Openfolder"
       style="cursor: pointer; align-items: center"
       title="选择日志路径"
+      :style="{ fontSize: fontsize }"
       @click="handleTree"
     ></i>
     <el-dialog title="选择日志路径" v-model="visible" width="70%" height="70%" align-center>
@@ -141,7 +142,10 @@ import "@/css/listing-icons.css"
 import "@/css/listing.css"
 
 import css from "@/utils/css";
+defineProps<{
+  fontsize: string;
 
+}>();
 const fileStore = useFileStore3();
 const visible = ref(false);
 const selectPath = ref("");
