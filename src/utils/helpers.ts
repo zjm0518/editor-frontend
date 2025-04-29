@@ -40,7 +40,7 @@ export function getFileLanguage(fileName: string) {
   const type = (arr.pop() || "").toLowerCase();
   switch (type) {
     case "jks":
-      return "python";
+      return "c";
       case "bat":
         return "bat"
     case "vue":
