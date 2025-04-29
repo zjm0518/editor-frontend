@@ -1,6 +1,6 @@
 <template>
   <div class="ip-input">
-    <el-form label-position="right" label-width="150px" :model="formData">
+    <el-form label-position="right" label-width="260px" :model="formData">
       <el-form-item label="请输入ip">
         <el-input v-model="formData.ip"></el-input>
       </el-form-item>
@@ -14,6 +14,9 @@
           >
           </el-option>
         </el-select>
+      </el-form-item>
+      <el-form-item label="项目界面resource地址">
+        <el-input v-model="formData.webpath"></el-input>
       </el-form-item>
     </el-form>
   </div>

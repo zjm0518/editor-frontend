@@ -6,6 +6,7 @@ interface ConfigRecord{
   load:Array<string>,
   agvip:string,
   agvname:string,
+  webpath:string,
 
 }
 export const useConfigStore = defineStore('config', {
@@ -16,6 +17,7 @@ export const useConfigStore = defineStore('config', {
       load:Array(13).fill(""),
       agvip:'',
       agvname:'robot',
+      webpath:""
     } as ConfigRecord, // 存储表单数据
   }),
   actions: {
