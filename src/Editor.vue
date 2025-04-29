@@ -71,6 +71,7 @@ const getTextFromServer = function (path: string | undefined) {
 };
 
 const deleteFile=function(path:string,isDir:boolean){
+  if(path=="" ||!path ) return;
     path = path.replace(/\//g, "\\");
 
     if(isDir){
@@ -94,12 +95,10 @@ const deleteFile=function(path:string,isDir:boolean){
         }
     }else{
       const headerTabIndex = headerTabs.value.findIndex(item => item.path == path);
-
       if(headerTabIndex!=-1) {
         deleteTab(headerTabIndex);
       }
     }
-
 }
 const saveTextToServer = function () {
   console.log("selectedPath.value",selectedPath.value)

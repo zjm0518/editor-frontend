@@ -7,6 +7,7 @@ import { ArrowRightBold, Loading, Search } from "@element-plus/icons-vue";
 import RightContentMenu from "./components/RightContentMenu.vue";
 import LoadingMask from "../LoadingMask.vue";
 import DeleteConfirm from "../DeleteConfirm.vue";
+import DeleteFail from "../DeleteRenameFail.vue";
 import { errorInfo } from "./config/config";
 import { v4 as uuidv4 } from "uuid";
 import { type FileData,type SearchFileData } from "@/utils";
@@ -53,6 +54,7 @@ const addInputRef = ref(null);
 const renameInputRef = ref(null);
 const rightContentMenuRef = ref(null);
 const deleteConfirmRef = ref(null);
+const deleteFailRef = ref(null);
 const errorInfoRef = ref(null);
 const errorInfoPosition = reactive({
   left: 0,
@@ -511,7 +513,6 @@ function renameFileFunc(data, node, type) {
         oldPath: data.path,
         newPath: data.path.replace(/(\\|\/)([^\\\/]+)$/, `$1${reName}`),
       };
-      console.log(postdata);
 
       renameFile(postdata)
         .then((res) => {
@@ -520,7 +521,7 @@ function renameFileFunc(data, node, type) {
          /*  data.isRename = false;
           data.label = reName;
           data.path = data.path.replace(/(\\|\/)([^\\\/]+)$/, `$1${reName}`); */
-
+            if(res.status==1){
               if(elTreeRef.value.getCurrentNode().path==currentNodeData.data.path){
 
              setCurrentNode(currentFolder.value.replace(/\//g, "\\"));
@@ -530,6 +531,13 @@ function renameFileFunc(data, node, type) {
                getDirStructure(currentFolder.value);
              renameFileName.value = "";
               createError.value = "";
+          }else if(res.status==3){
+
+            deleteFailRef.value.showDeleteRenameFail(data.path,data.isDir,false);
+            data.isRename = false;
+          renameFileName.value = "";
+          createError.value = "";
+          }
         })
         .catch((err) => {
           console.log(err);
@@ -578,18 +586,23 @@ const deleteFile222 = function () {
   };
   deleteFile(postdata).then((res) => {
 
-
-   // console.log("issss",elTreeRef.value.getCurrentNode().path,currentNodeData.data.path)
-    if(elTreeRef.value.getCurrentNode().path==currentNodeData.data.path){
-
-      setCurrentNode(currentFolder.value.replace(/\//g, "\\"));
+    if(res.data.status==1){
+          if(elTreeRef.value.getCurrentNode().path==currentNodeData.data.path){
+        setCurrentNode(currentFolder.value.replace(/\//g, "\\"));
+        }
+          elTreeRef.value.remove(currentNodeData.node);
+          currentNodeData.data = "";
+          currentNodeData.node = "";
+          rightData.value=null;
+        emits("deleteFile",currentNodeData.data.path,currentNodeData.data.isDir);
+    }else if(res.data.status==3){
+      console.log("ocuppied")
+      deleteFailRef.value.showDeleteRenameFail(currentNodeData.data.path,currentNodeData.data.isDir,true);
     }
-    emits("deleteFile",currentNodeData.data.path,currentNodeData.data.isDir);
-    elTreeRef.value.remove(currentNodeData.node);
-    currentNodeData.data = "";
-    currentNodeData.node = "";
-    rightData.value=null;
-  });
+
+
+  })
+
 };
 
 const handleDownload=function() {
@@ -1090,6 +1103,7 @@ const handleCurrentChange=function(data, node){
     </div>
     <RightContentMenu ref="rightContentMenuRef" @handleMenu="clickMenu" />
     <DeleteConfirm ref="deleteConfirmRef" @delete-confirm="deleteFile222"></DeleteConfirm>
+    <DeleteFail ref="deleteFailRef"></DeleteFail>
   </div>
 </template>
 
