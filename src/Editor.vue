@@ -329,7 +329,9 @@ const saved = ref("");
 const monacoeditor=ref(null);
 interface TabLabel {
   name:string,
-  path:string
+  path:string,
+  text:string,
+  modified:boolean
 
 }
 const headerTabs=ref<Array<TabLabel>>([])

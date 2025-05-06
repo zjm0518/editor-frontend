@@ -69,8 +69,8 @@ onMounted(() => {
     theme: "vs-dark",
     unusualLineTerminators:"off",
     fontSize:layoutStore.editorFontSize,
+    contextmenu:true,
   });
-
 
   container.value?.addEventListener("keydown", saveHandler);
 });

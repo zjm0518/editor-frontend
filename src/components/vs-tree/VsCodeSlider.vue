@@ -585,8 +585,7 @@ const deleteFile222 = function () {
     isDir: currentNodeData.data.isDir,
   };
   deleteFile(postdata).then((res) => {
-
-    if(res.data.status==1){
+    if(res.status==1){
           if(elTreeRef.value.getCurrentNode().path==currentNodeData.data.path){
         setCurrentNode(currentFolder.value.replace(/\//g, "\\"));
         }
@@ -595,7 +594,7 @@ const deleteFile222 = function () {
           currentNodeData.node = "";
           rightData.value=null;
         emits("deleteFile",currentNodeData.data.path,currentNodeData.data.isDir);
-    }else if(res.data.status==3){
+    }else if(res.status==3){
       console.log("ocuppied")
       deleteFailRef.value.showDeleteRenameFail(currentNodeData.data.path,currentNodeData.data.isDir,true);
     }
