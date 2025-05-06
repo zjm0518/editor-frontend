@@ -15,7 +15,7 @@
       align-center
     >
       <div v-if="layoutStore.loading">
-        <h2 class="message delayed">
+        <h2 class="message-fb delayed">
           <div class="spinner">
             <div class="bounce1"></div>
             <div class="bounce2"></div>
@@ -33,7 +33,7 @@
               0
             "
           >
-            <h2 class="message">
+            <h2 class="message-fb">
               <i class="material-icons">sentiment_dissatisfied</i>
               <span>No data</span>
             </h2>

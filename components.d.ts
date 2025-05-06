@@ -17,20 +17,11 @@ declare module 'vue' {
     ConfigPage3: typeof import('./src/components/config/ConfigPage3.vue')['default']
     ConfigPage4: typeof import('./src/components/config/ConfigPage4.vue')['default']
     ConfigPage5: typeof import('./src/components/config/ConfigPage5.vue')['default']
-    copy: typeof import('./src/components/DeleteConfirm copy.vue')['default']
     DeleteConfirm: typeof import('./src/components/DeleteConfirm.vue')['default']
-    DeleteFail: typeof import('./src/components/DeleteFail.vue')['default']
     DeleteRenameFail: typeof import('./src/components/DeleteRenameFail.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElDatePicker: typeof import('element-plus/es')['ElDatePicker']
-    ElForm: typeof import('element-plus/es')['ElForm']
-    ElFormItem: typeof import('element-plus/es')['ElFormItem']
     ElInput: typeof import('element-plus/es')['ElInput']
-    ElOption: typeof import('element-plus/es')['ElOption']
-    ElScrollbar: typeof import('element-plus/es')['ElScrollbar']
-    ElSelect: typeof import('element-plus/es')['ElSelect']
-    ElStep: typeof import('element-plus/es')['ElStep']
-    ElSteps: typeof import('element-plus/es')['ElSteps']
     FileBroswerButton: typeof import('./src/components/FileBroswerButton.vue')['default']
     FolderTree: typeof import('./src/components/FolderTree.vue')['default']
     IXterm: typeof import('./src/components/IXterm.vue')['default']
@@ -49,11 +40,7 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     SimpleKeyBoard: typeof import('./src/components/SimpleKeyBoard.vue')['default']
     TerminalComponent: typeof import('./src/components/TerminalComponent.vue')['default']
-    TimeSelectDialog: typeof import('./src/components/TimeSelectDialog.vue')['default']
     VsCodeSlider: typeof import('./src/components/vs-tree/VsCodeSlider.vue')['default']
     VsCodeSliderLog: typeof import('./src/components/vs-tree-log/VsCodeSliderLog.vue')['default']
-  }
-  export interface ComponentCustomProperties {
-    vLoading: typeof import('element-plus/es')['ElLoadingDirective']
   }
 }

@@ -72,7 +72,7 @@ html[dir="rtl"] #listing {
   vertical-align: bottom;
 }
 
-.message {
+.message-fb {
   text-align: center;
   font-size: 2em;
   margin: 1em auto;
@@ -83,7 +83,7 @@ html[dir="rtl"] #listing {
   font-weight: 500;
 }
 
-.message i {
+.message-fb i {
   font-size: 2.5em;
   margin-bottom: 0.2em;
   display: block;

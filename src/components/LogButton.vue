@@ -10,7 +10,7 @@
     <el-dialog title="选择日志路径" v-model="visible" width="70%" height="70%" align-center>
 
       <div v-if="false">
-        <h2 class="message delayed">
+        <h2 class="message-fb delayed">
           <div class="spinner">
             <div class="bounce1"></div>
             <div class="bounce2"></div>
@@ -27,7 +27,7 @@
             (fileStore.req?.numDirs ?? 0) + (fileStore.req?.numFiles ?? 0) == 0
           "
         >
-          <h2 class="message">
+          <h2 class="message-fb">
             <i class="material-icons">sentiment_dissatisfied</i>
             <span>No data</span>
           </h2>
