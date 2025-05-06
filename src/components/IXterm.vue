@@ -306,10 +306,10 @@ const Run=async function(filepath:string) {
       });
       //console.log(jks_script_app_path)
 
-      //data="cd"+" "+workdir+"\r\n"
+      data="cd"+" "+workdir+"\r\n"
       data += jks_script_app_path + " " + filepath + "\r\n";
   }else if(ext==".exe" || ext == ".bat"){
-    // data="cd"+" "+workdir+"\r\n"
+    data="cd"+" "+workdir+"\r\n"
     data+=filepath+"\r\n"
   }
   if(data.length==0) return
