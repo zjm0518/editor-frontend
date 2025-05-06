@@ -424,7 +424,8 @@ const reduceFontSize=function(){
 }
 const switchHeaderTab=function(index){
   currentTab.value = index;
-  selectedPath.value = headerTabs.value[index].path
+  selectedPath.value = headerTabs.value[index].path;
+  isBinary.value=false;
 
 }
 </script>
@@ -443,11 +444,11 @@ const switchHeaderTab=function(index){
           <pane min-size="20" :size="100-TerminalSize">
             <div class="header" :style="{ height: layoutStore.headerHeight }">
               <div class="header-left" :style="{ fontSize: layoutStore.headerFontSize }">
-                <i class="icon iconfont2 icon2-baocun" title="保存文件" @click="saveTextToServer"></i>
-                <i class="icon iconfont2 icon2-yunhang" title="运行" @click="RunJKS"></i>
-                <i class="icon iconfont2 icon2-tingzhi" title="停止" @click="Stop"></i>
-                <i class="icon iconfont2 icon2-zitifangda" title="字体放大" @click="addFontSize"></i>
-                <i class="icon iconfont2 icon2-zitisuoxiao" title="字体放大" @click="reduceFontSize"></i>
+                <i class="icon iconfont2 icon2-baocun" title="保存文件" @click="saveTextToServer" :class="{ disabled: isBinary || headerTabs.length==0 }"></i>
+                <i class="icon iconfont2 icon2-yunhang" title="运行" @click="RunJKS" :class="{ disabled: isBinary || headerTabs.length==0 }"></i>
+                <i class="icon iconfont2 icon2-tingzhi" title="停止" @click="Stop" :class="{ disabled: isBinary || headerTabs.length==0 }"></i>
+                <i class="icon iconfont2 icon2-zitifangda" title="字体放大" @click="addFontSize" :class="{ disabled: isBinary || headerTabs.length==0 }"></i>
+                <i class="icon iconfont2 icon2-zitisuoxiao" title="字体放大" @click="reduceFontSize" :class="{ disabled: isBinary || headerTabs.length==0 }"></i>
 
 
                 <span class="mark-saved" >{{ saved }}</span>

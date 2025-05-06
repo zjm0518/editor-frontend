@@ -144,3 +144,9 @@
 .unsaved{
     font-size: var(--tab-fontsize)/2 !important; 
 }
+
+.icon.disabled {
+    pointer-events: none;
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
