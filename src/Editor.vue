@@ -32,6 +32,11 @@ const selectedPath = ref("");
 const getTextFromServer = function (path: string | undefined) {
   if (path === undefined) return;
   selectedPath.value = path;
+  const tabIndex = headerTabs.value.findIndex(tab => tab.path === path);
+  if(tabIndex != -1){
+    currentTab.value=tabIndex;
+    return;
+  }
   axios({
     method: "get",
     url: "/getTextFromPath",
@@ -52,18 +57,18 @@ const getTextFromServer = function (path: string | undefined) {
       }
       text.value = res.data["file-text"];
 
-      const tabIndex = headerTabs.value.findIndex(tab => tab.path === path);
+
       if (tabIndex === -1) {
         headerTabs.value.push({
           name: path.split("\\").pop() || "",
-          path: path
+          path: path,
+          text: text.value,
+          modified: false,
         });
         currentTab.value = headerTabs.value.length - 1;
 
-      }else{
-        currentTab.value=tabIndex
       }
-      console.log("headerTabs", headerTabs.value)
+      //console.log("headerTabs", headerTabs.value)
     })
     .catch((err) => {
       console.log(err);
@@ -108,7 +113,7 @@ const saveTextToServer = function () {
     method: "post",
     url: "/api/saveText",
     data: {
-      path: selectedPath.value,
+      path: headerTabs.value[currentTab.value].path,
       text: text,
     },
     headers: {
@@ -117,6 +122,7 @@ const saveTextToServer = function () {
   })
     .then((res) => {
       console.log(res);
+      headerTabs.value[currentTab.value].modified = false;
       saved.value = "已保存";
   setTimeout(() => {
     saved.value = "";
@@ -336,6 +342,8 @@ interface TabLabel {
 }
 const headerTabs=ref<Array<TabLabel>>([])
 const currentTab=ref(0)
+provide("headerTabs", headerTabs)
+provide("currentTab", currentTab)
 const deleteTab=function(index:number){
   //console.log("deleteTab",index,currentTab.value)
   if(index==0 && headerTabs.value.length==1){
@@ -349,7 +357,7 @@ const deleteTab=function(index:number){
     headerTabs.value.splice(index,1)
     currentTab.value=currentTab.value-1
     selectedPath.value=headerTabs.value[currentTab.value].path
-    getTextFromServer(selectedPath.value)
+    //getTextFromServer(selectedPath.value)
   }else if(index>currentTab.value){
     headerTabs.value.splice(index,1)
     selectedPath.value=headerTabs.value[currentTab.value].path
@@ -360,12 +368,13 @@ const deleteTab=function(index:number){
       currentTab.value=currentTab.value-1
     }
     selectedPath.value=headerTabs.value[currentTab.value].path
-    getTextFromServer(selectedPath.value)
+    //getTextFromServer(selectedPath.value)
   }
 }
 provide("selectedPath", selectedPath)
 import simplebar from 'simplebar-vue';
 import 'simplebar-vue/dist/simplebar.min.css';
+import { head } from "node_modules/axios/index.cjs";
 watchEffect(() => {
   document.documentElement.style.setProperty("--header-height", layoutStore.headerHeight);
   document.documentElement.style.setProperty("--tab-fontsize", layoutStore.tabFontSize);
@@ -413,6 +422,11 @@ const addFontSize=function(){
 const reduceFontSize=function(){
   layoutStore.SubEditorFontSize()
 }
+const switchHeaderTab=function(index){
+  currentTab.value = index;
+  selectedPath.value = headerTabs.value[index].path
+
+}
 </script>
 
 <template>
@@ -441,10 +455,10 @@ const reduceFontSize=function(){
               <simplebar data-simplebar-auto-hide="true" class="header-tabs" ref="simplebarRef">
 
                 <div class="header-tabs-item" v-for="(item,index) in headerTabs" :key="index"
-                  :class="{ 'Tabselected': item.path == selectedPath }" @click="getTextFromServer(item.path)" >
+                  :class="{ 'Tabselected': item.path == selectedPath }" @click="switchHeaderTab(index)" >
 
                     <span class="header-tabs-item-name">{{ item.name }}</span>
-
+                    <i class="iconfont2 icon2-weibaocun unsaved" title="未保存" v-if="item.modified"></i>
                     <i class="iconfont2 icon2-guanbi1 close" @click.stop="deleteTab(index)" title="Close"></i>
                 </div>
 
@@ -455,7 +469,7 @@ const reduceFontSize=function(){
               </div>
             </div>
 
-            <MonacoEditor class="editor" :text-value="text" :is-binary="isBinary" :path="selectedPath" @save="saveTextToServer"
+            <MonacoEditor class="editor" :is-binary="isBinary" :path="selectedPath" @save="saveTextToServer"
             ref="monacoeditor" :no-data="headerTabs.length==0" />
           </pane>
 

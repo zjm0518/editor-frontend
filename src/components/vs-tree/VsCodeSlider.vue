@@ -46,7 +46,7 @@ const emits = defineEmits<{
   (e: "addFile", data: object): void;
   (e: "addFolder", data: FileData): void;
   (e: "getTextFromPath", path: string | undefined): void;
-  (e:"deleteFile",path:string):void;
+  (e:"deleteFile",path:string,isDir:boolean):void;
 }>();
 
 const elTreeRef = ref(null);
@@ -526,7 +526,7 @@ function renameFileFunc(data, node, type) {
 
              setCurrentNode(currentFolder.value.replace(/\//g, "\\"));
             }
-             emits("deleteFile",data.path);
+             emits("deleteFile",data.path,data.isDir);
              elTreeRef.value.remove(node);
                getDirStructure(currentFolder.value);
              renameFileName.value = "";

@@ -141,3 +141,6 @@
    user-select: none;
    font-size: var(--tab-fontsize);
 }
+.unsaved{
+    font-size: var(--tab-fontsize)/2 !important; 
+}

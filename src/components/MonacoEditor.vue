@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, watch } from "vue";
+import { inject, onMounted, onUnmounted, ref, watch } from "vue";
 import { useResizeObserver, useStorage } from "@vueuse/core";
 
 // Import monaco
@@ -23,7 +23,6 @@ import { useLayoutStore } from "../stores/layout";
 const layoutStore = useLayoutStore();
 const props = defineProps<{
   path: string;
-  textValue: string;
   isBinary: boolean;
   noData:boolean;
 }>();
@@ -32,7 +31,9 @@ const emit = defineEmits<{
   (e: "change", payload: typeof editorValue.value): void;
   (e: "save"): void;
 }>();
-
+let isSettingValue = false;
+const headerTabs=inject("headerTabs");
+const currentTab=inject("currentTab");
 self.MonacoEnvironment = {
   getWorker(_: string, label: string) {
     if (label === "json") return new JSONWorker();
@@ -65,13 +66,23 @@ const editorValue = useStorage<Record<string, any>>(
 
 onMounted(() => {
   editor = monaco.editor.create(container.value!, {
-    language: "python",
+    language: "c",
     theme: "vs-dark",
     unusualLineTerminators:"off",
     fontSize:layoutStore.editorFontSize,
     contextmenu:true,
   });
+  editor.onDidChangeModelContent(() => {
 
+  if (!isSettingValue) {
+    // 用户主动编辑内容，发出更新事件
+
+    const currentValue = editor.getValue();
+    headerTabs.value[currentTab.value].text = currentValue;
+    headerTabs.value[currentTab.value].modified = true;
+   ;
+  }
+});
   container.value?.addEventListener("keydown", saveHandler);
 });
 const saveHandler = (event) => {
@@ -81,19 +92,22 @@ const saveHandler = (event) => {
   }
 };
 watch(
-  () => props.textValue,
-  (newvalue, oldValue) => {
-    if (typeof newvalue === "undefined") {
-    } else {
-      console.log("in monaco editor,text change");
-      editor.setValue(newvalue);
-      let label = props.path.replace(/\/$/, ""); // 去掉末尾的 \\
-      label = label.split("/").pop() || "";
-      console.log("language", getFileLanguage(label));
-      monaco.editor.setModelLanguage(editor.getModel(), getFileLanguage(label));
+  () => {
+    const tab = headerTabs.value[currentTab.value];
+    return tab ? [currentTab.value, tab.path] : [null, null];
+  },
+  () => {
+    const current = headerTabs.value[currentTab.value];
+    if (current) {
+      isSettingValue = true;
+      editor.setValue(current.text);
+      isSettingValue = false;
 
+      const label = current.path.replace(/\/$/, "").split("/").pop() || "";
+      monaco.editor.setModelLanguage(editor.getModel(), getFileLanguage(label));
     }
-  }
+  },
+  { immediate: true }
 );
 watch(isDark, (value) => {
   editor.updateOptions({
