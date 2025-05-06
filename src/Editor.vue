@@ -35,6 +35,7 @@ const getTextFromServer = function (path: string | undefined) {
   const tabIndex = headerTabs.value.findIndex(tab => tab.path === path);
   if(tabIndex != -1){
     currentTab.value=tabIndex;
+    isBinary.value=false;
     return;
   }
   axios({
@@ -76,6 +77,7 @@ const getTextFromServer = function (path: string | undefined) {
 };
 
 const deleteFile=function(path:string,isDir:boolean){
+  //console.log("deleteFile",path,isDir)
   if(path=="" ||!path ) return;
     path = path.replace(/\//g, "\\");
 
@@ -100,6 +102,7 @@ const deleteFile=function(path:string,isDir:boolean){
         }
     }else{
       const headerTabIndex = headerTabs.value.findIndex(item => item.path == path);
+      console.log("headerTabIndex",headerTabIndex)
       if(headerTabIndex!=-1) {
         deleteTab(headerTabIndex);
       }
@@ -345,7 +348,7 @@ const currentTab=ref(0)
 provide("headerTabs", headerTabs)
 provide("currentTab", currentTab)
 const deleteTab=function(index:number){
-  //console.log("deleteTab",index,currentTab.value)
+  console.log("deleteTab",index,currentTab.value)
   if(index==0 && headerTabs.value.length==1){
     currentTab.value=0;
     headerTabs.value.splice(index,1)

@@ -585,15 +585,17 @@ const deleteFile222 = function () {
     isDir: currentNodeData.data.isDir,
   };
   deleteFile(postdata).then((res) => {
+    console.log(res)
     if(res.status==1){
           if(elTreeRef.value.getCurrentNode().path==currentNodeData.data.path){
         setCurrentNode(currentFolder.value.replace(/\//g, "\\"));
         }
+        emits("deleteFile",currentNodeData.data.path,currentNodeData.data.isDir);
           elTreeRef.value.remove(currentNodeData.node);
           currentNodeData.data = "";
           currentNodeData.node = "";
           rightData.value=null;
-        emits("deleteFile",currentNodeData.data.path,currentNodeData.data.isDir);
+
     }else if(res.status==3){
       console.log("ocuppied")
       deleteFailRef.value.showDeleteRenameFail(currentNodeData.data.path,currentNodeData.data.isDir,true);
@@ -893,6 +895,7 @@ onUnmounted(() => {
 const setCurrentNode=function(path:string){
 
   const node = elTreeRef.value?.getNode(path);
+  if(!node) return;
   elTreeRef.value?.setCurrentKey(node.key);
 
 }
