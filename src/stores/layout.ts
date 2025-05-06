@@ -13,6 +13,7 @@ export const useLayoutStore = defineStore("layout", {
     tabFontSize:string;
     touchZone:string;
     logHeaderHeight:string;
+    editorFontSize:number;
   } => ({
     showTerminal: true,
     TerminalSize:30,
@@ -24,6 +25,7 @@ export const useLayoutStore = defineStore("layout", {
     tabFontSize:"26px",
     touchZone:"-15px",
     logHeaderHeight:"80px",
+    editorFontSize:16,
   }),
   actions: {
     // no context as first argument, use `this` instead
@@ -46,6 +48,12 @@ export const useLayoutStore = defineStore("layout", {
       this.headerFontSize=this.screenHeight<0?"16px":"26px";
       this.tabFontSize=this.screenHeight<0?"16px":"26px";
       this.touchZone=this.screenHeight<0?"-5px":"-15px";
-    }
+    },
+    AddEditorFontSize() {
+      this.editorFontSize += 1;
+    },
+    SubEditorFontSize() {
+      this.editorFontSize -= 1;
+    },
   },
 });

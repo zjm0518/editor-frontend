@@ -405,6 +405,12 @@ const simulateMouseEvent=function(type, touch) {
       if (target) target.dispatchEvent(evt)
     }
 const simplebarRef=ref(null);
+const addFontSize=function(){
+  layoutStore.AddEditorFontSize()
+}
+const reduceFontSize=function(){
+  layoutStore.SubEditorFontSize()
+}
 </script>
 
 <template>
@@ -424,6 +430,9 @@ const simplebarRef=ref(null);
                 <i class="icon iconfont2 icon2-baocun" title="保存文件" @click="saveTextToServer"></i>
                 <i class="icon iconfont2 icon2-yunhang" title="运行" @click="RunJKS"></i>
                 <i class="icon iconfont2 icon2-tingzhi" title="停止" @click="Stop"></i>
+                <i class="icon iconfont2 icon2-zitifangda" title="字体放大" @click="addFontSize"></i>
+                <i class="icon iconfont2 icon2-zitisuoxiao" title="字体放大" @click="reduceFontSize"></i>
+
 
                 <span class="mark-saved" >{{ saved }}</span>
               </div>

@@ -19,7 +19,8 @@ import {
 } from "../utils";
 
 import "@/css/fonts.css";
-
+import { useLayoutStore } from "../stores/layout";
+const layoutStore = useLayoutStore();
 const props = defineProps<{
   path: string;
   textValue: string;
@@ -66,7 +67,8 @@ onMounted(() => {
   editor = monaco.editor.create(container.value!, {
     language: "python",
     theme: "vs-dark",
-    unusualLineTerminators:"off"
+    unusualLineTerminators:"off",
+    fontSize:layoutStore.editorFontSize,
   });
 
 
@@ -98,7 +100,14 @@ watch(isDark, (value) => {
     theme: value ? "vs-dark" : "vs",
   });
 });
-
+watch(
+  () => layoutStore.editorFontSize,
+  (value) => {
+    editor.updateOptions({
+      fontSize: value,
+    });
+  }
+);
 const editorObserver = useResizeObserver(container, () => {
   editor.layout();
 });
