@@ -7,6 +7,7 @@
             class="file"
             theme="light"
             @get-text-from-path="getTextFromServer"
+            @export-log-x-l-s-x="exportLog"
           ></VsCodeSliderLog>
         </div>
       </pane>
@@ -16,6 +17,7 @@
             class="logeditor"
             :text-value="text"
             :path="selectedPath"
+            ref="monacologeditor"
           />
         </pane>
 
@@ -32,6 +34,7 @@ import { useLayoutStore } from "./stores/layout";
 const text = ref("");
 const selectedPath = ref("");
 const layoutStore = useLayoutStore();
+const monacologeditor = ref<InstanceType<typeof MonacoEditorLog> | null>(null);
 watchEffect(() => {
   document.documentElement.style.setProperty("--header-height", layoutStore.headerHeight);
   document.documentElement.style.setProperty("--tab-fontsize", layoutStore.tabFontSize);
@@ -56,7 +59,34 @@ const getTextFromServer = function (path: string | undefined) {
     });
 };
 
+import * as XLSX from 'xlsx';
 
+function parseLog(logText:string,label:string) {
+  const lines = logText.split('\n');
+  const data = [["日期", "时间", "内容"]];
+
+  lines.forEach(line => {
+    const parts = line.split('#');
+    if (parts.length >= 3) {
+      const part1 = parts[0].trim(); // 第一个 #
+      const part2 = parts[1].trim(); // 第二个 #
+      const part3 = parts.slice(2).join('#').trim(); // 剩余部分，避免内容里有 #
+
+      data.push([part1, part2, part3]);
+    }
+  });
+
+  const worksheet = XLSX.utils.aoa_to_sheet(data);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "日志");
+
+  XLSX.writeFile(workbook, label+".xlsx", { compression: true });
+}
+function exportLog(label:string) {
+  const logtext: string | undefined=monacologeditor.value.getLogEditorValue()
+
+  parseLog(logtext,label)
+}
 </script>
 <style scoped>
 html,

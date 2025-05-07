@@ -98,7 +98,9 @@ onUnmounted(() => {
   editor?.dispose();
   editorObserver.stop();
 });
-
+defineExpose({
+  getLogEditorValue: () => editor?.getValue() || "",
+});
 </script>
 
 <template>

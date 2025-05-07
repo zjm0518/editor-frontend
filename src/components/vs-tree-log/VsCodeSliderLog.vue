@@ -23,6 +23,7 @@ const props = defineProps<{
 const emits = defineEmits<{
   (e: "fileClick"): void;
   (e: "getTextFromPath", path: string | undefined): void;
+  (e: "exportLogXLSX",label:string): void;
 }>();
 
 const elTreeRef = ref(null);
@@ -242,7 +243,7 @@ const timeRange = ref();
 const searchResult=ref<Array<SearchFileData>>([]);
 const searchLoading=ref(false);
 const isFilterTime=computed(()=>{
-  
+
   if(timeRange.value){
     return true;
   }
@@ -285,7 +286,7 @@ function handleNodeClick2(obj, node, TreeNode, Event){
 
 const shortcuts = [
   {
-    text: 'Last week',
+    text: '一周内',
     value: () => {
       const end = new Date()
       const start = new Date()
@@ -294,7 +295,7 @@ const shortcuts = [
     },
   },
   {
-    text: 'Last month',
+    text: '一个月内',
     value: () => {
       const end = new Date()
       const start = new Date()
@@ -303,7 +304,7 @@ const shortcuts = [
     },
   },
   {
-    text: 'Last 3 months',
+    text: '最近3个月',
     value: () => {
       const end = new Date()
       const start = new Date()
@@ -312,6 +313,24 @@ const shortcuts = [
     },
   },
 ]
+function getFileNameWithoutExtension(filename) {
+  const lastDot = filename.lastIndexOf('.');
+  if (lastDot === -1) return filename; // 没有后缀
+  return filename.substring(0, lastDot);
+}
+const handleExport=function() {
+  if(currentNodeData.data==null) return;
+  const selectedPath=currentNodeData.data.path;
+  const label= selectedPath.split("\\").pop() || ""
+  //console.log("label",label,getFileNameWithoutExtension(label))
+  const isDir=currentNodeData.data.isDir;
+  if(isDir){
+    alert("请先选择文件")
+    return;
+  }
+  emits("exportLogXLSX",getFileNameWithoutExtension(label))
+  //parseLog(getFileNameWithoutExtension(label))
+}
 </script>
 
 <template>
@@ -319,6 +338,7 @@ const shortcuts = [
     <div class="header" :style="{height:layoutStore.logHeaderHeight,fontSize:layoutStore.headerFontSize}">
 
       <div class="base-button">
+        <i class="icon iconfont2 icon2-export cursor-pointer" title="导出XLSX" @click="handleExport"></i>
         <i class="icon iconfont2 icon2-xiazai cursor-pointer" title="下载文件" @click="handleDownload"></i>
         <LogButton @select-log-path="setLogPath" :fontsize="layoutStore.headerFontSize"></LogButton>
         <i
