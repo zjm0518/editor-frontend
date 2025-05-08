@@ -52,6 +52,9 @@ onMounted(() => {
     readOnly: true,
     domReadOnly: true,
     unusualLineTerminators: "off",
+    suggest: {
+    preview: true,
+  },
   });
 
   monaco.editor.defineTheme("myTheme", {

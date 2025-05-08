@@ -17,7 +17,7 @@ import {
   useDarkGlobal,
   getFileLanguage,
 } from "../utils";
-
+import { completion } from "@/utils/completion";
 import "@/css/fonts.css";
 import { useLayoutStore } from "../stores/layout";
 const layoutStore = useLayoutStore();
@@ -71,6 +71,9 @@ onMounted(() => {
     unusualLineTerminators:"off",
     fontSize:layoutStore.editorFontSize,
     contextmenu:true,
+    suggest: {
+    preview: true,
+  },
   });
   editor.onDidChangeModelContent(() => {
 
@@ -84,6 +87,9 @@ onMounted(() => {
   }
 });
   container.value?.addEventListener("keydown", saveHandler);
+  monaco.languages.registerCompletionItemProvider("c",{
+    provideCompletionItems:completion
+  })
 });
 const saveHandler = (event) => {
   if (event.ctrlKey && event.key === "s") {
