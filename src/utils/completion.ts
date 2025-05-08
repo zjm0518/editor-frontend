@@ -128,8 +128,10 @@ export const completion=(model, position)=>  {
     startColumn: word.startColumn,
     endColumn: word.endColumn,
   };
+
   const funcNames=[packages,AuxFunc,endPosTrajSymbols,ConveyorTrack,ForceSensor,JKModbus,JKModule_shareMessage,JKSerialPort,LSPB,LSPB_mov,multiCurve,Robot5D,Robot6D,Robot7D,RobotHand,SafeModule,Vector,unittest]
   const uniqueItems = [...new Set(funcNames.flat())];
+
   const completionItems = uniqueItems.map(text => ({
     label: text,
     kind: monaco.languages.CompletionItemKind.Text,
@@ -155,5 +157,27 @@ export const completion=(model, position)=>  {
       range: range,
     },
   ];
+  const codeText = model.getValue();
+  const regex = /\b\w+\b/g;  // \b 表示单词边界，\w 匹配字母、数字和下划线
+  const allWords = [];
+  let match;
+  while ((match = regex.exec(codeText)) !== null) {
+    allWords.push(match[0]);
+  }
+  // 获取当前光标下的词汇
+  const wordUnderCursor = word.word;
+   // 将当前文件中出现过的词汇作为补全项
+   allWords.forEach(w => {
+    if (w !== wordUnderCursor) {
+      suggestions.push({
+        label: w,
+        kind: monaco.languages.CompletionItemKind.Text,
+        insertText: w,
+        range: range
+      });
+    }
+  });
+
+
   return { suggestions: suggestions };
 }
