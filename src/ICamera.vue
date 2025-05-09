@@ -233,6 +233,9 @@ const openCamera = function () {
     });
 };
 const closeCamera = function () {
+  if(cameraSNPick.value==""){
+    return
+  }
   closeCamera_({
     cameraType: cameraTypePick.value,
     cameraSN: cameraSNPick.value,
@@ -244,6 +247,9 @@ const closeCamera = function () {
 };
 
 const getCamerap = function () {
+  if(cameraSNPick.value==""){
+    return
+  }
   getCameraParams({
     cameraType: cameraTypePick.value,
     cameraSN: cameraSNPick.value,

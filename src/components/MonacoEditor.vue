@@ -207,4 +207,5 @@ defineExpose({
 :deep(.monaco-editor) {
   --vscode-focusBorder: #333232;
 }
+
 </style>

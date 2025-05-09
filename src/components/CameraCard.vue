@@ -100,6 +100,9 @@ const closeConnection = function () {
     console.log("WebSocket connection closed.");
   }
   image.src = "";
+  if(props.cameraType == "" || props.cameraSN == ""){
+    return;
+  }
   stopGrabImage({ cameraType: props.cameraType, cameraSN: props.cameraSN }).then(res=>{
     emits("connectionSuccess", false);
   });
