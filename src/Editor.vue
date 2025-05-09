@@ -377,7 +377,7 @@ const deleteTab=function(index:number){
 provide("selectedPath", selectedPath)
 import simplebar from 'simplebar-vue';
 import 'simplebar-vue/dist/simplebar.min.css';
-import { head } from "node_modules/axios/index.cjs";
+
 watchEffect(() => {
   document.documentElement.style.setProperty("--header-height", layoutStore.headerHeight);
   document.documentElement.style.setProperty("--tab-fontsize", layoutStore.tabFontSize);
