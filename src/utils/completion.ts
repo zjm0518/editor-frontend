@@ -159,13 +159,14 @@ export const completion=(model, position)=>  {
   ];
   const codeText = model.getValue();
   const regex = /\b\w+\b/g;  // \b 表示单词边界，\w 匹配字母、数字和下划线
-  const allWords = [];
+  let allWords = [];
   let match;
   while ((match = regex.exec(codeText)) !== null) {
     allWords.push(match[0]);
   }
   // 获取当前光标下的词汇
   const wordUnderCursor = word.word;
+
    // 将当前文件中出现过的词汇作为补全项
    allWords.forEach(w => {
     if (w !== wordUnderCursor) {
@@ -178,6 +179,12 @@ export const completion=(model, position)=>  {
     }
   });
 
-
-  return { suggestions: suggestions };
+  const unique = new Map();
+for (const item of suggestions) {
+  if (!unique.has(item.label)) {
+    unique.set(item.label, item);
+  }
+}
+const deduplicatedSuggestions = Array.from(unique.values());
+  return { suggestions: deduplicatedSuggestions };
 }
