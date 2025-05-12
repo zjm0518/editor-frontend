@@ -125,6 +125,10 @@ const cameraTypeOptions = ref([
     value: "Endoscope",
     label: "微型相机",
   },
+  {
+    value: "DuShen",
+    label: "度申相机"
+  }
 ]);
 const selectedIndex = ref(0);
 provide("selectedIndex", selectedIndex);
