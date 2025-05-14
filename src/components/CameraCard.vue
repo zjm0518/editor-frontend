@@ -15,7 +15,11 @@
     </div>
 
     <canvas id="videoCanvas" ref="videoRef"></canvas>
+
     <div style="display:flex;justify-content:flex-end;">
+      <el-button @click="openDialog">存图设置</el-button>
+      <el-button @click="startSaving" :disabled="saving">开始保存</el-button>
+      <el-button @click="stopSaving" :disabled="!saving">停止保存</el-button>
       <i
         class="iconfont2 icon2-zoomin"
         @click.stop="toggleZoom"
@@ -30,12 +34,39 @@
       ></i>
     </div>
   </el-card>
+  <el-dialog
+    v-model="savedialogVisible"
+    title="存图设置"
+    width="500"
+  >
+  <div class="saveDialog">
+  <div>
+      <el-button @click="selectDirectory">选择保存路径</el-button>
+      <span style="margin-left: 2%;">{{    filename }}</span>
+    </div>
+    <div>
+      <span style="margin-right: 2%;">时间间隔</span>
+      <el-input-number v-model="saveInterval" :precision="1" :step="0.1" :min="0.1" />
+      <span style="margin-left: 2%;">秒</span>
+    </div></div>
+    <template #footer>
+      <div class="dialog-footer">
+        
+        <el-button type="primary" @click="handleConfirm">
+          确定
+        </el-button>
+      </div>
+
+    </template>
+
+  </el-dialog>
 </template>
 <script setup lang="ts">
-import { ElCard } from "element-plus";
+import { ElCard,ElButton } from "element-plus";
 import { onMounted, ref, inject, computed, onUnmounted } from "vue";
 import { stopGrabImage, getImage, closeCamera_ } from "@/api/path";
 import "../assets/iconfont2/iconfont.css";
+
 const props = defineProps<{
   cameraIndex: number;
   cameraType: string;
@@ -44,6 +75,7 @@ const props = defineProps<{
 const selectedIndex = inject("selectedIndex");
 const cameraNum = inject("cameraNum");
 const zoomedCardIndex:number|null|undefined=inject("zoomedCardIndex")
+const savedialogVisible=ref(false)
 const isSelected = computed(() => {
   return selectedIndex.value == props.cameraIndex;
 });
@@ -151,7 +183,7 @@ const toggleZoom = function () {
     videoRef.value.style.height = `250px`;
   } else {
     zoomedCardIndex.value = props.cameraIndex; // 只放大当前卡片
-   videoRef.value.style.width = `60vw`;
+    videoRef.value.style.width = `60vw`;
     videoRef.value.style.height = `70vh`;
   }
 
@@ -195,6 +227,74 @@ const sendRequestBeforeRefresh = function (event) {
     cameraSN: props.cameraSN,
   });
 };
+let dirHandle = null;
+const filename=ref("")
+const saving=ref(false)
+let saveIntervalId:number|undefined;
+const saveInterval = ref(1.0)
+async function selectDirectory() {
+  dirHandle = await window.showDirectoryPicker();
+  filename.value=dirHandle.name;
+  //saveCanvasToDir(1)
+}
+async function saveCanvasToDir() {
+  //if (!dirHandle) return alert("请先选择保存文件夹");
+
+  const blob = await new Promise(resolve => videoRef.value.toBlob(resolve, 'image/jpeg'));
+
+  const fileHandle = await dirHandle.getFileHandle(`${getFormattedTimestamp()}.jpg`, { create: true });
+  const writable = await fileHandle.createWritable();
+  await writable.write(blob);
+  await writable.close();
+}
+function startSaving(canvas) {
+  if (!dirHandle) {
+    alert("请先选择保存文件夹");
+    return;
+  }
+
+  saving.value = true;
+
+   saveIntervalId = setInterval(async () => {
+    if (!saving.value) {
+      clearInterval(saveIntervalId);
+      return;
+    }
+
+    await saveCanvasToDir();
+  }, saveInterval.value*1000);
+}
+
+function stopSaving() {
+  if (saveIntervalId !== undefined) {
+    clearInterval(saveIntervalId);
+    saveIntervalId = undefined;
+    saving.value=false;
+    console.log("已停止保存图像");
+  }
+}
+function getFormattedTimestamp() {
+  const now = new Date();
+  const pad = n => n.toString().padStart(2, '0');
+
+  const year = now.getFullYear();
+  const month = pad(now.getMonth() + 1);
+  const day = pad(now.getDate());
+  const hour = pad(now.getHours());
+  const minute = pad(now.getMinutes());
+  const second = pad(now.getSeconds());
+  const millisecond=pad(now.getMilliseconds());
+
+  return `${year}-${month}-${day}_${hour}-${minute}-${second}-${millisecond}`;
+}
+const handleConfirm=function(){
+  savedialogVisible.value=false;
+  saving.value=false;
+}
+const openDialog=function(){
+  savedialogVisible.value=true;
+  saving.value=false;
+}
 defineExpose({
   getSingleImage,
   closeConnection,
@@ -241,5 +341,10 @@ defineExpose({
   border: none;
   outline: none;
   box-shadow: none;
+}
+.saveDialog{
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 </style>

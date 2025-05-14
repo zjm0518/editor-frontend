@@ -23,6 +23,7 @@
               placeholder="请选择"
               class="cameraSelect"
               @change="getCameraSNList"
+              @visible-change="handleVisibleChange"
             >
               <el-option
                 v-for="item in cameraTypeOptions"
@@ -89,7 +90,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, provide, ref } from "vue";
+import { computed, provide, ref, watch } from "vue";
 import CameraCard from "./components/CameraCard.vue";
 import { ElCard, ElSlider, ElSelect, ElOption } from "element-plus";
 import {
@@ -247,6 +248,7 @@ const closeCamera = function () {
     cameraParamsList.value[selectedIndex.value].isOpened = false;
     cameraParamsList.value[selectedIndex.value].exposureTime = 0;
     cameraParamsList.value[selectedIndex.value].gain = 0;
+    cameraParamsList.value[selectedIndex.value].isGrabbing=false;
   });
 };
 
@@ -270,20 +272,27 @@ const getCamerap = function () {
       console.log(err);
     });
 };
+const previousCameraType=ref("")
+const handleVisibleChange = (visible: boolean) => {
+  console.log("visible",visible)
+  if (visible) {
+    previousCameraType.value = cameraParamsList.value[selectedIndex.value].cameraType;
+  }
+};
 const getCameraSNList = function (value) {
-  //cameraSNOptions.value = [];
-  cameraParamsList.value[selectedIndex.value].precameraType = value;
+  console.log("previousCameraType",previousCameraType.value)
   cameraParamsList.value[selectedIndex.value].precameraSN=cameraParamsList.value[selectedIndex.value].cameraSN
-
+  console.log("close",cameraParamsList.value[selectedIndex.value].precameraType,cameraParamsList.value[selectedIndex.value].precameraSN)
   const uuid=cameraParamsList.value[selectedIndex.value].uuid;
   cameraParamsList.value[selectedIndex.value].cameraSNOptions = [];
   cameraParamsList.value[selectedIndex.value].cameraSN = "";
 
-  if (cameraParamsList.value[selectedIndex.value].precameraType != "") {
+  if (previousCameraType.value != "" && cameraParamsList.value[selectedIndex.value].precameraSN!="") {
 
     cameraCardRefs.value[uuid].closeConnection();
+
     closeCamera_({
-      cameraType: cameraParamsList.value[selectedIndex.value].precameraType,
+      cameraType: previousCameraType.value,
       cameraSN: cameraParamsList.value[selectedIndex.value].precameraSN,
     });
 
@@ -308,6 +317,8 @@ const getCameraSNList = function (value) {
     }
   });
 };
+
+
 const changeExposure = function (newvalue) {
   const postData = {
     cameraType: cameraTypePick.value,
