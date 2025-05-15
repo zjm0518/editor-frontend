@@ -716,9 +716,10 @@ const triggerDirUpload = function () {
   dirInput.value.click();
 };
 const handleFileUpload = async function (event) {
+  const input = event.target as HTMLInputElement;
   const files = event.target.files;
   if (!files.length) return;
-  console.log("files", files);
+
   const formData = new FormData();
   formData.append("targetPath", selectedFolder.value);
   console.log("selectedFolder.value", selectedFolder.value);
@@ -732,12 +733,13 @@ const handleFileUpload = async function (event) {
       getDirStructure(currentFolder.value); //刷新目录
     }
   );
+  input.value = ""; // 清空文件选择框的值
 };
 
-const handleDirUpload = async function (event: Event) {
+const handleDirUpload2 = async function (event: Event) {
   const files = event.target.files;
   if (!files.length) return;
-  console.log("files", files);
+
   const formData = new FormData();
   formData.append("targetPath", selectedFolder.value);
   console.log("selectedFolder.value", selectedFolder.value);
@@ -751,6 +753,46 @@ const handleDirUpload = async function (event: Event) {
     getDirStructure(currentFolder.value); //刷新目录
   });
 };
+const handleDirUpload = async function (event: Event) {
+  const input = event.target as HTMLInputElement;
+  const files = Array.from((event.target as HTMLInputElement).files || []);
+  if (!files.length) return;
+
+  const batchSize = 100;
+  const totalBatches = Math.ceil(files.length / batchSize);
+  console.log(`共 ${files.length} 个文件，分 ${totalBatches} 批上传`);
+
+  for (let batchIndex = 0; batchIndex < totalBatches; batchIndex++) {
+    const batchFiles = files.slice(
+      batchIndex * batchSize,
+      (batchIndex + 1) * batchSize
+    );
+
+    const formData = new FormData();
+    formData.append("targetPath", selectedFolder.value);
+
+    for (const file of batchFiles) {
+      formData.append("files", file);
+      formData.append("paths", file.webkitRelativePath); // 保留原始路径
+    }
+
+    console.log(`上传第 ${batchIndex + 1} 批，共 ${batchFiles.length} 个文件`);
+
+    try {
+      const res = await uploadDir(formData, {
+        "Content-Type": "multipart/form-data",
+      });
+      console.log(`第 ${batchIndex + 1} 批上传成功`, res);
+    } catch (error) {
+      console.error(`第 ${batchIndex + 1} 批上传失败`, error);
+      // 可选：实现失败重试机制
+    }
+  }
+
+  getDirStructure(currentFolder.value); // 上传完后刷新目录
+  input.value=""
+};
+
 const readFiles = async function (item, currentPath = "") {
   if (item.isDirectory) {
     // 是一个文件夹
