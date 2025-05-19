@@ -43,6 +43,7 @@
   <div>
       <el-button @click="selectDirectory">选择保存路径</el-button>
       <span style="margin-left: 2%;">{{    filename }}</span>
+      <input type="file" id="dirPicker" style="display: none;" webkitdirectory directory />
     </div>
     <div>
       <span style="margin-right: 2%;">时间间隔</span>
@@ -51,7 +52,7 @@
     </div></div>
     <template #footer>
       <div class="dialog-footer">
-        
+
         <el-button type="primary" @click="handleConfirm">
           确定
         </el-button>
@@ -214,9 +215,10 @@ const drawImage = function () {
 };
 onUnmounted(() => {
   window.removeEventListener("beforeunload", sendRequestBeforeRefresh);
+  sendRequestBeforeRefresh();
   closeConnection();
 });
-const sendRequestBeforeRefresh = function (event) {
+const sendRequestBeforeRefresh = function () {
   //event.preventDefault();
   //closeConnection();
   if (props.cameraType == "" || props.cameraSN == "") {
@@ -237,6 +239,7 @@ async function selectDirectory() {
   filename.value=dirHandle.name;
   //saveCanvasToDir(1)
 }
+
 async function saveCanvasToDir() {
   //if (!dirHandle) return alert("请先选择保存文件夹");
 
@@ -247,6 +250,7 @@ async function saveCanvasToDir() {
   await writable.write(blob);
   await writable.close();
 }
+
 function startSaving(canvas) {
   if (!dirHandle) {
     alert("请先选择保存文件夹");

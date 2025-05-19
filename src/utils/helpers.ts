@@ -56,7 +56,7 @@ export function getFileLanguage(fileName: string) {
     case "c":
       return "c";
     case "jsx":
-      return "iconfont vs-react icon-b";
+      return "jsx";
     case "license":
       return "iconfont vs-license icon-y";
     case "setting":
@@ -77,12 +77,12 @@ export function getFileLanguage(fileName: string) {
     case "sass":
       return "sass";
     case "css":
-      return "iconfont vs-css icon-b";
+      return "css";
     case "md":
       if (fileName.toLowerCase() === "readme.md") {
         return "iconfont vs-readme icon-b";
       }
-      return "iconfont vs-md icon-b";
+      return "md";
     case "json":
       return "json";
     case "html":
@@ -95,8 +95,8 @@ export function getFileLanguage(fileName: string) {
     case "cpp":
       return "cpp";
     case "cjs":
-      return "iconfont vs-cjs icon-cyan";
+      return "c";
     default:
-      return "iconfont vs-default icon-w";
+      return "c";
   }
 }
