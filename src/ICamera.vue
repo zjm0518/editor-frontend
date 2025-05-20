@@ -220,6 +220,7 @@ delete cameraCardRefs.value[removedCameraUUID];
 
 };
 const handleConnectionSuccess = (isGrabbing) => {
+  //console.log("isGrabbing", isGrabbing);
   cameraParamsList.value[selectedIndex.value].isGrabbing = isGrabbing;
 };
 const openCamera = function () {

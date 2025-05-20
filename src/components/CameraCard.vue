@@ -41,7 +41,7 @@
   >
   <div class="saveDialog">
   <div>
-      <el-button @click="selectDirectory">选择保存路径</el-button>
+      <camera-save-dir-button @select-save-path="selectDirectory"/>
       <span style="margin-left: 2%;">{{    filename }}</span>
       <input type="file" id="dirPicker" style="display: none;" webkitdirectory directory />
     </div>
@@ -65,9 +65,9 @@
 <script setup lang="ts">
 import { ElCard,ElButton } from "element-plus";
 import { onMounted, ref, inject, computed, onUnmounted } from "vue";
-import { stopGrabImage, getImage, closeCamera_ } from "@/api/path";
+import { stopGrabImage, getImage, closeCamera_,startSaveImage,stopSaveImage } from "@/api/path";
 import "../assets/iconfont2/iconfont.css";
-
+import CameraSaveDirButton from "./CameraSaveDirButton.vue";
 const props = defineProps<{
   cameraIndex: number;
   cameraType: string;
@@ -133,12 +133,16 @@ const closeConnection = function () {
     console.log("WebSocket connection closed.");
   }
   image.src = "";
-  if(props.cameraType == "" || props.cameraSN == ""){
+
+  if(props.cameraType == "" || String(props.cameraSN) == ""){
     return;
   }
+
   stopGrabImage({ cameraType: props.cameraType, cameraSN: props.cameraSN }).then(res=>{
     emits("connectionSuccess", false);
   });
+
+  
 
 };
 const closeCamera = function () {
@@ -229,14 +233,14 @@ const sendRequestBeforeRefresh = function () {
     cameraSN: props.cameraSN,
   });
 };
-let dirHandle = null;
+
 const filename=ref("")
 const saving=ref(false)
-let saveIntervalId:number|undefined;
+
 const saveInterval = ref(1.0)
-async function selectDirectory() {
-  dirHandle = await window.showDirectoryPicker();
-  filename.value=dirHandle.name;
+async function selectDirectory(path:string) {
+
+  filename.value=path;
   //saveCanvasToDir(1)
 }
 
@@ -252,30 +256,38 @@ async function saveCanvasToDir() {
 }
 
 function startSaving(canvas) {
-  if (!dirHandle) {
+  if (filename.value=="") {
     alert("请先选择保存文件夹");
     return;
   }
 
-  saving.value = true;
 
-   saveIntervalId = setInterval(async () => {
-    if (!saving.value) {
-      clearInterval(saveIntervalId);
-      return;
-    }
 
-    await saveCanvasToDir();
-  }, saveInterval.value*1000);
+  const postdata={
+    cameraType: props.cameraType,
+    cameraSN: String(props.cameraSN),
+    savePath: filename.value,
+    saveInterval: saveInterval.value,
+    enable: true,
+  }
+  console.log("保存图像",postdata);
+  startSaveImage(postdata).then(res=>{
+    saving.value = true;
+    console.log("开始保存图像",res);
+  })
 }
 
 function stopSaving() {
-  if (saveIntervalId !== undefined) {
-    clearInterval(saveIntervalId);
-    saveIntervalId = undefined;
-    saving.value=false;
-    console.log("已停止保存图像");
+
+
+  const postdata={
+    cameraType: props.cameraType,
+    cameraSN: String(props.cameraSN),
   }
+  stopSaveImage(postdata).then(res=>{
+    saving.value = false;
+    console.log("停止保存图像",res);
+  })
 }
 function getFormattedTimestamp() {
   const now = new Date();

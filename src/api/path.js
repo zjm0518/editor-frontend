@@ -115,3 +115,10 @@ export function getSearchText(params = {}, headers = {}, config = {}) {
 export function getSearchByTime(params = {}, headers = {}, config = {}) {
   return http.get("/SearchByTime", params, headers, config);
 }
+export function startSaveImage(data = {}, headers = {}, config = {}) {
+  return http.post("/api/StartSaveImage", data, headers, config);
+}
+
+export function stopSaveImage(data = {}, headers = {}, config = {}) {
+  return http.post("/api/StopSaveImage", data, headers, config);
+}
