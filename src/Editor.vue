@@ -18,7 +18,7 @@ import "./css/terminal.css"
 import "./css/editor-tab.css"
 import "./css/splitpanes.css"
 
-import { setJKSScriptPath, getJKSScriptPath } from "@/api/path";
+import { setJKSScriptPath, getJKSScriptPath,getOpenVscode } from "@/api/path";
 import { v4 as uuidv4 } from "uuid";
 import JKSLibButton from "./components/JKSLibButton2.vue";
 const layoutStore = useLayoutStore();
@@ -431,6 +431,11 @@ const switchHeaderTab=function(index){
   isBinary.value=false;
 
 }
+const VscodeSliderRef = ref(null);
+const openVscode=function(){
+  //getOpenVscode({path:selectedPath.value})
+  getOpenVscode({path:VscodeSliderRef.value.currentFolder})
+}
 </script>
 
 <template>
@@ -438,7 +443,7 @@ const switchHeaderTab=function(index){
     <splitpanes class="Panel">
       <pane size="20" min-size="10">
         <div class="folder">
-          <VsCodeSlider class="file" theme="dark" @get-text-from-path="getTextFromServer" @delete-file="deleteFile"> </VsCodeSlider>
+          <VsCodeSlider class="file" theme="dark" @get-text-from-path="getTextFromServer" @delete-file="deleteFile" ref="VscodeSliderRef"> </VsCodeSlider>
         </div>
       </pane>
       <pane>
@@ -470,6 +475,8 @@ const switchHeaderTab=function(index){
               <div class="header-right">
                 <span class="jks-lib" :title="jksLibPath"  :style="{ fontSize: layoutStore.headerFontSize }">{{ jksLibPath }}</span>
                 <JKSLibButton @select-lib="getLibPath" :fontsize="layoutStore.headerFontSize"></JKSLibButton>
+                <i class="icon iconfont2 icon2-vscode1" title="打开vscode" @click="openVscode"></i>
+
               </div>
             </div>
 

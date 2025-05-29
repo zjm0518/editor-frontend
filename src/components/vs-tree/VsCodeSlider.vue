@@ -953,7 +953,16 @@ const handleCurrentChange=function(data, node){
        elTreeRef.value.currentNode=elTreeRef.value.root.childNodes[0]
   }
 }
+const handleKeyDown = function(event) {
+  if (event.key === 'F2') {
+    rightData.value = currentNodeData.data;
+    showRenameInput();
 
+  }
+}
+defineExpose({
+  currentFolder
+});
 </script>
 
 <template>
@@ -1060,6 +1069,7 @@ const handleCurrentChange=function(data, node){
         draggable
         :allow-drag="() => {return false;}"
         @current-change="handleCurrentChange"
+         @keydown="handleKeyDown"
 
       >
         <template #default="{ node, data }">

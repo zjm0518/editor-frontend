@@ -39,7 +39,10 @@
     flex-shrink: 0;
     margin-left:8px;
 }
-
+.header .header-right i {
+   
+    cursor: pointer;
+}
 .header .header-right JKSLibButton {
     width: 20%;
 }

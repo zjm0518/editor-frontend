@@ -122,3 +122,6 @@ export function startSaveImage(data = {}, headers = {}, config = {}) {
 export function stopSaveImage(data = {}, headers = {}, config = {}) {
   return http.post("/api/StopSaveImage", data, headers, config);
 }
+export function getOpenVscode(params = {}, headers = {}, config = {}) {
+  return http.get("/OpenVscode", params, headers, config);
+}
