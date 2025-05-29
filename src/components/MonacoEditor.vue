@@ -7,7 +7,7 @@ import { useResizeObserver, useStorage } from "@vueuse/core";
 import * as monaco from "monaco-editor";
 import EditorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
 import JSONWorker from "monaco-editor/esm/vs/language/json/json.worker?worker";
-
+import 'monaco-editor/esm/vs/editor/contrib/find/browser/findController.js';
 import CSSWorker from "monaco-editor/esm/vs/language/css/css.worker?worker";
 import HTMLWorker from "monaco-editor/esm/vs/language/html/html.worker?worker";
 import TSWorker from "monaco-editor/esm/vs/language/typescript/ts.worker?worker";
@@ -97,6 +97,19 @@ const saveHandler = (event) => {
     Save();
   }
 };
+function openFindWithSearchText(searchText:string) {
+  editor.focus();
+  //const findController = editor.getContribution('editor.contrib.findController');
+  editor.trigger("find", "editor.actions.findWithArgs", { searchString: searchText,
+  triggerSearch: true
+  })
+};
+const closeFindWidget=function() {
+  if(props.noData || props.isBinary) return;
+  editor?.focus();
+  const findController = editor?.getContribution('editor.contrib.findController');
+  findController.closeFindWidget();
+}
 watch(
   () => {
     const tab = headerTabs.value[currentTab.value];
@@ -109,8 +122,15 @@ watch(
       editor.setValue(current.text);
       isSettingValue = false;
 
+
       const label = current.path.replace(/\/$/, "").split("/").pop() || "";
       monaco.editor.setModelLanguage(editor.getModel(), getFileLanguage(label));
+    }
+    console.log("currentTab changed", current);
+    if(current?.isSearch){
+      openFindWithSearchText(current.searchText);
+    }else{
+      closeFindWidget();
     }
   },
   { immediate: true }

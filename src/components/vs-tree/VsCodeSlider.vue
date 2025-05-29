@@ -45,7 +45,7 @@ const emits = defineEmits<{
   (e: "fileClick"): void;
   (e: "addFile", data: object): void;
   (e: "addFolder", data: FileData): void;
-  (e: "getTextFromPath", path: string | undefined): void;
+  (e: "getTextFromPath", path: string | undefined,isSearch:boolean,searchText?:string): void;
   (e:"deleteFile",path:string,isDir:boolean):void;
 }>();
 
@@ -99,7 +99,7 @@ const showAddFolder = computed(() => {
 });
 function handleNodeClick2(obj, node, TreeNode, Event){
   Event.stopPropagation();
-  emits("getTextFromPath", obj.path);
+  emits("getTextFromPath", obj.path,true,searchFileText.value);
   selectedFolder.value = obj.path.substring(0, obj.path.lastIndexOf("\\"));
 }
 function handleNodeClick(obj, node, TreeNode, Event) {
@@ -111,7 +111,7 @@ function handleNodeClick(obj, node, TreeNode, Event) {
   currentNodeData.node = node;
 
   if (!obj.isDir) {
-    emits("getTextFromPath", obj.path);
+    emits("getTextFromPath", obj.path,false,searchFileText.value);
     console.log("fileClick", obj.path);
     selectedFolder.value = obj.path.substring(0, obj.path.lastIndexOf("\\"));
   } else {

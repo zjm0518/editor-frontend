@@ -2,7 +2,7 @@
 <script setup lang="ts">
 import MonacoEditor from "./components/MonacoEditor.vue";
 
-import { provide, ref, computed, watch, onMounted, watchEffect } from "vue";
+import { provide, ref, computed, watch, onMounted, watchEffect, h } from "vue";
 import axios from "axios";
 //import TerminalComponent from "./components/TerminalComponent.vue";
 //import RemoteTreeFile from "./components/RemoteTreeFile.vue";
@@ -29,13 +29,17 @@ const text = ref("");
 const isBinary = ref(false);  // 是否是二进制文件
 const selectedPath = ref("");
 
-const getTextFromServer = function (path: string | undefined) {
+const getTextFromServer = function (path: string | undefined,isSearch?:boolean,searchText?:string) {
   if (path === undefined) return;
   selectedPath.value = path;
   const tabIndex = headerTabs.value.findIndex(tab => tab.path === path);
   if(tabIndex != -1){
     currentTab.value=tabIndex;
     isBinary.value=false;
+    if(isSearch){
+      headerTabs.value[currentTab.value].isSearch = true;
+      headerTabs.value[currentTab.value].searchText = searchText || "";
+    }
     return;
   }
   axios({
@@ -65,6 +69,8 @@ const getTextFromServer = function (path: string | undefined) {
           path: path,
           text: text.value,
           modified: false,
+          isSearch: isSearch || false, // 是否是搜索状态编辑器
+          searchText: searchText || "" // 搜索字符串
         });
         currentTab.value = headerTabs.value.length - 1;
 
@@ -340,7 +346,9 @@ interface TabLabel {
   name:string,
   path:string,
   text:string,
-  modified:boolean
+  modified:boolean,
+  isSearch:boolean, //是否是搜索状态编辑器
+  searchText?:string //搜索字符串
 
 }
 const headerTabs=ref<Array<TabLabel>>([])
