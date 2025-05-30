@@ -163,8 +163,13 @@ const Save = function () {
   emit("save");
 
 };
+const foldAll= function () {
+  editor?.focus();
+  editor?.trigger('', 'editor.foldAll',{});
+};
 defineExpose({
   getEditorValue: () => editor?.getValue() || "",
+  foldAll,
 });
 
 </script>
