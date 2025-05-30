@@ -125,3 +125,7 @@ export function stopSaveImage(data = {}, headers = {}, config = {}) {
 export function getOpenVscode(params = {}, headers = {}, config = {}) {
   return http.get("/OpenVscode", params, headers, config);
 }
+
+export function getReConnectCamera(params = {}, headers = {}, config = {}) {
+  return http.get("/ReConnectCamera", params, headers, config);
+}

@@ -56,6 +56,11 @@
             <el-button plain @click="editCamera" style="margin-left: 5px">{{
               editCameraText
             }}</el-button>
+            <el-button
+              plain
+              @click="reconnectCamera"
+              style="margin-left: 5px"
+              >重连</el-button>
           </div>
         </div>
         <div style="width: 40vw">
@@ -99,6 +104,7 @@ import {
   getCameraSNList_,
   openCameraBySN,
   closeCamera_,
+  getReConnectCamera
 } from "@/api/path";
 import { v4 as uuidv4 } from "uuid";
 const zoomedCardIndex = ref<number|null>(null);
@@ -360,6 +366,24 @@ const closeConnection = function () {
   const uuid=cameraParamsList.value[selectedIndex.value].uuid;
   cameraCardRefs.value[uuid].closeConnection();
 };
+const reconnectCamera=function(){
+  getReConnectCamera({
+    cameraType: cameraTypePick.value,
+    cameraSN: cameraSNPick.value,
+  })
+    .then((res) => {
+      console.log("res", res);
+      cameraParamsList.value[selectedIndex.value].isOpened = true;
+      getCamerap();
+    })
+    .catch((err) => {
+      console.log(err);
+      cameraParamsList.value[selectedIndex.value].isOpened = false;
+      cameraParamsList.value[selectedIndex.value].exposureTime = 0;
+      cameraParamsList.value[selectedIndex.value].gain = 0;
+      cameraParamsList.value[selectedIndex.value].isGrabbing=false;
+    });
+}
 </script>
 <style scoped>
 .camera-container {
