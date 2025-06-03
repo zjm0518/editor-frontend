@@ -18,7 +18,7 @@ import "./css/terminal.css"
 import "./css/editor-tab.css"
 import "./css/splitpanes.css"
 
-import { setJKSScriptPath, getJKSScriptPath,getOpenVscode } from "@/api/path";
+import { setJKSScriptPath, getJKSScriptPath,getOpenVscode,getTextFromPath } from "@/api/path";
 import { v4 as uuidv4 } from "uuid";
 import JKSLibButton from "./components/JKSLibButton2.vue";
 const layoutStore = useLayoutStore();
@@ -28,7 +28,24 @@ const { TerminalSize } = storeToRefs(layoutStore);
 const text = ref("");
 const isBinary = ref(false);  // 是否是二进制文件
 const selectedPath = ref("");
+const getupdateTextFromServer=function() {
+   headerTabs.value.forEach((item, index) => {
+    getTextFromPath({
+    path: item.path,
+  }).then((res) => {
+      if (res["is-binary"]) {
+        item.text = "";
 
+      } else {
+        item.text = res["file-text"];
+
+      }
+
+    }).catch((err) => {
+      console.log(err);
+    });
+  });
+}
 const getTextFromServer = function (path: string | undefined,isSearch?:boolean,searchText?:string,searchResult?:any) {
   if (path === undefined) return;
   selectedPath.value = path;
@@ -58,7 +75,6 @@ const getTextFromServer = function (path: string | undefined,isSearch?:boolean,s
     },
   })
     .then((res) => {
-      console.log(res);
       isBinary.value = res.data["is-binary"];
       if (isBinary.value) {
         text.value = "";
@@ -473,7 +489,8 @@ const editorFoldAll = function () {
     <splitpanes class="Panel">
       <pane size="20" min-size="10">
         <div class="folder">
-          <VsCodeSlider class="file" theme="dark" @get-text-from-path="getTextFromServer" @delete-file="deleteFile" ref="VscodeSliderRef"> </VsCodeSlider>
+          <VsCodeSlider class="file" theme="dark" @get-text-from-path="getTextFromServer" @delete-file="deleteFile"
+          ref="VscodeSliderRef" @update="getupdateTextFromServer"> </VsCodeSlider>
         </div>
       </pane>
       <pane>

@@ -113,7 +113,7 @@ const closeFindWidget=function() {
 watch(
   () => {
     const tab = headerTabs.value[currentTab.value];
-    return tab ? [currentTab.value, tab.path,tab.lineNumber,tab.column] : [null, null,null,null];
+    return tab ? [currentTab.value, tab.path,tab.text,tab.lineNumber,tab.column] : [null, null,null,null,null];
   },
   () => {
     const current = headerTabs.value[currentTab.value];

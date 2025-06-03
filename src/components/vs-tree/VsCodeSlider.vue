@@ -21,7 +21,8 @@ import {
   getUserHomePath,
   uploadFiles,
   uploadDir,
-  getSearchText
+  getSearchText,
+  postReplaceText
 } from "@/api/path";
 
 import FileBroswerButton from "../FileBroswerButton.vue";
@@ -47,6 +48,7 @@ const emits = defineEmits<{
   (e: "addFolder", data: FileData): void;
   (e: "getTextFromPath", path: string | undefined,isSearch:boolean,searchText?:string,searchResult?:any): void;
   (e:"deleteFile",path:string,isDir:boolean):void;
+  (e:"update"):void;
 }>();
 
 const elTreeRef = ref(null);
@@ -63,6 +65,7 @@ const errorInfoPosition = reactive({
 });
 const searchFilterText = ref("");
 const searchFileText = ref("");
+const replaceText = ref("");
 const isSearchFilter = ref(false);//过滤
 const isSearchText = ref(false);//全局搜索
 const searchTextLoading=ref(false);//全局搜索加载中
@@ -712,6 +715,18 @@ function hiddenSearch2(){
   isSearchText.value = false;
 
 }
+function replace(){
+  postReplaceText({
+    searchText: searchFileText.value,
+    replaceText: replaceText.value,
+    path: currentFolder.value,
+  }).then((res) => {
+    //console.log(res);
+    fetchSearchResults(searchFileText.value);
+    emits("update");
+   // hiddenSearch();
+  });
+}
 const fileInput = ref(null);
 const dirInput = ref(null);
 const triggerFileUpload = function () {
@@ -1051,9 +1066,12 @@ defineExpose({
           >取消</el-button>
       </div>
       <div v-if="isSearchText" class="search">
-        <ElInput v-model="searchFileText" placeholder="输入搜索字符串" />
+        <ElInput v-model="searchFileText" placeholder="输入搜索内容" />
         <el-button  @click="hiddenSearch2"
           >取消</el-button>
+          <ElInput v-model="replaceText" placeholder="替换内容" />
+        <el-button  @click="replace"
+          >替换</el-button>
       </div>
     </div>
     <div class="el-tree-view" @contextmenu.prevent @click="cancelCurrentClick">

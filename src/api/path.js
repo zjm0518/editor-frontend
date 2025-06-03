@@ -129,3 +129,6 @@ export function getOpenVscode(params = {}, headers = {}, config = {}) {
 export function getReConnectCamera(params = {}, headers = {}, config = {}) {
   return http.get("/ReConnectCamera", params, headers, config);
 }
+export function postReplaceText(data = {}, headers = {}, config = {}) {
+  return http.get("/ReplaceText", data, headers, config);
+}
