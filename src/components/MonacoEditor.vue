@@ -7,7 +7,7 @@ import { useResizeObserver, useStorage } from "@vueuse/core";
 import * as monaco from "monaco-editor";
 import EditorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
 import JSONWorker from "monaco-editor/esm/vs/language/json/json.worker?worker";
-import 'monaco-editor/esm/vs/editor/contrib/find/browser/findController.js';
+
 import CSSWorker from "monaco-editor/esm/vs/language/css/css.worker?worker";
 import HTMLWorker from "monaco-editor/esm/vs/language/html/html.worker?worker";
 import TSWorker from "monaco-editor/esm/vs/language/typescript/ts.worker?worker";
@@ -113,7 +113,7 @@ const closeFindWidget=function() {
 watch(
   () => {
     const tab = headerTabs.value[currentTab.value];
-    return tab ? [currentTab.value, tab.path] : [null, null];
+    return tab ? [currentTab.value, tab.path,tab.lineNumber,tab.column] : [null, null,null,null];
   },
   () => {
     const current = headerTabs.value[currentTab.value];
@@ -129,8 +129,10 @@ watch(
     console.log("currentTab changed", current);
     if(current?.isSearch){
       openFindWithSearchText(current.searchText);
+      editor.revealPositionInCenter({ lineNumber: Number(current?.lineNumber), column: current?.column || 1 });
     }else{
       closeFindWidget();
+      editor?.revealPositionInCenter({ lineNumber: 0, column: 0 });
     }
   },
   { immediate: true }

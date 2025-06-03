@@ -29,7 +29,7 @@ const text = ref("");
 const isBinary = ref(false);  // 是否是二进制文件
 const selectedPath = ref("");
 
-const getTextFromServer = function (path: string | undefined,isSearch?:boolean,searchText?:string) {
+const getTextFromServer = function (path: string | undefined,isSearch?:boolean,searchText?:string,searchResult?:any) {
   if (path === undefined) return;
   selectedPath.value = path;
   const tabIndex = headerTabs.value.findIndex(tab => tab.path === path);
@@ -39,6 +39,10 @@ const getTextFromServer = function (path: string | undefined,isSearch?:boolean,s
     if(isSearch){
       headerTabs.value[currentTab.value].isSearch = true;
       headerTabs.value[currentTab.value].searchText = searchText || "";
+      headerTabs.value[currentTab.value].lineNumber = searchResult?.line || 0;
+      headerTabs.value[currentTab.value].column = searchResult?.start || 0;
+    }else{
+      headerTabs.value[currentTab.value].isSearch = false;
     }
     return;
   }
@@ -63,7 +67,7 @@ const getTextFromServer = function (path: string | undefined,isSearch?:boolean,s
       text.value = res.data["file-text"];
 
 
-      if (tabIndex === -1) {
+      if (!isSearch) {
         headerTabs.value.push({
           name: path.split("\\").pop() || "",
           path: path,
@@ -74,8 +78,21 @@ const getTextFromServer = function (path: string | undefined,isSearch?:boolean,s
         });
         currentTab.value = headerTabs.value.length - 1;
 
+      }else{
+        headerTabs.value.push({
+          name: path.split("\\").pop() || "",
+          path: path,
+          text: text.value,
+          modified: false,
+          isSearch: isSearch || false, // 是否是搜索状态编辑器
+          searchText: searchText || "", // 搜索字符串
+          lineNumber: searchResult?.line || 0, // 行号
+          column: searchResult?.start || 0 // 列号
+
+        });
+        currentTab.value = headerTabs.value.length - 1;
       }
-      //console.log("headerTabs", headerTabs.value)
+
     })
     .catch((err) => {
       console.log(err);
@@ -349,6 +366,8 @@ interface TabLabel {
   modified:boolean,
   isSearch:boolean, //是否是搜索状态编辑器
   searchText?:string //搜索字符串
+  lineNumber?:number //行号
+  column?:number //列号
 
 }
 const headerTabs=ref<Array<TabLabel>>([])
