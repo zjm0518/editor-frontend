@@ -28,24 +28,25 @@ const { TerminalSize } = storeToRefs(layoutStore);
 const text = ref("");
 const isBinary = ref(false);  // 是否是二进制文件
 const selectedPath = ref("");
-const getupdateTextFromServer=function() {
-   headerTabs.value.forEach((item, index) => {
-    getTextFromPath({
-    path: item.path,
-  }).then((res) => {
+const getupdateTextFromServer = async function() {
+  const promises = headerTabs.value.map((item) => {
+    return getTextFromPath({ path: item.path }).then((res) => {
       if (res["is-binary"]) {
         item.text = "";
-
       } else {
         item.text = res["file-text"];
-
       }
-
     }).catch((err) => {
       console.log(err);
     });
   });
-}
+
+  // 等待所有异步操作完成
+  await Promise.all(promises);
+
+  // 所有文本更新完成后，再更新编辑器内容
+  monacoeditor.value.updateEditorValue();
+};
 const getTextFromServer = function (path: string | undefined,isSearch?:boolean,searchText?:string,searchResult?:any) {
   if (path === undefined) return;
   selectedPath.value = path;

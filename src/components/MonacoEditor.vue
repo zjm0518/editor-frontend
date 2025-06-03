@@ -113,7 +113,7 @@ const closeFindWidget=function() {
 watch(
   () => {
     const tab = headerTabs.value[currentTab.value];
-    return tab ? [currentTab.value, tab.path,tab.text,tab.lineNumber,tab.column] : [null, null,null,null,null];
+    return tab ? [currentTab.value, tab.path,tab.lineNumber,tab.column] : [null, null,null,null];
   },
   () => {
     const current = headerTabs.value[currentTab.value];
@@ -169,9 +169,30 @@ const foldAll= function () {
   editor?.focus();
   editor?.trigger('', 'editor.foldAll',{});
 };
+const updateEditorValue = () => {
+  const current = headerTabs.value[currentTab.value];
+    if (current) {
+      isSettingValue = true;
+      editor.setValue(current.text);
+      isSettingValue = false;
+
+
+      const label = current.path.replace(/\/$/, "").split("/").pop() || "";
+      monaco.editor.setModelLanguage(editor.getModel(), getFileLanguage(label));
+    }
+
+    if(current?.isSearch){
+      openFindWithSearchText(current.searchText);
+      editor.revealPositionInCenter({ lineNumber: Number(current?.lineNumber), column: current?.column || 1 });
+    }else{
+      closeFindWidget();
+      editor?.revealPositionInCenter({ lineNumber: 0, column: 0 });
+    }
+};
 defineExpose({
   getEditorValue: () => editor?.getValue() || "",
   foldAll,
+  updateEditorValue
 });
 
 </script>
