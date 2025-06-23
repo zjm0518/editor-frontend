@@ -169,6 +169,10 @@ const foldAll= function () {
   editor?.focus();
   editor?.trigger('', 'editor.foldAll',{});
 };
+const unfoldAll= function () {
+  editor?.focus();
+  editor?.trigger('', 'editor.unfoldAll',{});
+};
 const updateEditorValue = () => {
   const current = headerTabs.value[currentTab.value];
     if (current) {
@@ -192,6 +196,7 @@ const updateEditorValue = () => {
 defineExpose({
   getEditorValue: () => editor?.getValue() || "",
   foldAll,
+  unfoldAll,
   updateEditorValue
 });
 

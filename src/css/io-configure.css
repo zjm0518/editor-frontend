@@ -47,7 +47,7 @@
 .IOs{
     display: flex;
     flex-direction: column;
-    width: 50vw;
+    width: 70vw;
     height: 60vh;
     gap:2%;
    
@@ -83,4 +83,27 @@
 .title{
     font-size: x-large;
     font-family: 'Courier New', Courier, monospace;
+}
+
+.Axis-Enable{
+    display: flex;
+}
+
+.io-output-container {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  height: 80%;
+  box-sizing: border-box;
+}
+
+.io-output-item {
+  width: 12.5%; /* 100% / 8 = 12.5% */
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  padding:1px;
+  box-sizing: border-box;
+  font-size: clamp(12px, 1.5vw, 18px); /* 自动根据宽度适应 */
 }

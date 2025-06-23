@@ -480,8 +480,16 @@ const openVscode=function(){
   //getOpenVscode({path:selectedPath.value})
   getOpenVscode({path:VscodeSliderRef.value.currentFolder})
 }
+let foldAll=ref(false);
 const editorFoldAll = function () {
+
   monacoeditor.value.foldAll();
+  foldAll.value= !foldAll.value;
+
+};
+const editorUnfoldAll = function () {
+  monacoeditor.value.unfoldAll();
+  foldAll.value= !foldAll.value;
 };
 </script>
 
@@ -505,7 +513,8 @@ const editorFoldAll = function () {
                 <i class="icon iconfont2 icon2-tingzhi" title="停止" @click="Stop" :class="{ disabled: isBinary || headerTabs.length==0 }"></i>
                 <i class="icon iconfont2 icon2-zitifangda" title="字体放大" @click="addFontSize" :class="{ disabled: isBinary || headerTabs.length==0 }"></i>
                 <i class="icon iconfont2 icon2-zitisuoxiao" title="字体放大" @click="reduceFontSize" :class="{ disabled: isBinary || headerTabs.length==0 }"></i>
-                <i class="icon iconfont2 icon2-ic_fold_all" title="全部折叠" @click="editorFoldAll" :class="{ disabled: isBinary || headerTabs.length==0 }"></i>
+                <i class="icon iconfont2 icon2-ic_fold_all" v-if="!foldAll" title="全部折叠" @click="editorFoldAll" :class="{ disabled: isBinary || headerTabs.length==0 }"></i>
+                <i class="icon iconfont2 icon2-ic_unfold_all" v-else title="全部展开" @click="editorUnfoldAll" :class="{ disabled: isBinary || headerTabs.length==0 }"></i>
 
 
                 <span class="mark-saved" >{{ saved }}</span>

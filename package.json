@@ -16,6 +16,7 @@
     "@layui/layui-vue": "^2.21.0",
     "@vscode/codicons": "^0.0.36",
     "@vueuse/core": "^11.3.0",
+    "@wasm-fmt/clang-format": "^20.1.7",
     "@xterm/xterm": "^5.5.0",
     "axios": "^1.7.8",
     "dayjs": "^1.11.13",
