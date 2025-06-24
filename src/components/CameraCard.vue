@@ -100,7 +100,8 @@ const showVideo = function () {
 
 const openConnection = function () {
   socket = new WebSocket(
-    "ws://localhost:3669/GetVideoStream?cameraType=" +
+    import.meta.env.VITE_WS_BASE_API +
+      "/GetVideoStream?cameraType=" +
       props.cameraType +
       "&cameraSN=" +
       props.cameraSN
@@ -142,7 +143,7 @@ const closeConnection = function () {
     emits("connectionSuccess", false);
   });
 
-  
+
 
 };
 const closeCamera = function () {

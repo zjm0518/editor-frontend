@@ -669,29 +669,61 @@ watch(searchFilterText, (val) => {
 });
 import { debounce } from "lodash";
 const latestRequestId = ref("")
+let searchWebsocket: WebSocket|null;
 // 使用 lodash 的 debounce，设置 500ms 延迟
 const fetchSearchResults = debounce((val) => {
-  const requestId = uuidv4(); // 生成当前请求的 ID（时间戳）
-  latestRequestId.value = requestId; // 更新最新的请求 ID
   if(val==""){
+    if(searchWebsocket) {
+      searchWebsocket.close(); // 关闭 WebSocket 连接
+      searchWebsocket = null;
+    }
     searchResult.value=[];
     return;
   }
 
   searchTextLoading.value=true;
-  getSearchText({ path: currentFolder.value, searchText: val }).then((res) => {
-    if(requestId===latestRequestId.value){
-      console.log(res);
-      searchResult.value = res.result;
-      searchTextLoading.value=false;
-    }else {
-      console.log(`请求过期: ${requestId}, 丢弃数据`);
-    }
-  });
+  startWSSearch(val);
 }, 500); // 500ms 延迟
 watch(searchFileText,(val)=>{
  fetchSearchResults(val);
 })
+
+// 启动搜索
+const startWSSearch = (searchText: string) => {
+  if (searchWebsocket) {
+    searchWebsocket.close(); // 关闭上一个连接
+    searchWebsocket = null;
+  }
+
+  searchResult.value = [];
+  searchTextLoading.value = true;
+  latestRequestId.value = uuidv4(); // 标记此次搜索唯一 ID
+  const wsId = latestRequestId.value;
+
+  const encodedPath = encodeURIComponent(currentFolder.value);
+  const encodedText = encodeURIComponent(searchText);
+  const wsURL = import.meta.env.VITE_WS_BASE_API+`/SearchText?path=${encodedPath}&searchText=${encodedText}`;
+  searchWebsocket = new WebSocket(wsURL);
+
+  searchWebsocket.onmessage = (event) => {
+    if (wsId !== latestRequestId.value) return; // 旧连接数据直接丢弃
+    const data = JSON.parse(event.data);
+    console.log(data);
+    if (data.type === 'batch') {
+      searchResult.value = [...searchResult.value, ...data.result];
+      searchTextLoading.value = false;
+    } else if (data.type === 'done') {
+      searchTextLoading.value = false;
+      searchWebsocket?.close();
+    }
+  };
+
+  searchWebsocket.onerror = (err) => {
+    console.error("WebSocket Error", err);
+    searchTextLoading.value = false;
+    searchWebsocket = null;
+  };
+};
 function filterNode(value: string, data: Tree, node) {
   if (!value) return true;
   return data.label.includes(value);
@@ -1149,7 +1181,7 @@ defineExpose({
         :data="searchResult"
         node-key="path"
         @node-click="handleNodeClick2"
-       default-expand-all
+
       >
       <template #default="{ node, data }">
           <span

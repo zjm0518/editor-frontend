@@ -40,7 +40,8 @@ const tokenUrl = [
 ].join("");
 
 const options = {
-  wsUrl: "ws://localhost:3669/ws?session_id="+props.sessionID,
+  wsUrl:import.meta.env.VITE_WS_BASE_API+"/ws?session_id="+props.sessionID,
+
   tokenUrl : tokenUrl,
   flowControl: flowControl,
   termOptions: termOptions,

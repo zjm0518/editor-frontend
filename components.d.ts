@@ -34,6 +34,7 @@ declare module 'vue' {
     ElStep: typeof import('element-plus/es')['ElStep']
     ElSteps: typeof import('element-plus/es')['ElSteps']
     ElSwitch: typeof import('element-plus/es')['ElSwitch']
+    ElTreeV2: typeof import('element-plus/es')['ElTreeV2']
     FileBroswerButton: typeof import('./src/components/FileBroswerButton.vue')['default']
     FolderTree: typeof import('./src/components/FolderTree.vue')['default']
     IXterm: typeof import('./src/components/IXterm.vue')['default']
