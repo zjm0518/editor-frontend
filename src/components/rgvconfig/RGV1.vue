@@ -10,7 +10,7 @@
 </template>
 <script lang="ts" setup>
 import { TinySteps } from '@opentiny/vue'
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted,inject, watch } from 'vue'
 import { useRouter, useRoute } from "vue-router";
 const router = useRouter();
 const route = useRoute();
@@ -31,15 +31,16 @@ const advancedClick = (index, node) => {
       router.push("/rgv/r1/pre-test");
     }
 }
+const innerActive = inject('innerActive')
+const outerActive = inject('outerActive')
+watch(()=>{return [innerActive.value,outerActive.value]},
+()=>{
+  if(outerActive.value==0){
+    active.value=innerActive.value
+  }
+}
+)
 onMounted(() => {
-   const segments = route.path.split('/'); // ['', 'rgv', 'r1', 'pre-soft']
-   const path = segments[3]; // 'pre-soft'
-   if(path=='pre-soft'){
-    active.value = 0;
-   }else if(path=='pre-hard'){
-    active.value = 1;
-   }else if(path=='pre-test'){
-    active.value = 2;
-   }
+
 });
 </script>

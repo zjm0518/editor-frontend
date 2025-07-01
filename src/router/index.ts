@@ -24,6 +24,10 @@ const routes = [
         children: [
           { path: 'connect-camera', name: 'connect-camera', component: () => import('@/components/rgvconfig/rgv2/ConnectCamera.vue') },
           { path: 'reset', name: 'reset', component: () => import('@/components/rgvconfig/rgv2/Reset.vue') },
+          { path: 'set-params', name: 'set-params', component: () => import('@/components/rgvconfig/rgv2/SetParams.vue') },
+          { path: 'com-set', name: 'com-set', component: () => import('@/components/rgvconfig/rgv2/ComSet.vue') },
+          { path: 'edit-expo', name: 'edit-expo', component: () => import('@/components/rgvconfig/rgv2/EditExpo.vue') },
+          { path: 'save-params', name: 'save-params', component: () => import('@/components/rgvconfig/rgv2/SaveParams.vue') },
 
         ]
        },

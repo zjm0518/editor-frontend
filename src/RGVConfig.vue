@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { TinySteps } from '@opentiny/vue'
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted,watch,provide } from 'vue'
 import { useRouter, useRoute } from "vue-router";
 const router = useRouter();
 const route = useRoute();
@@ -12,36 +12,124 @@ const data2 = reactive([
   { name: '仙工控制器配置' },
   { name: '避障雷达配置' }
 ])
+
+// 跳转到 stepPaths[index]
 const jump = (index: number) => {
-  //currentIndex.value = index;
-  router.push(`/rgv/r${index}`);
-};
+  const path = stepPaths[index]
+  if (path) router.push(path)
+}
+
 const advancedClick = (index, node) => {
-  active.value = index
-  jump(index+1)
+
+}
+const stepPaths = [
+  '/rgv/r1/pre-soft',
+  '/rgv/r1/pre-hard',
+  '/rgv/r1/pre-test',
+
+  '/rgv/r2/connect-camera',
+  '/rgv/r2/reset',
+  '/rgv/r2/set-params',
+  '/rgv/r2/com-set',
+  '/rgv/r2/edit-expo',
+  '/rgv/r2/save-params',
+
+];
+// 下一步
+const next = () => {
+  const currentIndex = stepPaths.findIndex(p => p === route.path)
+  if (currentIndex < stepPaths.length - 1) {
+    const nextIndex = currentIndex + 1
+    jump(nextIndex)
+  }
+}
+
+const previous = () => {
+  const currentIndex = stepPaths.findIndex(p => p === route.path)
+  if (currentIndex > 0) {
+    const prevPath = stepPaths[currentIndex - 1]
+    const groupIndex = outerStepGroups.findIndex(group => group.includes(prevPath))
+    const innerIndex = outerStepGroups[groupIndex].indexOf(prevPath)
+
+    outerActive.value = groupIndex
+    innerActive.value = innerIndex
+
+    router.push(prevPath)
+  }
+}
+const outerActive = ref(0)          // 外层主步骤
+const innerActive = ref(0)          // 当前子步骤在该主步骤下的索引
+provide('outerActive', outerActive)
+provide('innerActive', innerActive)
+// 主步骤列表，r1, r2 分组
+const outerStepGroups = [
+  stepPaths.filter(p => p.startsWith('/rgv/r1')),
+  stepPaths.filter(p => p.startsWith('/rgv/r2'))
+]
+// 更新 active 值（包括外层和内层）
+const updateActiveFromRoute = () => {
+  const currentPath = route.path
+  const index = stepPaths.findIndex(p => p === currentPath)
+  if (index !== -1) {
+    // 主步骤编号
+    const groupIndex = outerStepGroups.findIndex(group =>
+      group.includes(currentPath)
+    )
+    outerActive.value = groupIndex
+
+    // 子步骤编号
+    if (groupIndex !== -1) {
+      const innerIndex = outerStepGroups[groupIndex].indexOf(currentPath)
+      innerActive.value = innerIndex
+    }
+  }
 }
 onMounted(() => {
-   const segments = route.path.split('/'); // ['', 'rgv', 'r1', 'pre-soft']
-  const rgvId = segments[2]; // 'r1'
- // console.log('currentPathName', currentPathName, 'currentPathNumber', currentPathNumber);
- const currentPathNumber = parseInt(rgvId.replace('r', '')); // 提取数字部分
-  active.value = currentPathNumber - 1;
+  updateActiveFromRoute()
 });
+
+watch(() => route.path, () => {
+  console.log('Route changed:', route.path)
+  updateActiveFromRoute()
+})
 </script>
 
 <template>
   <div class="rgv-config">
-  <div >
-     <tiny-steps line vertical :data="data2" :active="active" @click="advancedClick"></tiny-steps>
+  <div class="rgv-steps">
+     <tiny-steps line vertical :data="data2" :active="outerActive" @click="advancedClick"></tiny-steps>
   </div>
-<div>
+<div class="rgv-content">
   <RouterView></RouterView>
-</div></div>
+</div>
+<div class="config-footer">
+
+      <el-button @click="previous"
+        >上一步</el-button
+      >
+      <el-button @click="next" >下一步</el-button>
+      <el-button @click="save">完成配置</el-button>
+    </div>
+</div>
 </template>
 <style scoped>
 .rgv-config {
   width: 100vw;
   height: 100vh;
   overflow: hidden;
+}
+.rgv-steps{
+  height: 10vh;
+}
+.rgv-content{
+  height: 80vh;
+}
+.config-footer {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+
+  height: 10vh;
 }
 </style>
