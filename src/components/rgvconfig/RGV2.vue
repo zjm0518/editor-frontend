@@ -1,21 +1,22 @@
 <template>
-<div>
-  <div>
-     <tiny-steps line vertical :data="data" :active="active" @click="advancedClick"
+<div class="rgv-page">
+  <div class="second-steps">
+     <tiny-steps line vertical :data="data" :active="innerActive" @click="advancedClick"
      :visible-num="6"></tiny-steps>
   </div>
-  <div>
+  <div class="rgv-config-content">
     <RouterView></RouterView>
   </div>
 </div>
 </template>
 <script lang="ts" setup>
 import { TinySteps } from '@opentiny/vue'
-import { ref, reactive, onMounted,inject,watch } from 'vue'
+import { ref, reactive } from 'vue'
 import { useRouter, useRoute } from "vue-router";
 const router = useRouter();
 const route = useRoute();
 const active = ref(0)
+const props = defineProps<{ innerActive: number }>()
 const data = reactive([
   {name: '连接相机',},
   { name: '恢复出厂设置' },
@@ -26,7 +27,7 @@ const data = reactive([
 
 ])
 const advancedClick = (index, node) => {
-  active.value = index
+
   if(index==0){
     router.push("/rgv/r2/connect-camera");
   }
@@ -42,13 +43,25 @@ const advancedClick = (index, node) => {
     router.push("/rgv/r2/save-params");
   }
 }
-const innerActive = inject('innerActive')
-const outerActive = inject('outerActive')
-watch(()=>{return [innerActive.value,outerActive.value]},
-()=>{
-  if(outerActive.value==1){
-    active.value=innerActive.value
-  }
-}
-)
+
+
 </script>
+<style scoped>
+.rgv-page{
+
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.second-steps {
+  width: 100%;
+  height: 10vh;
+   flex-shrink: 0;
+
+}
+.rgv-config-content {
+  width: 100%;
+  height: 70vh;
+
+}
+</style>

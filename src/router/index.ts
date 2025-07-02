@@ -31,7 +31,18 @@ const routes = [
 
         ]
        },
-      { path: 'r3', name: 'r3', component: () => import('@/components/rgvconfig/RGV3.vue') },
+      { path: 'r3', name: 'r3', component: () => import('@/components/rgvconfig/RGV3.vue'),
+       redirect: '/rgv/r3/connect-s',
+        children:[
+          { path: 'connect-s', name: 'connect-s', component: () => import('@/components/rgvconfig/rgv3/ConnectS.vue') },
+          { path: 'init-params', name: 'init-params', component: () => import('@/components/rgvconfig/rgv3/InitParams.vue') },
+          { path: 'can-comm', name: 'can-comm', component: () => import('@/components/rgvconfig/rgv3/CanComm.vue') },
+          { path: 'clear-io', name: 'clear-io', component: () => import('@/components/rgvconfig/rgv3/ClearIO.vue') },
+          { path: 'stable-set', name: 'stable-set', component: () => import('@/components/rgvconfig/rgv3/StableSet.vue') },
+          { path: 'work-mode', name: 'work-mode', component: () => import('@/components/rgvconfig/rgv3/WorkMode.vue') },
+          { path: 'save-params', name: 'save-params', component: () => import('@/components/rgvconfig/rgv3/SaveParams.vue') }
+        ]
+       },
       { path: 'r4', name: 'r4', component: () => import('@/components/rgvconfig/RGV4.vue') },
       { path: 'r5', name: 'r5', component: () => import('@/components/rgvconfig/RGV5.vue') },
     ]
