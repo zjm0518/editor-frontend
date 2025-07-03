@@ -2,23 +2,23 @@
   <div class="rgv-page-content">
 
     <div>a、启用DI，若没有相应的DI，选中任一DI，右键选择复制并添加即可</div>
-    <img :src="imageUrl" />
+    <img loading="lazy" :src="imageUrl" />
     <div>b、启用DISensor</div>
-    <img :src="imageUrl2" />
+    <img loading="lazy" :src="imageUrl2" />
    <div> type选择infrared(红外)</div>
 	<div> basic输入雷达连接的实际DI</div>
 	<div> shape选择arc，具体参考下面配置</div>
 	<div> 	func根据当前的DI输入选择，减速选slowdown，停止选stop</div>
 	<div> c、前雷达减速输入</div>
-    <img :src="imageUrl3" />
+    <img loading="lazy" :src="imageUrl3" />
    <div>  d、前雷达停止输入</div>
-    <img :src="imageUrl4" />
+    <img loading="lazy" :src="imageUrl4" />
    <div>  e、后雷达减速输入</div>
-    <img :src="imageUrl5" />
+    <img loading="lazy" :src="imageUrl5" />
    <div>  f、后雷达停止输入</div>
-    <img :src="imageUrl6" />
+    <img loading="lazy" :src="imageUrl6" />
    <div> 注意：（务必在车轮悬空测试），为了保障安全，雷达务必采用常闭输入，所有的雷达DI都需要勾选inverse；</div>
-    <img :src="imageUrl7" />
+    <img loading="lazy" :src="imageUrl7" />
     <div> 将相应DI的inverse勾上即可将输入信号反转</div>
 
 

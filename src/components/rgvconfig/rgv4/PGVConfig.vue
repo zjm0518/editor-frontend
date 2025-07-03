@@ -2,23 +2,23 @@
   <div class="rgv-page-content">
 
     <div>a、在模型中找到pgv，启用</div>
-    <img :src="imageUrl" />
+    <img loading="lazy" :src="imageUrl" />
     <div>b、pgv基本参数配置</div>
-    <img :src="imageUrl2" />
+    <img loading="lazy" :src="imageUrl2" />
     <div>除了yaw外，华睿或大华相机均按上面参数配置,
 yaw根据相机实际安装角度填写，分以下两种情况：
 1)正常安装状态，如下图所示，此时yaw填写180°</div>
-    <img :src="imageUrl3" />
+    <img loading="lazy" :src="imageUrl3" />
     <div>2)	调试状态下，如下图所示，此时yaw填写90°（因现场调试时二维码贴于地面，更改相机安装位置满足对焦要求）</div>
-    <img :src="imageUrl4" />
+    <img loading="lazy" :src="imageUrl4" />
     <div>c、func必须选localization,
 	brand选DaHua-R3051-485,
 	devName填实际连接的485端口名称</div>
-    <img :src="imageUrl5" />
+    <img loading="lazy" :src="imageUrl5" />
     <div>保存模型后，点击推送，之后点击地图与控制中的运行状态，点击PGV，将二维码置于扫码相机视野内，若看到有数据，则正常连接。</div>
-    <img :src="imageUrl6" />
+    <img loading="lazy" :src="imageUrl6" />
     <div>当识别到二维码时，如图</div>
-    <img :src="imageUrl7" />
+    <img loading="lazy" :src="imageUrl7" />
     <div>注意：只有在无二维码时tag_diff_x和tag_diff_y才会完全等于0；
 	若有二维码且为0，注意is_DMT_detected是不是为false，为false时，检查PGV是否正常</div>
 

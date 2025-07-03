@@ -2,7 +2,7 @@
   <div class="rgv-page-content">
 
       <div>使用usb转485调试线连接驱动器，在KincoServo3.exe的通信中刷新串口打开。</div>
-    <img :src="imageUrl"  />
+    <img loading="lazy" :src="imageUrl"  />
     <div>注意：若连接不上，需要确认串口线是否免安装驱动，若否，需要安装驱动；其次确认调试线的连接是否正确。</div>
 
   </div>

@@ -2,22 +2,22 @@
   <div class="rgv-page-content">
 
   <div>启用一个实际接线的DI端口，使用常闭输入 </div>
-      <img :src="imageUrl" />
+      <img loading="lazy" :src="imageUrl" />
    <div>添加一个DISensor，</div>
     <div> id使用上面的di</div>
     <div> type必须是ignoreTask</div>
     <div> shape为vertex</div>
     <div> func为stop</div>
-      <img :src="imageUrl2" />
+      <img loading="lazy" :src="imageUrl2" />
      <div>  注意：只有在无法实现硬件接线的情况下，采取这种方式</div>
      <div>启用第一个虚拟DI，添加DI10</div>
-      <img :src="imageUrl3" />
+      <img loading="lazy" :src="imageUrl3" />
      <div>  添加一个DISensor，</div>
      <div>id为10</div>
     <div> type必须是ignoreTask</div>
     <div> shape为vertex</div>
     <div> func为stop</div>
-      <img :src="imageUrl4" />
+      <img loading="lazy" :src="imageUrl4" />
 
 
   </div>

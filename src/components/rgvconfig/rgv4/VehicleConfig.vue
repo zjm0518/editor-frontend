@@ -9,7 +9,7 @@
    <div>head填驱动轮圆心到车头长度</div>
    <div>tail填驱动轮圆心到车尾长度</div>
    <div>height填车体高度</div>
-    <img :src="imageUrl" />
+    <img loading="lazy" :src="imageUrl" />
 
 
   </div>

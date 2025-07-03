@@ -4,6 +4,7 @@
      <tiny-steps line vertical :data="data" :active="innerActive" @click="advancedClick"></tiny-steps>
   </div>
   <div class="rgv-config-content">
+    
     <RouterView></RouterView>
   </div>
 </div>

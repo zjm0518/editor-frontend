@@ -27,7 +27,7 @@ const routes = [
           { path: 'set-params', name: 'set-params', component: () => import('@/components/rgvconfig/rgv2/SetParams.vue') },
           { path: 'com-set', name: 'com-set', component: () => import('@/components/rgvconfig/rgv2/ComSet.vue') },
           { path: 'edit-expo', name: 'edit-expo', component: () => import('@/components/rgvconfig/rgv2/EditExpo.vue') },
-          { path: 'save-params', name: 'save-params', component: () => import('@/components/rgvconfig/rgv2/SaveParams.vue') },
+          { path: 'save-params2', name: 'save-params2', component: () => import('@/components/rgvconfig/rgv2/SaveParam.vue') },
 
         ]
        },
@@ -61,7 +61,15 @@ const routes = [
           { path: 'save-config', name: 'save-config', component: () => import('@/components/rgvconfig/rgv4/SaveConfig.vue') },
         ]
        },
-      { path: 'r5', name: 'r5', component: () => import('@/components/rgvconfig/RGV5.vue') },
+      { path: 'r5', name: 'r5', component: () => import('@/components/rgvconfig/RGV5.vue'),
+        redirect: '/rgv/r5/connect-radar',
+        children:[
+          { path: 'connect-radar', name: 'connect-radar', component: () => import('@/components/rgvconfig/rgv5/ConnectRadar.vue') },
+          { path: 'modify-radar', name: 'modify-radar', component: () => import('@/components/rgvconfig/rgv5/ModifyRadar.vue') },
+          { path: 'radar-range', name: 'radar-range', component: () => import('@/components/rgvconfig/rgv5/RadarRange.vue') },
+          { path: 'test-o', name: 'test-o', component: () => import('@/components/rgvconfig/rgv5/TestO.vue') }
+        ]
+       },
     ]
    },
   { path: '/init' , component: ()=>import('@/InitConfig.vue'),

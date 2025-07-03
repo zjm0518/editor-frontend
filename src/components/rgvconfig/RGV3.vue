@@ -5,6 +5,8 @@
      :visible-num="7"></tiny-steps>
   </div>
   <div class="rgv-config-content">
+    <el-button class="floating-button" @click="openKin">打开KincoServo3</el-button>
+
     <RouterView></RouterView>
   </div>
 </div>
@@ -15,7 +17,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { useRouter, useRoute } from "vue-router";
 const router = useRouter();
 const route = useRoute();
-
+import axios from 'axios';
 const data = reactive([
   {name: '连接上位机',},
   { name: '初始化驱动器参数' },
@@ -46,9 +48,11 @@ const advancedClick = (index, node) => {
 }
 
 const props = defineProps<{ innerActive: number }>()
-onMounted(() => {
-
-});
+const openKin =  () => {
+axios.get('/api/OpenSoftware', {
+  params: { type: 2 }
+})
+}
 </script>
 <style scoped>
 .rgv-page{
@@ -67,5 +71,12 @@ onMounted(() => {
   width: 100%;
   height: 70vh;
 
+}
+/* 悬浮按钮样式 */
+.floating-button {
+  position: absolute;
+  top: 20vh;   /* 距离容器顶部 10px */
+  left: 10px; /* 距离容器右边 10px */
+  z-index: 10;
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
 <div class="save-params">
   <span>保存到用户配置1,启动配置选择用户配置1,重启设备</span>
-  <img :src="imgUrl" alt="保存参数"  style="width: 35%; height: auto;"/>
+  <img loading="lazy" :src="imgUrl" alt="保存参数"  style="width: 35%; height: auto;"/>
 </div>
 </template>
 

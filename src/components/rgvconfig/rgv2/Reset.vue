@@ -2,7 +2,7 @@
 
   <div class="reset">
     <span>恢复出厂设置,按下图操作</span>
-    <img :src="imageUrl" alt="Reset Image"  style="width: 40%; height: auto;"/>
+    <img loading="lazy" :src="imageUrl" alt="Reset Image"  style="width: 40%; height: auto;"/>
   </div>
 
 </template>

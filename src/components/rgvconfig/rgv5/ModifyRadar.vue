@@ -1,9 +1,7 @@
 <template>
   <div class="rgv-page-content">
 
-    <div>找到EMC，启用设备</div>
-    <div>basic中取消全部勾选</div>
-    <div>func选择driver IO EMC</div>
+    <div>在传感器设定中，将传感器输出逻辑改为常闭方式。其他配置默认。</div>
     <img loading="lazy" :src="imageUrl" />
 
 
@@ -11,7 +9,7 @@
 </template>
 <script lang="ts" setup>
 import "/src/css/rgvconfig.css"
-import img1 from '/public/rgv4/stop-config.png';
+import img1 from '/public/rgv5/modify-radar.png';
 
 const imageUrl = img1;
 

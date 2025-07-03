@@ -132,3 +132,6 @@ export function getReConnectCamera(params = {}, headers = {}, config = {}) {
 export function postReplaceText(data = {}, headers = {}, config = {}) {
   return http.get("/ReplaceText", data, headers, config);
 }
+export function openSoftware(data = {}, headers = {}, config = {}) {
+  return http.get("/OpenSoftware", data, headers, config);
+}

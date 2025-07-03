@@ -6,9 +6,9 @@
 	<div>voltage选54.8V</div>
 	<div>devName根据实际连接的485端口填写</div>
 	<div>baudrate选9600</div>
-    <img :src="imageUrl" />
+    <img loading="lazy" :src="imageUrl" />
     <div>保存模型并推送后，在运行状态中看到电池电量即为配置成功</div>
-    <img :src="imageUrl2" />
+    <img loading="lazy" :src="imageUrl2" />
 
 
   </div>

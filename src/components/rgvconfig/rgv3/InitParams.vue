@@ -2,7 +2,7 @@
   <div class="rgv-page-content">
 
 
-    <img :src="imageUrl" alt="connect-camera" />
+    <img loading="lazy" :src="imageUrl" alt="connect-camera" />
     
 
   </div>

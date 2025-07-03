@@ -2,7 +2,7 @@
   <div class="rgv-page-content">
 
     <div>选择数字输入，清空所有数字输入。</div>
-    <img :src="imageUrl" />
+    <img loading="lazy" :src="imageUrl" />
 
 
   </div>

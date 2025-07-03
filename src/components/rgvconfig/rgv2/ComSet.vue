@@ -1,7 +1,7 @@
 <template>
 <div class="com-set">
   <span>按照下图配置串口</span>
-<img :src="imgUrl" style="width: 30%; height: auto; object-fit: cover;">
+<img :src="imgUrl" style="width: 30%; height: auto; object-fit: cover;" loading="lazy">
 </div>
 </template>
 

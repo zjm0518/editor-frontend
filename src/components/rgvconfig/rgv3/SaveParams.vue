@@ -2,7 +2,7 @@
   <div class="rgv-page-content">
 
     <div>选择“驱动器 D”--“初始化/保存/重启”打开操作界面</div>
-    <img :src="imageUrl" a/>
+    <img loading="lazy" :src="imageUrl" a/>
 
 
   </div>

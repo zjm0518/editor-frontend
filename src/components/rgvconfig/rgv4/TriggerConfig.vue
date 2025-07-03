@@ -6,18 +6,18 @@
 	<div>type为risingEdge，</div>
 	<div>func为suspendTask</div>
 	<div>前雷达停止，电平上升触发</div>
-    <img :src="imageUrl" />
+    <img loading="lazy" :src="imageUrl" />
 <div>后雷达停止，电平上升触发</div>
-    <img :src="imageUrl2" />
+    <img loading="lazy" :src="imageUrl2" />
    <div> 为了保证触发概率，在di信号复位时也进行触发暂停</div>
 	<div>type为fallingEdge，</div>
 	<div>func为suspendTask</div>
 <div>	前雷达停止DI1为</div>
-  <img :src="imageUrl3" />
+  <img loading="lazy" :src="imageUrl3" />
   <div>后雷达停止DI3为</div>
-  <img :src="imageUrl4" />
+  <img loading="lazy" :src="imageUrl4" />
  <div> 急停EMC，若急停恢复后会暂停当前导航，可不加</div>
-  <img :src="imageUrl5" />
+  <img loading="lazy" :src="imageUrl5" />
 
 
   </div>

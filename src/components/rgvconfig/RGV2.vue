@@ -5,6 +5,7 @@
      :visible-num="6"></tiny-steps>
   </div>
   <div class="rgv-config-content">
+    <el-button class="floating-button" @click="openSVStudio">打开SVStudio</el-button>
     <RouterView></RouterView>
   </div>
 </div>
@@ -13,6 +14,8 @@
 import { TinySteps } from '@opentiny/vue'
 import { ref, reactive } from 'vue'
 import { useRouter, useRoute } from "vue-router";
+import { openSoftware,getUserHomePath } from "@/api/path"
+import axios from 'axios';
 const router = useRouter();
 const route = useRoute();
 const active = ref(0)
@@ -40,11 +43,15 @@ const advancedClick = (index, node) => {
   }else if(index==4){
     router.push("/rgv/r2/edit-expo");
   }else if(index==5){
-    router.push("/rgv/r2/save-params");
+    router.push("/rgv/r2/save-params2");
   }
 }
 
-
+const openSVStudio =  () => {
+axios.get('/api/OpenSoftware', {
+  params: { type: 1 }
+})
+}
 </script>
 <style scoped>
 .rgv-page{
@@ -63,5 +70,12 @@ const advancedClick = (index, node) => {
   width: 100%;
   height: 70vh;
 
+}
+/* 悬浮按钮样式 */
+.floating-button {
+  position: absolute;
+  top: 20vh;   /* 距离容器顶部 10px */
+  left: 10px; /* 距离容器右边 10px */
+  z-index: 10;
 }
 </style>

@@ -5,6 +5,8 @@
      :visible-num="7"></tiny-steps>
   </div>
   <div class="rgv-config-content">
+    <el-button class="floating-button" @click="openRobo">打开RoboshopPro</el-button>
+
     <RouterView></RouterView>
   </div>
 </div>
@@ -15,7 +17,8 @@ import { ref, reactive, onMounted } from 'vue'
 import { useRouter, useRoute } from "vue-router";
 const router = useRouter();
 const route = useRoute();
-
+import { openSoftware } from "@/api/path"
+import axios from 'axios';
 const data = reactive([
   {name: '连接控制器',},
   { name: '模型配置' },
@@ -36,6 +39,11 @@ const data = reactive([
 
 
 ])
+const openRobo =  () => {
+axios.get('/api/OpenSoftware', {
+  params: { type: 3 }
+})
+}
 const advancedClick = (index, node) => {
 
   const routes = [
@@ -80,5 +88,13 @@ onMounted(() => {
   width: 100%;
   height: 70vh;
 
+}
+
+/* 悬浮按钮样式 */
+.floating-button {
+  position: absolute;
+  top: 20vh;   /* 距离容器顶部 10px */
+  left: 10px; /* 距离容器右边 10px */
+  z-index: 10;
 }
 </style>

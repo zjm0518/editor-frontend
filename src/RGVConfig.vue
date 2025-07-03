@@ -43,7 +43,7 @@ const stepPaths = [
   '/rgv/r2/set-params',
   '/rgv/r2/com-set',
   '/rgv/r2/edit-expo',
-  '/rgv/r2/save-params',
+  '/rgv/r2/save-params2',
   '/rgv/r3/connect-s',
   '/rgv/r3/init-params',
   '/rgv/r3/can-comm',
@@ -65,6 +65,11 @@ const stepPaths = [
   '/rgv/r4/voice-b',
   '/rgv/r4/control-config',
   '/rgv/r4/save-config',
+
+  '/rgv/r5/connect-radar',
+  '/rgv/r5/modify-radar',
+  '/rgv/r5/radar-range',
+  '/rgv/r5/test-o'
 ];
 // 下一步
 const next = () => {

@@ -18,6 +18,18 @@
       <el-form-item label="项目界面resource地址">
         <el-input v-model="formData.webpath"></el-input>
       </el-form-item>
+      <el-form-item label="hinsonPath">
+        <el-input v-model="formData.hinsonPath"></el-input>
+      </el-form-item>
+      <el-form-item label="kincoservoPath">
+        <el-input v-model="formData.kincoservoPath"></el-input>
+      </el-form-item>
+      <el-form-item label="svstudioPath">
+        <el-input v-model="formData.svstudioPath"></el-input>
+      </el-form-item>
+      <el-form-item label="roboshopProPath">
+        <el-input v-model="formData.roboshopProPath"></el-input>
+      </el-form-item>
     </el-form>
   </div>
 </template>

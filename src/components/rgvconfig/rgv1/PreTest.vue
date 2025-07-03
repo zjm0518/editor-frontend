@@ -2,7 +2,7 @@
   <div class="pre-test">
     <span>开始配置，务必把车轮悬空，确认无误再下地测试。
 	车体方向定义如下图，后续配置注意。</span>
-   <img :src="imageUrl" alt="描述文字" />
+   <img :src="imageUrl" loading="lazy" />
   </div>
 </template>
 <script lang="ts" setup>

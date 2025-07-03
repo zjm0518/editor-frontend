@@ -8,6 +8,10 @@ interface ConfigRecord{
   agvname:string,
   webpath:string,
 
+  hinsonPath?: string;
+  kincoservoPath?: string;
+  svstudioPath?: string;
+  roboshopProPath?: string;
 }
 export const useConfigStore = defineStore('config', {
   state: () => ({
@@ -17,7 +21,11 @@ export const useConfigStore = defineStore('config', {
       load:Array(13).fill(""),
       agvip:'',
       agvname:'robot',
-      webpath:""
+      webpath:"",
+      hinsonPath: '',
+      kincoservoPath: '',
+      svstudioPath: '',
+      roboshopProPath: '',
     } as ConfigRecord, // 存储表单数据
   }),
   actions: {

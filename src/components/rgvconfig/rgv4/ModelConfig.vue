@@ -2,7 +2,7 @@
   <div class="rgv-page-content">
 
     <div>可使用默认的模型配置，或者导入已经配置好的模型</div>
-    <img :src="imageUrl" />
+    <img loading="lazy" :src="imageUrl" />
 
     <div>1. 进入机器人界面的【模型文件】页面</div>
 <div>2. 对文件的操作：</div>

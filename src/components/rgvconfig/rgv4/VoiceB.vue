@@ -2,7 +2,7 @@
   <div class="rgv-page-content">
 
     <div>在模型中启用soundplayer，参数默认即可。</div>
-    <img :src="imageUrl" />
+    <img loading="lazy" :src="imageUrl" />
 
 
   </div>
