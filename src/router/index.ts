@@ -43,7 +43,24 @@ const routes = [
           { path: 'save-params', name: 'save-params', component: () => import('@/components/rgvconfig/rgv3/SaveParams.vue') }
         ]
        },
-      { path: 'r4', name: 'r4', component: () => import('@/components/rgvconfig/RGV4.vue') },
+      { path: 'r4', name: 'r4', component: () => import('@/components/rgvconfig/RGV4.vue'),
+        redirect: '/rgv/r4/connect-c',
+        children:[
+          { path: 'connect-c', name: 'connect-c', component: () => import('@/components/rgvconfig/rgv4/ConnectC.vue') },
+          { path: 'model-config', name: 'model-config', component: () => import('@/components/rgvconfig/rgv4/ModelConfig.vue') },
+          { path: 'motor-config', name: 'motor-config', component: () => import('@/components/rgvconfig/rgv4/MotorConfig.vue') },
+          { path: 'pgv-config', name: 'pgv-config', component: () => import('@/components/rgvconfig/rgv4/PGVConfig.vue') },
+          { path: 'battery-config', name: 'battery-config', component: () => import('@/components/rgvconfig/rgv4/BatteryConfig.vue') },
+          { path: 'vehicle-config', name: 'vehicle-config', component: () => import('@/components/rgvconfig/rgv4/VehicleConfig.vue') },
+          { path: 'stop-config', name: 'stop-config', component: () => import('@/components/rgvconfig/rgv4/StopConfig.vue') },
+          { path: 'radar-config', name: 'radar-config', component: () => import('@/components/rgvconfig/rgv4/RadarConfig.vue') },
+          { path: 'trigger-config', name: 'trigger-config', component: () => import('@/components/rgvconfig/rgv4/TriggerConfig.vue') },
+          { path: 'di-nav', name: 'di-nav', component: () => import('@/components/rgvconfig/rgv4/DINav.vue') },
+          { path: 'voice-b', name: 'voice-b', component: () => import('@/components/rgvconfig/rgv4/VoiceB.vue') },
+          { path: 'control-config', name: 'control-config', component: () => import('@/components/rgvconfig/rgv4/ControlConfig.vue') },
+          { path: 'save-config', name: 'save-config', component: () => import('@/components/rgvconfig/rgv4/SaveConfig.vue') },
+        ]
+       },
       { path: 'r5', name: 'r5', component: () => import('@/components/rgvconfig/RGV5.vue') },
     ]
    },

@@ -52,6 +52,19 @@ const stepPaths = [
   '/rgv/r3/work-mode',
   '/rgv/r3/save-params',
 
+  '/rgv/r4/connect-c',
+  '/rgv/r4/model-config',
+  '/rgv/r4/motor-config',
+  '/rgv/r4/pgv-config',
+  '/rgv/r4/battery-config',
+  '/rgv/r4/vehicle-config',
+  '/rgv/r4/stop-config',
+  '/rgv/r4/radar-config',
+  '/rgv/r4/trigger-config',
+  '/rgv/r4/di-nav',
+  '/rgv/r4/voice-b',
+  '/rgv/r4/control-config',
+  '/rgv/r4/save-config',
 ];
 // 下一步
 const next = () => {
@@ -83,7 +96,9 @@ provide('innerActive', innerActive)
 const outerStepGroups = [
   stepPaths.filter(p => p.startsWith('/rgv/r1')),
   stepPaths.filter(p => p.startsWith('/rgv/r2')),
-  stepPaths.filter(p => p.startsWith('/rgv/r3'))
+  stepPaths.filter(p => p.startsWith('/rgv/r3')),
+  stepPaths.filter(p => p.startsWith('/rgv/r4')),
+  stepPaths.filter(p => p.startsWith('/rgv/r5'))
 ]
 // 更新 active 值（包括外层和内层）
 const updateActiveFromRoute = () => {
