@@ -17,7 +17,7 @@
 </template>
 <script lang="ts" setup>
 import "/src/css/rgvconfig.css"
-import img1 from '/public/rgv5/radar-range.png';
+import img1 from '/rgv5/radar-range.png';
 
 const imageUrl = img1;
 

@@ -15,9 +15,9 @@
 
 <script lang="ts" setup>
 import "/src/css/rgvconfig.css"
-import img1 from '/public/rgv2/p.png';
-import img2 from '/public/rgv2/p2.png';
-import img3 from '/public/rgv2/p3.png';
+import img1 from '/rgv2/p.png';
+import img2 from '/rgv2/p2.png';
+import img3 from '/rgv2/p3.png';
 
 const imageUrl = img1;
 const imageUrl2 = img2;

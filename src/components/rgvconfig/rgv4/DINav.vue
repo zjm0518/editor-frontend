@@ -24,10 +24,10 @@
 </template>
 <script lang="ts" setup>
 import "/src/css/rgvconfig.css"
-import img1 from '/public/rgv4/di-nav.png';
-import img2 from '/public/rgv4/di-nav2.png';
-import img3 from '/public/rgv4/di-nav3.png';
-import img4 from '/public/rgv4/di-nav4.png';
+import img1 from '/rgv4/di-nav.png';
+import img2 from '/rgv4/di-nav2.png';
+import img3 from '/rgv4/di-nav3.png';
+import img4 from '/rgv4/di-nav4.png';
 
 
 const imageUrl = img1;

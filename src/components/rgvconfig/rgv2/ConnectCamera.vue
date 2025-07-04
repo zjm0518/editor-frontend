@@ -12,8 +12,8 @@
 </template>
 <script lang="ts" setup>
 import "/src/css/rgvconfig.css"
-import img1 from '/public/connect-camera1.png';
-import img2 from '/public/connect-camera2.png';
+import img1 from '/connect-camera1.png';
+import img2 from '/connect-camera2.png';
 const imageUrl = img1;
 const imageUrl2 = img2;
 </script>

@@ -15,8 +15,8 @@
 </template>
 <script lang="ts" setup>
 import "/src/css/rgvconfig.css"
-import img1 from '/public/rgv4/battery-config.png';
-import img2 from '/public/rgv4/battery-config2.png';
+import img1 from '/rgv4/battery-config.png';
+import img2 from '/rgv4/battery-config2.png';
 
 const imageUrl = img1;
 const imageUrl2 = img2;

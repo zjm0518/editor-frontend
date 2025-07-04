@@ -26,14 +26,14 @@ yaw根据相机实际安装角度填写，分以下两种情况：
 </template>
 <script lang="ts" setup>
 import "/src/css/rgvconfig.css"
-import img1 from '/public/rgv4/pgv-config.png';
-import img2 from '/public/rgv4/pgv-config2.png';
+import img1 from '/rgv4/pgv-config.png';
+import img2 from '/rgv4/pgv-config2.png';
 
-import img3 from '/public/rgv4/pgv-config3.png';
-import img4 from '/public/rgv4/pgv-config4.png';
-import img5 from '/public/rgv4/pgv-config5.png';
-import img6 from '/public/rgv4/pgv-config6.png';
-import img7 from '/public/rgv4/pgv-config7.png';
+import img3 from '/rgv4/pgv-config3.png';
+import img4 from '/rgv4/pgv-config4.png';
+import img5 from '/rgv4/pgv-config5.png';
+import img6 from '/rgv4/pgv-config6.png';
+import img7 from '/rgv4/pgv-config7.png';
 
 
 const imageUrl = img1;

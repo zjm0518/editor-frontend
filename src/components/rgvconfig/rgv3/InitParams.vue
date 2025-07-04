@@ -9,7 +9,7 @@
 </template>
 <script lang="ts" setup>
 import "/src/css/rgvconfig.css"
-import img1 from '/public/init-params.png';
+import img1 from '/init-params.png';
 
 const imageUrl = img1;
 

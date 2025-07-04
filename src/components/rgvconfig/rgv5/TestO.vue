@@ -15,8 +15,8 @@
 </template>
 <script lang="ts" setup>
 import "/src/css/rgvconfig.css"
-import img1 from '/public/rgv5/test-o.png';
-import img2 from '/public/rgv5/test-o2.png';
+import img1 from '/rgv5/test-o.png';
+import img2 from '/rgv5/test-o2.png';
 
 const imageUrl = img1;
 const imageUrl2 = img2;

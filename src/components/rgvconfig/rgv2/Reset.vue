@@ -7,7 +7,7 @@
 
 </template>
 <script lang="ts" setup>
-import img from '/public/reset.png';
+import img from '/reset.png';
 const imageUrl = img;
 </script>
 <style scoped>

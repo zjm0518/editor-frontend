@@ -6,7 +6,7 @@
 </template>
 
 <script lang="ts" setup>
-import img from '/public/save-params.png';
+import img from '/save-params.png';
 const imgUrl=img;
 </script>
 <style scoped>

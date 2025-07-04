@@ -6,7 +6,7 @@
 </template>
 
 <script lang="ts" setup>
-import img from '/public/com-set.png'
+import img from '/com-set.png'
 const imgUrl=img;
 </script>
 <style scoped>

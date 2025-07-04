@@ -10,9 +10,9 @@
 </template>
 
 <script lang="ts" setup>
-import img from '/public/expo1.png';
-import img2 from '/public/expo2.png';
-import img4 from '/public/expo4.png';
+import img from '/expo1.png';
+import img2 from '/expo2.png';
+import img4 from '/expo4.png';
 const imgSrc = img;
 const imgSrc2 = img2;
 const imgSrc4 = img4;

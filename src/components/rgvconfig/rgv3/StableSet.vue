@@ -24,11 +24,11 @@
 </template>
 <script lang="ts" setup>
 import "/src/css/rgvconfig.css"
-import img1 from '/public/rgv3/stable-set.png';
-import img2 from '/public/rgv3/stable-set2.png';
-import img3 from '/public/rgv3/stable-set3.png';
-import img4 from '/public/rgv3/stable-set4.png';
-import img5 from '/public/rgv3/stable-set5.png';
+import img1 from '/rgv3/stable-set.png';
+import img2 from '/rgv3/stable-set2.png';
+import img3 from '/rgv3/stable-set3.png';
+import img4 from '/rgv3/stable-set4.png';
+import img5 from '/rgv3/stable-set5.png';
 
 
 

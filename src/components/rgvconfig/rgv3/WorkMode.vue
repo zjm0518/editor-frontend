@@ -20,8 +20,8 @@
 </template>
 <script lang="ts" setup>
 import "/src/css/rgvconfig.css"
-import img1 from '/public/rgv3/work-mode.png';
-import img2 from '/public/rgv3/work-mode2.png';
+import img1 from '/rgv3/work-mode.png';
+import img2 from '/rgv3/work-mode2.png';
 
 
 const imageUrl = img1;

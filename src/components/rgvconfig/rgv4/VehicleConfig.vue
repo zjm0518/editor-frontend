@@ -16,7 +16,7 @@
 </template>
 <script lang="ts" setup>
 import "/src/css/rgvconfig.css"
-import img1 from '/public/rgv4/vehicle-config.png';
+import img1 from '/rgv4/vehicle-config.png';
 
 const imageUrl = img1;
 

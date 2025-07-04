@@ -23,11 +23,11 @@
 </template>
 <script lang="ts" setup>
 import "/src/css/rgvconfig.css"
-import img1 from '/public/rgv4/connect-c.png';
-import img2 from '/public/rgv4/connect-c2.png';
-import img3 from '/public/rgv4/connect-c3.png';
-import img4 from '/public/rgv4/connect-c4.png';
-import img5 from '/public/rgv4/connect-c5.png';
+import img1 from '/rgv4/connect-c.png';
+import img2 from '/rgv4/connect-c2.png';
+import img3 from '/rgv4/connect-c3.png';
+import img4 from '/rgv4/connect-c4.png';
+import img5 from '/rgv4/connect-c5.png';
 
 const imageUrl = img1;
 const imageUrl2 = img2;

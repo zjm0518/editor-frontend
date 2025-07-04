@@ -14,10 +14,10 @@
 </template>
 <script lang="ts" setup>
 import "/src/css/rgvconfig.css"
-import img1 from '/public/rgv5/connect-radar.png';
-import img2 from '/public/rgv5/connect-radar2.png';
-import img3 from '/public/rgv5/connect-radar3.png';
-import img4 from '/public/rgv5/connect-radar4.png';
+import img1 from '/rgv5/connect-radar.png';
+import img2 from '/rgv5/connect-radar2.png';
+import img3 from '/rgv5/connect-radar3.png';
+import img4 from '/rgv5/connect-radar4.png';
 
 const imageUrl = img1;
 const imageUrl2 = img2;

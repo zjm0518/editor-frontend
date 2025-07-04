@@ -9,7 +9,7 @@
 </template>
 <script lang="ts" setup>
 import "/src/css/rgvconfig.css"
-import img1 from '/public/rgv5/modify-radar.png';
+import img1 from '/rgv5/modify-radar.png';
 
 const imageUrl = img1;
 

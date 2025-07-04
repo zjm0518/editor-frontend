@@ -6,7 +6,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import img from '/public/pre-test.png';
+import img from '/pre-test.png';
 const imageUrl = img;
 </script>
 <style scoped>
