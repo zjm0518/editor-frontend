@@ -22,7 +22,6 @@ import img3 from '/public/rgv2/p3.png';
 const imageUrl = img1;
 const imageUrl2 = img2;
 const imageUrl3 = img3;
-
 </script>
 <style scoped>
 </style>

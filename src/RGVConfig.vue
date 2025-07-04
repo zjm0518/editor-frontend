@@ -4,7 +4,8 @@ import { ref, reactive, onMounted,watch,provide } from 'vue'
 import { useRouter, useRoute } from "vue-router";
 const router = useRouter();
 const route = useRoute();
-
+import { useConfigStepsStore } from './stores/stepsconfig';
+const store = useConfigStepsStore();
 const data2 = reactive([
   {name: '准备工作',},
   { name: '扫码相机配置' },
@@ -33,47 +34,13 @@ const advancedClick = (index, node) => {
     router.push("/rgv/r5");
   }
 }
-const stepPaths = [
-  '/rgv/r1/pre-soft',
-  '/rgv/r1/pre-hard',
-  '/rgv/r1/pre-test',
+const stepPaths=store.extractAllUrls()
 
-  '/rgv/r2/connect-camera',
-  '/rgv/r2/reset',
-  '/rgv/r2/set-params',
-  '/rgv/r2/com-set',
-  '/rgv/r2/edit-expo',
-  '/rgv/r2/save-params2',
-  '/rgv/r3/connect-s',
-  '/rgv/r3/init-params',
-  '/rgv/r3/can-comm',
-  '/rgv/r3/clear-io',
-  '/rgv/r3/stable-set',
-  '/rgv/r3/work-mode',
-  '/rgv/r3/save-params',
-
-  '/rgv/r4/connect-c',
-  '/rgv/r4/model-config',
-  '/rgv/r4/motor-config',
-  '/rgv/r4/pgv-config',
-  '/rgv/r4/battery-config',
-  '/rgv/r4/vehicle-config',
-  '/rgv/r4/stop-config',
-  '/rgv/r4/radar-config',
-  '/rgv/r4/trigger-config',
-  '/rgv/r4/di-nav',
-  '/rgv/r4/voice-b',
-  '/rgv/r4/control-config',
-  '/rgv/r4/save-config',
-
-  '/rgv/r5/connect-radar',
-  '/rgv/r5/modify-radar',
-  '/rgv/r5/radar-range',
-  '/rgv/r5/test-o'
-];
 // 下一步
 const next = () => {
   const currentIndex = stepPaths.findIndex(p => p === route.path)
+  const currentRoute= route.path
+  store.updateStatusByUrl(currentRoute, 'doing')
   if (currentIndex < stepPaths.length - 1) {
     const nextIndex = currentIndex + 1
     jump(nextIndex)
@@ -82,6 +49,8 @@ const next = () => {
 
 const previous = () => {
   const currentIndex = stepPaths.findIndex(p => p === route.path)
+  const currentRoute= route.path
+  store.updateStatusByUrl(currentRoute, 'doing')
   if (currentIndex > 0) {
     const prevPath = stepPaths[currentIndex - 1]
     const groupIndex = outerStepGroups.findIndex(group => group.includes(prevPath))
@@ -92,6 +61,16 @@ const previous = () => {
 
     router.push(prevPath)
   }
+}
+const done=function(){
+  const currentRoute= route.path
+  store.updateStatusByUrl(currentRoute, 'done')
+  const currentIndex = stepPaths.findIndex(p => p === route.path)
+  if (currentIndex < stepPaths.length - 1) {
+    const nextIndex = currentIndex + 1
+    jump(nextIndex)
+  }
+
 }
 const outerActive = ref(0)          // 外层主步骤
 const innerActive = ref(0)          // 当前子步骤在该主步骤下的索引
@@ -146,7 +125,7 @@ watch(() => route.path, () => {
       <el-button @click="previous"
         >上一步</el-button
       >
-      <el-button >完成当前步骤</el-button>
+      <el-button @click="done">完成当前步骤</el-button>
       <el-button @click="next" >下一步</el-button>
 
     </div>

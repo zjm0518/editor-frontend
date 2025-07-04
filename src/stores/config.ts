@@ -12,6 +12,7 @@ interface ConfigRecord{
   kincoservoPath?: string;
   svstudioPath?: string;
   roboshopProPath?: string;
+  restart: boolean; // 是否重启
 }
 export const useConfigStore = defineStore('config', {
   state: () => ({
@@ -26,6 +27,7 @@ export const useConfigStore = defineStore('config', {
       kincoservoPath: '',
       svstudioPath: '',
       roboshopProPath: '',
+      restart: false, // 是否重启
     } as ConfigRecord, // 存储表单数据
   }),
   actions: {
@@ -42,24 +44,30 @@ export const useConfigStore = defineStore('config', {
         .then((data) => console.log("Response:", data))
         .catch((error) => console.error("Error:", error));
     },
-    getFromServer(){
-      fetch("/api/GetConfig", {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-      })
-        .then((response) => response.json())
-        .then((data) => {
+  async getFromServer() {
+  try {
+    const response = await fetch("/api/GetConfig", {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    });
 
-          this.formData = data;
-          console.log("Response:", data);
-          //将load扩展为13个元素
-          if(this.formData.load.length<13){
-            this.formData.load = this.formData.load.concat(Array(13-this.formData.load.length).fill(""));
-          }
+    const data = await response.json();
+    this.formData = data;
+    console.log("Response:", data);
 
-        })
-        .catch((error) => console.error("Error:", error));
+    // 将 load 扩展为 13 个元素
+    if (this.formData.load.length < 13) {
+      this.formData.load = this.formData.load.concat(
+        Array(13 - this.formData.load.length).fill("")
+      );
     }
+
+    return true; // 成功返回
+  } catch (error) {
+    console.error("Error:", error);
+    return false; // 错误返回
+  }
+}
 
   },
 });
