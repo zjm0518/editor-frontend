@@ -76,6 +76,7 @@ declare module 'vue' {
     MonacoEditor: typeof import('./src/components/MonacoEditor.vue')['default']
     MonacoEditorLog: typeof import('./src/components/MonacoEditorLog.vue')['default']
     MotorConfig: typeof import('./src/components/rgvconfig/rgv4/MotorConfig.vue')['default']
+    PathInput: typeof import('./src/components/rgvconfig/rgv1/PathInput.vue')['default']
     PGVConfig: typeof import('./src/components/rgvconfig/rgv4/PGVConfig.vue')['default']
     PreHard: typeof import('./src/components/rgvconfig/rgv1/PreHard.vue')['default']
     PreSoft: typeof import('./src/components/rgvconfig/rgv1/PreSoft.vue')['default']

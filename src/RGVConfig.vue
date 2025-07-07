@@ -33,6 +33,7 @@ const advancedClick = (index, node) => {
   }else if(index==4){
     router.push("/rgv/r5");
   }
+  store.second=!store.second
 }
 const stepPaths=store.extractAllUrls()
 
@@ -41,7 +42,15 @@ const next = () => {
   const currentIndex = stepPaths.findIndex(p => p === route.path)
   const currentRoute= route.path
   store.updateStatusByUrl(currentRoute, 'doing')
-  if (currentIndex < stepPaths.length - 1) {
+   if (store.lastStepToMainPage[currentRoute as keyof typeof store.lastStepToMainPage]) {
+    store.second = false
+    //router.push(store.lastStepToMainPage[currentRoute as keyof typeof store.lastStepToMainPage])
+   }
+   // 是主页面路径 → 进入第二层，second=true
+  if (/^\/rgv\/r\d+$/.test(currentRoute)) {
+    store.second = true
+  }
+   if (currentIndex < stepPaths.length - 1) {
     const nextIndex = currentIndex + 1
     jump(nextIndex)
   }
@@ -114,20 +123,20 @@ watch(() => route.path, () => {
 
 <template>
   <div class="rgv-config">
-  <div class="rgv-steps">
+  <div class="rgv-steps" v-if="!store.second">
      <tiny-steps line vertical :data="data2" :active="outerActive" @click="advancedClick"></tiny-steps>
   </div>
-<div class="rgv-content">
-  <RouterView :inner-active="innerActive"></RouterView>
+<div class="rgv-content" v-if="store.second">
+     <RouterView :inner-active="innerActive"></RouterView>
+</div>
+<div class="blank-content" v-if="!store.second">
+    
 </div>
 <div class="config-footer">
 
-      <el-button @click="previous"
-        >上一步</el-button
-      >
+      <el-button @click="previous">上一步</el-button>
       <el-button @click="done">完成当前步骤</el-button>
       <el-button @click="next" >下一步</el-button>
-
     </div>
 </div>
 </template>
@@ -141,8 +150,10 @@ watch(() => route.path, () => {
   height: 10vh;
 }
 .rgv-content{
+  height: 90vh;
+}
+.blank-content{
   height: 80vh;
-
 }
 .config-footer {
   display: flex;

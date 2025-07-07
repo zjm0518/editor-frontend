@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont2"; /* Project id 4783281 */
-  src: url('iconfont.woff2?t=1748509840157') format('woff2'),
-       url('iconfont.woff?t=1748509840157') format('woff'),
-       url('iconfont.ttf?t=1748509840157') format('truetype');
+  src: url('iconfont.woff2?t=1751615878797') format('woff2'),
+       url('iconfont.woff?t=1751615878797') format('woff'),
+       url('iconfont.ttf?t=1751615878797') format('truetype');
 }
 
 .iconfont2 {
@@ -11,6 +11,10 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon2-wenjianguanliqi:before {
+  content: "\e636";
 }
 
 .icon2-ic_fold_all:before {

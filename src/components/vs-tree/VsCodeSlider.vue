@@ -3,7 +3,7 @@ heme
 import { computed, watch, reactive, ref, nextTick, onMounted, inject,onUnmounted, provide } from "vue";
 import { getFileIcon, convertToTreeData, sortDirTree } from "./utils/utils";
 import { ElTree, ElInput } from "element-plus";
-import { ArrowRightBold, Loading, Search } from "@element-plus/icons-vue";
+import { ArrowRightBold } from "@element-plus/icons-vue";
 import RightContentMenu from "./components/RightContentMenu.vue";
 import LoadingMask from "../LoadingMask.vue";
 import DeleteConfirm from "../DeleteConfirm.vue";
@@ -21,7 +21,6 @@ import {
   getUserHomePath,
   uploadFiles,
   uploadDir,
-  getSearchText,
   postReplaceText
 } from "@/api/path";
 

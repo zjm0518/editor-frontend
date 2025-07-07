@@ -1,10 +1,10 @@
 import { defineStore } from "pinia";
-import { reactive } from "vue";
+import { reactive, ref } from "vue";
 
 
 export const useConfigStepsStore = defineStore('configSteps', () => {
   const steps = reactive({
-    data: [
+    data1: [
       { name: '软件',url:'/rgv/r1/pre-soft',status:'' },
       { name: '硬件',url:'/rgv/r1/pre-hard',status:'' },
       { name: '开始配置',url:'/rgv/r1/pre-test',status:'' },
@@ -49,7 +49,14 @@ export const useConfigStepsStore = defineStore('configSteps', () => {
     ]
   })
 
-
+  const second = ref(false)
+  const lastStepToMainPage = {
+  '/rgv/r1/pre-test': '/rgv/r1',
+  '/rgv/r2/save-params2': '/rgv/r2',
+  '/rgv/r3/save-params': '/rgv/r3',
+  '/rgv/r4/save-config': '/rgv/r4',
+  '/rgv/r5/test-o': '/rgv/r5',
+}
 function updateStatusByUrl(targetUrl: string, newStatus: string) {
     for (const module of Object.keys(steps) as (keyof typeof steps)[]) {
       const item = steps[module].find(i => i.url === targetUrl)
@@ -66,17 +73,22 @@ function updateStatusByUrl(targetUrl: string, newStatus: string) {
 
   function extractAllUrls() {
   const urls: string[] = []
-  for (const module of Object.values(steps)) {
+  const stepGroups = Object.values(steps)
+   stepGroups.forEach((module, index) => {
     for (const item of module) {
       urls.push(item.url)
     }
-  }
-  console.log("提取的所有URL:", urls)
+    // 使用 index 来构造 groupNumber，从 0 开始 +1 → r1, r2, ...
+    const groupNumber = index + 2
+    urls.push(`/rgv/r${groupNumber}`)
+  })
   return urls
 }
 
   return {
     steps,
+    second,
+    lastStepToMainPage,
     updateStatusByUrl,
     extractAllUrls
   }
