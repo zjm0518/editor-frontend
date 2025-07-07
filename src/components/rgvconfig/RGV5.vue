@@ -1,7 +1,7 @@
 <template>
 <div class="rgv-page">
    <div class="second-steps">
-     <tiny-steps line vertical :data="store.steps.data5" :active="innerActive" @click="advancedClick"></tiny-steps>
+     <tiny-steps line vertical :data="store.steps[4]" :active="store.innerActive" @click="advancedClick"></tiny-steps>
   </div>
   <div class="rgv-config-content">
     <el-button class="floating-button" @click="openHinson">打开Hinson</el-button>
@@ -12,7 +12,7 @@
 </template>
 <script lang="ts" setup>
 import { TinySteps } from '@opentiny/vue'
-import { ref, reactive, onMounted } from 'vue'
+import { onMounted } from 'vue'
 import { useRouter } from "vue-router";
 const router = useRouter();
 
@@ -27,11 +27,15 @@ const openHinson =  () => {
 
 const advancedClick = (index, node) => {
 
-  const route= store.steps.data5[index].url;
-  if (route) router.push(route);
+  const route = store.currentSteps[index].url;
+ // store.innerActive=index
+  if (route) {
+    router.push(route)
+  }
 }
 
-const props = defineProps<{ innerActive: number }>()
+
+
 onMounted(() => {
 
 });

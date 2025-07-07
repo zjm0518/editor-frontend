@@ -1,7 +1,7 @@
 <template>
 <div class="rgv-page">
   <div class="second-steps">
-     <tiny-steps line vertical :data="store.steps.data2" :active="innerActive" @click="advancedClick"
+     <tiny-steps line vertical :data="store.steps[1]" :active="store.innerActive" @click="advancedClick"
      :visible-num="6"></tiny-steps>
   </div>
   <div class="rgv-config-content">
@@ -19,15 +19,17 @@ const store = useConfigStepsStore();
 import axios from 'axios';
 const router = useRouter();
 
-const props = defineProps<{ innerActive: number }>()
+
 
 const advancedClick = (index, node) => {
 
-  const route = store.steps.data2[index].url;
+  const route = store.currentSteps[index].url;
+  //store.innerActive=index
   if (route) {
     router.push(route)
   }
 }
+
 
 const openSVStudio =  () => {
 axios.get('/api/OpenSoftware', {

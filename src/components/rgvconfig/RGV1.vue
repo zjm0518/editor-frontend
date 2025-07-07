@@ -2,7 +2,7 @@
 <div class="rgv-page">
    <div class="second-steps">
     <!--  <component :is="Svgs[name] && Svgs[name]()" class="svgs-icon"></component> -->
-     <tiny-steps line vertical :data="store.steps.data1" :active="innerActive" @click="advancedClick"></tiny-steps>
+     <tiny-steps line vertical :data="store.steps[0]" :active="store.innerActive" @click="advancedClick"></tiny-steps>
   </div>
   <div class="rgv-config-content">
     
@@ -22,13 +22,14 @@ const name="IconEditorUndo"
 
 const advancedClick = (index, node) => {
 
-  const route = store.steps.data[index].url;
+  const route = store.currentSteps[index].url;
+ // store.innerActive=index
   if (route) {
     router.push(route)
   }
 }
 
-const props = defineProps<{ innerActive: number }>()
+
 onMounted(() => {
 
 });

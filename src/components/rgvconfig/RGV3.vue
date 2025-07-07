@@ -1,7 +1,7 @@
 <template>
 <div class="rgv-page">
    <div class="second-steps">
-     <tiny-steps line vertical :data="store.steps.data3" :active="innerActive" @click="advancedClick"
+     <tiny-steps line vertical :data="store.steps[2]" :active="store.innerActive" @click="advancedClick"
      :visible-num="7"></tiny-steps>
   </div>
   <div class="rgv-config-content">
@@ -20,17 +20,18 @@ const store = useConfigStepsStore();
 const router = useRouter();
 const route = useRoute();
 import axios from 'axios';
-import { storeToRefs } from 'pinia';
+
 
 const advancedClick = (index, node) => {
 
-  const route = store.steps.data3[index].url;
+  const route = store.currentSteps[index].url;
+  //store.innerActive=index
   if (route) {
     router.push(route)
   }
 }
 
-const props = defineProps<{ innerActive: number }>()
+
 const openKin =  () => {
 axios.get('/api/OpenSoftware', {
   params: { type: 2 }

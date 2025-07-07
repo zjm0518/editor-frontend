@@ -1,15 +1,15 @@
 import { defineStore } from "pinia";
-import { reactive, ref } from "vue";
+import { reactive, ref,computed } from "vue";
 
 
 export const useConfigStepsStore = defineStore('configSteps', () => {
-  const steps = reactive({
-    data1: [
+  const steps = reactive([
+    [
       { name: '软件',url:'/rgv/r1/pre-soft',status:'' },
       { name: '硬件',url:'/rgv/r1/pre-hard',status:'' },
       { name: '开始配置',url:'/rgv/r1/pre-test',status:'' },
     ] ,
-    data2: [
+     [
       { name: '连接相机',url:'/rgv/r2/connect-camera',status:'' },
       { name: '恢复出厂设置',url:'/rgv/r2/reset',status:'' },
       { name: '配置设备属性',url:'/rgv/r2/set-params',status:'' },
@@ -17,7 +17,7 @@ export const useConfigStepsStore = defineStore('configSteps', () => {
       { name: '修改曝光',url:'/rgv/r2/edit-expo',status:'' },
       { name: '保存参数',url:'/rgv/r2/save-params2',status:'' },
     ],
-    data3: [
+   [
       { name: '连接上位机',url:'/rgv/r3/connect-s',status:'' },
       { name: '初始化驱动器参数',url:'/rgv/r3/init-params',status:'' },
       { name: 'can通讯配置',url:'/rgv/r3/can-comm',status:'' },
@@ -26,7 +26,7 @@ export const useConfigStepsStore = defineStore('configSteps', () => {
       { name: '工作模式配置',url:'/rgv/r3/work-mode',status:'' },
       { name: '保存配置参数',url:'/rgv/r3/save-params',status:'' },
     ],
-    data4: [
+     [
       { name: '连接控制器',url:'/rgv/r4/connect-c',status:'' },
       { name: '模型配置',url:'/rgv/r4/model-config',status:'' },
       { name: '电机配置',url:'/rgv/r4/motor-config',status:'' },
@@ -41,15 +41,26 @@ export const useConfigStepsStore = defineStore('configSteps', () => {
       { name: '控制器配置',url:'/rgv/r4/control-config',status:'' },
       { name: '保存推送',url:'/rgv/r4/save-config',status:'' },
     ],
-    data5: [
+     [
       { name: '连接雷达',url:'/rgv/r5/connect-radar',status:'' },
       { name: '修改雷达输出逻辑',url:'/rgv/r5/modify-radar',status:'' },
       { name: '调整雷达扫描范围',url:'/rgv/r5/radar-range',status:'' },
       { name: '避障测试',url:'/rgv/r5/test-o',status:'' },
-    ]
-  })
-
-  const second = ref(false)
+    ],
+  ])
+  const outerData=reactive([
+  {name: '准备工作',status:''},
+  { name: '扫码相机配置' ,status:''},
+  { name: '驱动器配置',status:'' },
+  { name: '控制器配置',status:'' },
+  { name: '避障雷达配置',status:'' }
+])
+const outerActive = ref(0)          // 外层主步骤
+const innerActive = ref(0)          // 当前子步骤在该主步骤下的索引
+const currentSteps = computed(() => steps[outerActive.value])
+const isCurrentStepGroupDone = computed(() => {
+  return currentSteps.value.every(step => step.status === 'done')
+})
   const lastStepToMainPage = {
   '/rgv/r1/pre-test': '/rgv/r1',
   '/rgv/r2/save-params2': '/rgv/r2',
@@ -57,39 +68,47 @@ export const useConfigStepsStore = defineStore('configSteps', () => {
   '/rgv/r4/save-config': '/rgv/r4',
   '/rgv/r5/test-o': '/rgv/r5',
 }
-function updateStatusByUrl(targetUrl: string, newStatus: string) {
-    for (const module of Object.keys(steps) as (keyof typeof steps)[]) {
-      const item = steps[module].find(i => i.url === targetUrl)
-      if (item) {
-        if(item.status === 'done' ){
-        return  
-        }
-        item.status = newStatus
-        return
-      }
-    }
-    console.warn(`未找到 URL 为 "${targetUrl}" 的项`)
-  }
+function updateActiveByRoute(routePath:string) {
 
-  function extractAllUrls() {
-  const urls: string[] = []
-  const stepGroups = Object.values(steps)
-   stepGroups.forEach((module, index) => {
-    for (const item of module) {
-      urls.push(item.url)
+  for (let outerIndex = 0; outerIndex < steps.length; outerIndex++) {
+    const innerIndex = steps[outerIndex].findIndex(step => step.url === routePath)
+    if (innerIndex !== -1) {
+      outerActive.value = outerIndex
+      innerActive.value = innerIndex
+      return
     }
-    // 使用 index 来构造 groupNumber，从 0 开始 +1 → r1, r2, ...
-    const groupNumber = index + 2
-    urls.push(`/rgv/r${groupNumber}`)
+  }
+  console.warn(`未在步骤中找到路径: ${routePath}`)
+}
+function updateStatusByUrl(targetUrl: string, newStatus: string) {
+  for (const group of steps) {
+    const item = group.find(i => i.url === targetUrl)
+    if (item) {
+      if (item.status === 'done') {
+        return  // 不重复设置已完成
+      }
+      item.status = newStatus
+      return
+    }
+  }
+  console.warn(`未找到 URL 为 "${targetUrl}" 的项`)
+}
+function markCurrentStepGroupDone() {
+  steps[outerActive.value].forEach(step => {
+    step.status = 'done'
   })
-  return urls
 }
 
   return {
     steps,
-    second,
+    outerData,
+    outerActive,
+    innerActive,
+    currentSteps,
     lastStepToMainPage,
     updateStatusByUrl,
-    extractAllUrls
+    markCurrentStepGroupDone,
+    updateActiveByRoute,
+    isCurrentStepGroupDone
   }
 })
