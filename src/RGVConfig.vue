@@ -45,7 +45,9 @@ const done=function(){
   next() 
 }
 
-
+const returnToMain=function(){
+  router.push("/rgv/main")
+}
 
 onMounted(() => {
   store.updateActiveByRoute(route.path)
@@ -66,7 +68,7 @@ watch(() => route.path, () => {
 </div>
 
 <div class="config-footer">
-
+  <el-button @click="returnToMain">返回上一级</el-button>
       <el-button @click="previous">上一步</el-button>
       <el-button @click="done">完成当前步骤</el-button>
       <el-button @click="next" >下一步</el-button>

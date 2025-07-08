@@ -53,7 +53,7 @@ axios.get('/api/OpenSoftware', {
 }
 .rgv-config-content {
   width: 100%;
-  height: 70vh;
+  height: 80vh;
 
 }
 /* 悬浮按钮样式 */

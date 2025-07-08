@@ -1,5 +1,7 @@
 <template>
   <div class="rgv-page-content">
+    <div>打开对象字典</div>
+    <img loading="lazy" :src="imageUrl6" />
 
     <div>在对象字典中搜索Keba
 	将驱动器的 Keba PLC 模式（2340_0D）调整至打开状态， Value 配置为“ 1 ”。</div>
@@ -29,6 +31,7 @@ import img2 from '/rgv3/stable-set2.png';
 import img3 from '/rgv3/stable-set3.png';
 import img4 from '/rgv3/stable-set4.png';
 import img5 from '/rgv3/stable-set5.png';
+import img6 from '/rgv3/stable-set6.png';
 
 
 
@@ -37,6 +40,7 @@ const imageUrl2 = img2;
 const imageUrl3 = img3;
 const imageUrl4 = img4;
 const imageUrl5 = img5;
+const imageUrl6 = img6;
 
 </script>
 <style scoped>
