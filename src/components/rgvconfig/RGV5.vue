@@ -56,13 +56,12 @@ onMounted(() => {
 .rgv-config-content {
   width: 100%;
   height: 80vh;
-
 }
 /* 悬浮按钮样式 */
 .floating-button {
   position: absolute;
-  top: 20vh;   /* 距离容器顶部 10px */
-  left: 10px; /* 距离容器右边 10px */
+  top: 20vh;  
+  left: 10px; 
   z-index: 10;
 }
 </style>

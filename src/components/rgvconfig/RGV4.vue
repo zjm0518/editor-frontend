@@ -5,7 +5,17 @@
      :visible-num="7"></tiny-steps>
   </div>
   <div class="rgv-config-content">
-    <el-button class="floating-button" @click="openRobo">打开RoboshopPro</el-button>
+    <div  class="floating-button" >
+      <el-button @click="openRobo">打开RoboshopPro</el-button>
+    <el-button @click="triggerFileUpload">上传配置文件</el-button>
+    </div>
+    
+     <input
+          ref="fileInput"
+          type="file"
+          class="hidden"
+          @change="handleFileUpload"
+        />
 
     <RouterView></RouterView>
   </div>
@@ -34,8 +44,26 @@ const advancedClick = (index, node) => {
     router.push(route)
   }
 }
+const handleFileUpload = async function (event) {
+  const input = event.target as HTMLInputElement;
+  const files = event.target.files;
+  if (!files.length) return;
 
+  const formData = new FormData();
 
+formData.append("file", files[0]);
+
+  await axios.post("/api/UploadModel", formData, {
+  headers: {
+    "Content-Type": "multipart/form-data",
+  },
+});
+  input.value = ""; // 清空文件选择框的值
+};
+const fileInput = ref(null);
+const triggerFileUpload = function () {
+  fileInput.value.click();
+};
 onMounted(() => {
 
 });
@@ -65,5 +93,8 @@ onMounted(() => {
   top: 20vh;   /* 距离容器顶部 10px */
   left: 10px; /* 距离容器右边 10px */
   z-index: 10;
+}
+.hidden{
+display: none;
 }
 </style>
