@@ -1,9 +1,11 @@
 {
   "files": [],
   "compilerOptions": {
+    "strict":false,
     "noImplicitAny": false, 
     "allowJs": true,
     "strictPropertyInitialization": false,
+    "suppressImplicitAnyIndexErrors": true
   },
   "references": [
     {

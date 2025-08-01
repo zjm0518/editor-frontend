@@ -135,3 +135,9 @@ export function postReplaceText(data = {}, headers = {}, config = {}) {
 export function openSoftware(data = {}, headers = {}, config = {}) {
   return http.get("/OpenSoftware", data, headers, config);
 }
+export function writeModbus(params = {}, headers = {}, config = {}) {
+  return http.get("/writeModbus", params, headers, config);
+}
+export function writeModbus2(params = {}, headers = {}, config = {}) {
+  return http.get("/writeModbus2", params, headers, config);
+}

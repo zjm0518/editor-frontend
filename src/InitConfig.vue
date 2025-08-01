@@ -65,7 +65,7 @@ const jump = (index: number) => {
   router.push(`/init/${index}`);
 };
 const save = () => {
-  configstorage.formData.restart = true; // 设置重启标志
+  configstorage.formData.restart = false; // 设置重启标志
   configstorage.updateToServer();
 };
 const reset = () => {
