@@ -3,11 +3,13 @@ import Editor from '@/Editor.vue';
 import AGVInfo from '@/AGVInfo.vue';
 import ICamera from '@/ICamera.vue';
 import ILog from '@/ILog.vue';
+import PLCControl from '@/PLCControl.vue';
 const routes = [
   { path: '/', component: Editor },
   { path: '/agv', component: AGVInfo },
   { path: '/camera', component: ICamera },
   { path: '/log', component: ILog },
+  { path: '/plc', component: PLCControl },
    {path: '/rgv/main', name: 'main', component: () => import('@/RGVConfigMain.vue')},
   { path: '/rgv', component: () => import('@/RGVConfig.vue'),
     redirect:'/rgv/r1',

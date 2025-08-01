@@ -12,6 +12,10 @@ interface ConfigRecord{
   kincoservoPath?: string;
   svstudioPath?: string;
   roboshopProPath?: string;
+  plcip: string; // PLC IP 地址
+  plcport:string; // PLC 端口
+  modbusip:string; // Modbus IP 地址
+  modbusport:string; // Modbus 端口
   restart: boolean; // 是否重启
 }
 export const useConfigStore = defineStore('config', {
@@ -27,7 +31,11 @@ export const useConfigStore = defineStore('config', {
       kincoservoPath: '',
       svstudioPath: '',
       roboshopProPath: '',
+      plcip:'',
       restart: false, // 是否重启
+      plcport: '',
+      modbusip: '',
+      modbusport: '',
     } as ConfigRecord, // 存储表单数据
   }),
   actions: {
