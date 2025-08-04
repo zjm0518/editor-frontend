@@ -5,7 +5,7 @@
             <span>Modbus写入</span>
           </div>
             <div class="plc-status-container">
-              <div v-for="i in plcInput.labels.length" :key="i" class="plc-item">
+              <div v-for="i in plcInput.labels?.length ? plcInput.labels.length : 0" :key="i" class="plc-item">
                 <span class="plc-address">{{ "M"+(plcInput.labels[i-1].address) }}</span>
 
 
