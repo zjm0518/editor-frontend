@@ -4,14 +4,16 @@ import AGVInfo from '@/AGVInfo.vue';
 import ICamera from '@/ICamera.vue';
 import ILog from '@/ILog.vue';
 import PLCControl from '@/PLCControl.vue';
+import DebugControl from '@/DebugControl.vue';
 const routes = [
   { path: '/', component: Editor },
   { path: '/agv', component: AGVInfo },
   { path: '/camera', component: ICamera },
   { path: '/log', component: ILog },
   { path: '/plc', component: PLCControl },
- /*   {path: '/rgv/main', name: 'main', component: () => import('@/RGVConfigMain.vue')}, */
- /*  { path: '/rgv', component: () => import('@/RGVConfig.vue'),
+  { path: '/debug', component: DebugControl },
+  /*  {path: '/rgv/main', name: 'main', component: () => import('@/RGVConfigMain.vue')},
+  { path: '/rgv', component: () => import('@/RGVConfig.vue'),
     redirect:'/rgv/r1',
     children:[
 
@@ -75,7 +77,7 @@ const routes = [
         ]
        },
     ]
-   }, */
+   },  */
   { path: '/init' , component: ()=>import('@/InitConfig.vue'),
     redirect:'/init/1',
     children:[
