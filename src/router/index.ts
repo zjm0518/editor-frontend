@@ -10,11 +10,11 @@ const routes = [
   { path: '/camera', component: ICamera },
   { path: '/log', component: ILog },
   { path: '/plc', component: PLCControl },
-   {path: '/rgv/main', name: 'main', component: () => import('@/RGVConfigMain.vue')},
-  { path: '/rgv', component: () => import('@/RGVConfig.vue'),
+ /*   {path: '/rgv/main', name: 'main', component: () => import('@/RGVConfigMain.vue')}, */
+ /*  { path: '/rgv', component: () => import('@/RGVConfig.vue'),
     redirect:'/rgv/r1',
     children:[
-     
+
       { path: 'r1', name: 'r1', component: () => import('@/components/rgvconfig/RGV1.vue'),
         redirect: '/rgv/r1/pre-soft',
         children: [
@@ -75,7 +75,7 @@ const routes = [
         ]
        },
     ]
-   },
+   }, */
   { path: '/init' , component: ()=>import('@/InitConfig.vue'),
     redirect:'/init/1',
     children:[

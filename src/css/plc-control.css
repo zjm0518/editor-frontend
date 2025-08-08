@@ -1,6 +1,6 @@
 .plc-control-container{
     display: flex;
-    flex-direction: column;
+  
     height: 100vh;
     width: 100vw;
     overflow: hidden;
@@ -10,16 +10,29 @@
     padding-bottom: 0%;
     gap: 1%;
     box-sizing: border-box;
-
+ 
 }
 
-
+.first-col{
+  display: flex;
+  flex-direction: column;
+  gap: 1%;
+  height: 100vh;
+  width: 30vw;
+}
+.second-col{
+  display: flex;
+  flex-direction: column;
+  gap: 1%;
+  height: 100vh;
+  width: 50vw;
+}
 .border{
-    border: 1px solid #6c757d;          
+    border: 2px solid #00B0F0;          
     border-radius: 4px;
-    background-color: #f8f9fa;    
+    background-color: #ffffff;    
     padding: 1%;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);/* 增加一点阴影提升质感 */
+    box-shadow: 0 1px 3px rgba(255,255,255,0.1);/* 增加一点阴影提升质感 */
   font-family: 'Segoe UI', sans-serif; /* 使用更现代、常见的工业字体 */
   color: #343a40;                       /* 字体颜色更稳重，偏深灰 */
   box-sizing: border-box;
@@ -28,37 +41,131 @@
 .title{
     font-size: large;
     font-family: 'Courier New', Courier, monospace;
-}
-.plc-control-output{
-    height: 40%;
+    user-select: none;
+    height: 20px;
+  }
+.plc-config{
+    height: 30vh;
     width: 100%;
     box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
 }
-.plc-control-intput{
-    height: 40%;
-    width: 100%;
-    box-sizing: border-box;
-}
-.plc-status-container {
+.plc-config-content{
   display: flex;
- 
-  flex-wrap: wrap;
+  flex-direction: column;
+  justify-content: space-between;
+  flex:1;
+  padding: 3%;
   width: 100%;
-  height: 80%;
+  
   box-sizing: border-box;
   font-family: 'Courier New', Courier, monospace;
 }
-
-.plc-item {
-  width: 20%; /* 100% / 8 = 12.5% */
+.plc-config-ip-port{
   display: flex;
-  flex-direction: row;
+  justify-content: space-between;
   align-items: center;
-  justify-content:flex-end;
-  padding:1px;
-  height: 25%;
+ 
+ span{
+  user-select: none; /* 禁止选中 */
+ }
+}
+.plc-tray-convey{
+  width: 100%;
+  height: 20vh;
+}
+.plc-tray-convey-content{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+ align-items: center;
+  flex:1;
+  padding: 3%;
+  width: 100%;
+}
+.plc-tray-convey-speed{
+  display:flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'Courier New', Courier, monospace;
+ 
+ span{
+  user-select: none; /* 禁止选中 */
+ }
+ .el-input-group__append{
+  padding: 0 0px !important;
+  user-select: none; /* 禁止选中 */
+ }
+
+}
+.plc-operate{
+  height: 40vh;
+  width: 100%;
+}
+.plc-operate-content{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex:1;
+  padding: 3%;
+  width: 100%;
   box-sizing: border-box;
-  font-size: clamp(12px, 1.5vw, 18px); /* 自动根据宽度适应 */
+   font-family: 'Courier New', Courier, monospace;
+}
+.plc-operate-switchs{
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  div{
+    display: flex;
+    align-items: center;
+    width: 50%;
+    span{
+      user-select: none; /* 禁止选中 */
+      width: 50%;
+    }
+    .el-switch{
+      width: 40%;;
+    }
+  }
+}
+
+.cylinder-control{
+  height: 45vh;
+  width: 100%;
+}
+.cylinder-control-content{
+  display: flex;
+  flex-direction: column;
+ height: calc(40vh - 20px);
+  box-sizing: border-box;
+  flex-wrap: wrap;
+  font-family: 'Courier New', Courier, monospace;
+  gap: 5%;
+}
+.cylinder-control-item{
+  display: flex;
+  align-items: center;
+
+ height: 30%;
+
+  width: 50%;
+  box-sizing: border-box;
+  font-family: 'Courier New', Courier, monospace;
+}
+.motor-control{
+  height: 50vh;
+  width: 100%;
+  display: flex;
+  gap: 1%;
+}
+.left-motor,
+.right-motor{
+  width: 50%;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 1%;
 }
 
 .di-circle {
@@ -81,20 +188,21 @@
 .di-circle.offline {
   background-color: red;
 }
-
-.plc-input-item {
-  width: 15%; /* 100% / 8 = 12.5% */
-  display: flex;
-  flex-direction: row;
-  align-items: center ;
-  justify-content:flex-start;
-  padding:1px;
-  box-sizing: border-box;
- height: 25%;
-  font-size: clamp(10px, 1.5vw, 18px); /* 自动根据宽度适应 */
-  
+.motor-control-content{
+  width: 100%;
 }
-
+.motor-status{
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+}
+.motor-speed{
+  width: 100%;
+  .el-input-group__append{
+  padding: 0 0px !important;
+  user-select: none; /* 禁止选中 */
+ }
+}
 .hidden{
     display: none;
 }
