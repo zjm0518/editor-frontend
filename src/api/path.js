@@ -141,3 +141,6 @@ export function writeModbus(params = {}, headers = {}, config = {}) {
 export function writeModbus2(params = {}, headers = {}, config = {}) {
   return http.get("/writeModbus2", params, headers, config);
 }
+export function getPLCLabels(params = {}, headers = {}, config = {}) {
+  return http.get("/getPLCLabels", params, headers, config);
+}
