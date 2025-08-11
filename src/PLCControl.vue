@@ -43,8 +43,8 @@
         </el-input>
       </div>
       <div class="plc-tray-convey-buttons">
-        <el-button>传送带正转</el-button>
-        <el-button>传送带反转</el-button>
+        <el-button @click="WriteModbus(322,1)">传送带正转</el-button>
+        <el-button @click="WriteModbus(323,1)">传送带反转</el-button>
       </div>
     </div>
 
@@ -76,8 +76,14 @@
       </div>
     </div>
     </div>
+    <div class="plc-buttons">
+      <el-button>车体控制</el-button>
+      <el-button>IO监控</el-button>
+
+    </div>
   </div>
   <div class="second-col">
+    <div class="first-row2">
     <div class="cylinder-control border">
       <div class="title">
         料仓控制
@@ -102,9 +108,13 @@
         </div></div>
       </div>
     </div>
+</div>
+<div class="second-row">
+
+
     <div class="motor-control">
-      <div class="left-motor border">
-        <div class="title">左顶升电机</div>
+      <div class="left-motor border" v-for="(motor_item,i) in plc_config.motor_position_config" :key="i">
+        <div class="title">{{i==0?'左':'右'}}顶升电机</div>
         <div class="motor-control-content">
           <div class="motor-status">
            <span class="di-circle"
@@ -123,7 +133,7 @@
         <div class="motor-speed">
           <div>
            <span>当前位置</span>
-        <el-input style="width: 3cm;">
+        <el-input style="width: 30%;">
           <template #append>mm</template>
         </el-input>
         <span>步进量</span>
@@ -142,30 +152,53 @@
         <div class="motor-buttons">
           <el-button>步进电动</el-button>
           <el-button>回零</el-button>
-          <el-button>向上</el-button>
-          <el-button>向下</el-button>
+          <el-button @click="WriteModbus(motor_item.button[2],1)">向上</el-button>
+          <el-button @click="WriteModbus(motor_item.button[3],1)">向下</el-button>
         </div>
         <div class="motor-position">
-          <div v-for="item in motor_position_config" :key="item.name">
-            <span>{{ item.name }}</span>
-             <el-input style="width: 30%;">
+          <div v-for="item in motor_item.points" :key="item.name" class="motor-row">
+            <span style="width: 20%;">{{ item.name }}</span>
+            <el-input style="width: 30%;">
           <template #append>mm</template>
         </el-input>
         <el-button>示教</el-button>
         <el-button>点位追踪</el-button>
-          </div>
+        </div>
         </div>
       </div>
       </div>
-      <div class="right-motor border"></div>
 
     </div>
+   </div>
   </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import "@/css/plc-control.css";
-import { cylinder_config, motor_position_config } from "./utils/plcConfig";
+import { cylinder_config,useConfig } from "./utils/plcConfig";
+import { WriteModbusM} from "@/api/path";
+import { usePLCStore } from "./stores/PLCstatus";
+import { onMounted, watch,ref } from "vue";
+const { config, initConfig } = useConfig();
+const store = usePLCStore();
+const plc_config = ref({});
+
+onMounted(() => {
+  initConfig();
+  store.connectWebSocket();
+  plc_config.value = config.value.plc_config;
+});
+
+const WriteModbus = (address: number, value: number) => {
+  WriteModbusM({ address: address, value: value })
+    .then((response) => {
+      console.log("写入成功:", response);
+    })
+    .catch((error) => {
+      console.error("写入失败:", error);
+    });
+};
+
 </script>
 

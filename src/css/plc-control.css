@@ -25,7 +25,15 @@
   flex-direction: column;
   gap: 1%;
   height: 100vh;
-  width: 50vw;
+  width: 70vw;
+}
+.first-row2{
+  width: 100%;
+  height: 40vh;
+}
+.second-row{
+  width: 100%;
+  height: 55vh;
 }
 .border{
     border: 2px solid #00B0F0;          
@@ -100,7 +108,7 @@
 
 }
 .plc-operate{
-  height: 40vh;
+  height: 30vh;
   width: 100%;
 }
 .plc-operate-content{
@@ -132,13 +140,13 @@
 }
 
 .cylinder-control{
-  height: 45vh;
+  height: 40vh;
   width: 100%;
 }
 .cylinder-control-content{
   display: flex;
   flex-direction: column;
- height: calc(40vh - 20px);
+ height: calc(35vh - 20px);
   box-sizing: border-box;
   flex-wrap: wrap;
   font-family: 'Courier New', Courier, monospace;
@@ -148,14 +156,13 @@
   display: flex;
   align-items: center;
 
- height: 30%;
-
+  height: 30%;
   width: 50%;
   box-sizing: border-box;
   font-family: 'Courier New', Courier, monospace;
 }
 .motor-control{
-  height: 50vh;
+  height: 100%;
   width: 100%;
   display: flex;
   gap: 1%;
@@ -166,19 +173,20 @@
   height: 100%;
   box-sizing: border-box;
   padding: 1%;
+  
+
 }
 
 .di-circle {
   width:1em;
   height: 1em;
   border-radius: 50%;
- margin-right: 4px;
+  margin-right: 4px;
   background-color: gray;
   flex-shrink: 0;
   display: inline-block;
   vertical-align: middle;
   text-align: center;
-  
 }
 
 .di-circle.online {
@@ -190,6 +198,11 @@
 }
 .motor-control-content{
   width: 100%;
+  height: calc(100% - 20px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
 }
 .motor-status{
   display: flex;
@@ -202,6 +215,20 @@
   padding: 0 0px !important;
   user-select: none; /* 禁止选中 */
  }
+}
+.motor-position{
+  display: flex;
+  flex-direction: column;
+   .el-input-group__append{
+  padding: 0 0px !important;
+  user-select: none; /* 禁止选中 */
+ }
+ .motor-row {
+  display: flex;
+  align-items: center;
+
+}
+
 }
 .hidden{
     display: none;
